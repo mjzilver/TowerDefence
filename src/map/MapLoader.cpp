@@ -3,9 +3,11 @@
 #include <sstream>
 #include "../tile/TileFactory.h"
 
-MapLoader::MapLoader(const std::string& mapName, std::vector <Tile> &tiles, TextureManager& textureManager) : textureManager(textureManager) {
+MapLoader::MapLoader(TextureManager& textureManager) : textureManager(textureManager) {}
+
+Map MapLoader::LoadMap(const std::string& mapName) {
     std::string mapData = readFile(MAP_PATH + mapName);
-    parseMap(mapData, tiles);
+    return parseMap(mapData);
 }
 
 std::string MapLoader::readFile(const std::string& filepath) {
@@ -18,9 +20,11 @@ std::string MapLoader::readFile(const std::string& filepath) {
     return buffer.str();
 }
 
-void MapLoader::parseMap(const std::string& mapData, std::vector<Tile>& tiles) {
+Map MapLoader::parseMap(const std::string& mapData) {
     std::istringstream stream(mapData);
     std::string line;
+
+    Map map;
 
     int y = 0;
     
@@ -32,18 +36,26 @@ void MapLoader::parseMap(const std::string& mapData, std::vector<Tile>& tiles) {
         // p = path, g = grass, S = start, E = end
         while (lineStream >> tileType) {
             glm::vec2 position(x * Tile::TILE_SIZE, y * Tile::TILE_SIZE);
+            Tile startTile, endTile;
+            
             switch (tileType[0]) {
             case 'g':
-                tiles.push_back(TileFactory::createGrassTile(position, textureManager));
+                map.tiles.push_back(TileFactory::createGrassTile(position, textureManager));
                 break;
             case 'p':
-                tiles.push_back(TileFactory::createPathTile(position, textureManager));
+                map.tiles.push_back(TileFactory::createPathTile(position, textureManager));
                 break;
             case 'S':
-                tiles.push_back(TileFactory::createStartTile(position, textureManager));
+                startTile = TileFactory::createStartTile(position, textureManager);
+                map.startTile = &startTile;
+
+                map.tiles.push_back(startTile);
                 break;
             case 'E':
-                tiles.push_back(TileFactory::createEndTile(position, textureManager));
+                endTile = TileFactory::createEndTile(position, textureManager);
+                map.endTile = &endTile;
+
+                map.tiles.push_back(endTile);
                 break;
             default:
                 throw std::runtime_error("Invalid tile type: " + tileType);
@@ -54,4 +66,8 @@ void MapLoader::parseMap(const std::string& mapData, std::vector<Tile>& tiles) {
     }
 
     // TODO loop over to blend corners and edges with transition tiles
+
+    // TODO find path from start to end (a*)
+
+    return map;
 }

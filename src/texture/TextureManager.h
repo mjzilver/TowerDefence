@@ -7,7 +7,7 @@
 
 #include "Texture.h"
 
-const std::string TEXTURE_PATH = "resources/images/tiles/";
+const std::string TEXTURE_PATH = "resources/images/";
 
 class TextureManager {
 public:

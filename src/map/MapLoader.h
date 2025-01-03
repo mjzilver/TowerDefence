@@ -6,17 +6,18 @@
 #include <vector>
 #include "../tile/Tile.h"
 #include "../texture/TextureManager.h"
+#include "Map.h"
 
 class MapLoader {
 public:
-    MapLoader(const std::string& mapName, std::vector<Tile>& tiles, TextureManager& textureManager);
+    MapLoader(TextureManager& textureManager);
 
+    Map LoadMap(const std::string& mapName);
 private:
     const std::string MAP_PATH = "resources/maps/";
-
     TextureManager& textureManager;
 
     std::string readFile(const std::string& filepath);
     
-    void parseMap(const std::string& mapData, std::vector<Tile>& tiles);
+    Map parseMap(const std::string& mapData);
 };

@@ -1,14 +1,18 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include <glm/glm.hpp>
 #include <iostream>
 #include <vector>
-#include <glm/glm.hpp>
-#include "shader/Shader.h"
-#include "texture/TextureManager.h"
-#include "tile/TileFactory.h"
-#include "tile/Tile.h"
-#include "systems/RenderSystem.h"
+
+#include "enemy/Enemy.h"
+#include "enemy/EnemyFactory.h"
 #include "map/MapLoader.h"
+#include "shader/Shader.h"
+#include "systems/RenderSystem.h"
+#include "texture/TextureManager.h"
+#include "tile/Tile.h"
+#include "tile/TileFactory.h"
 
 const int screenWidth = 800;
 const int screenHeight = 800;
@@ -38,21 +42,28 @@ int main() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // Depth testing
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
     Shader shader("vertex.glsl", "fragment.glsl");
 
-    std::vector<Tile> tiles;
-    MapLoader mapLoader = MapLoader("map1.txt", tiles, textureManager);
+    MapLoader mapLoader = MapLoader(textureManager);
+    Map map = mapLoader.LoadMap("map1.txt");
 
-    RenderSystem renderSystem(shader);
+    RenderSystem renderSystem;
 
-    // texture filtering (otherwise causes lines)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    std::vector<Enemy> enemies;
+
+    enemies.push_back(EnemyFactory::createFireBug(glm::vec2(0, 0), textureManager));
 
     while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        renderSystem.addRenderBatch(&shader, map.tiles, 0);
+        renderSystem.addRenderBatch(&shader, std::vector<Tile>{enemies[0].toTile()}, 1);
 
-        renderSystem.renderTiles(tiles);
+        renderSystem.render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

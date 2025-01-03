@@ -16,11 +16,11 @@ Tile TileFactory::createTile(glm::vec2 position, TextureManager& textureManager,
 }
 
 Tile TileFactory::createGrassTile(glm::vec2 position, TextureManager& textureManager) {
-    return createTile(position, textureManager, "Grass.png", 2, 1);
+    return createTile(position, textureManager, "tiles/Grass.png", 2, 1);
 }
 
 Tile TileFactory::createPathTile(glm::vec2 position, TextureManager& textureManager) {
-    return createTile(position, textureManager, "Grass.png", 9, 2);
+    return createTile(position, textureManager, "tiles/Grass.png", 9, 2);
 }
 
 // TODO 

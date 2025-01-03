@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "../texture/Texture.h"
 #include "../utils/Direction.h"
+#include "../tile/Tile.h"	
 
 enum EnemyType {
     FireBug,
@@ -38,4 +39,15 @@ struct Enemy {
     // Texture Component
     Texture texture;
     glm::vec4 textureCoords;
+
+    // cast to tile 
+    // TODO: fix using ECS
+    Tile toTile() const {
+        Tile tile;
+        tile.position = position;
+        tile.size = size;
+        tile.texture = texture;
+        tile.textureCoords = textureCoords;
+        return tile;
+    }
 };
