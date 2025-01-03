@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include "../texture/TextureManager.h"
-#include "../systems/EntityFactory.h"
+#include "../ecs/EntityFactory.h"
 
 class MapLoader {
 public:

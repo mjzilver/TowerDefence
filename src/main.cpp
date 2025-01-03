@@ -5,8 +5,6 @@
 #include <iostream>
 #include <vector>
 
-#include "enemy/Enemy.h"
-#include "enemy/EnemyFactory.h"
 #include "map/MapLoader.h"
 #include "shader/Shader.h"
 #include "systems/RenderSystem.h"
@@ -15,8 +13,10 @@
 #include "ecs/EntityManager.h"
 #include "ecs/ComponentManager.h"
 #include "ecs/SystemManager.h"
+#include "ecs/EntityFactory.h"
+
 #include "systems/RenderSystem.h"
-#include "systems/EntityFactory.h"
+#include "systems/AnimationSystem.h"
 
 const int screenWidth = 800;
 const int screenHeight = 800;
@@ -58,10 +58,15 @@ int main() {
     EntityFactory entityFactory(componentManager, entityManager);
 
     auto& renderSystem = systemManager.registerSystem<RenderSystem>(componentManager);
+    auto& animationSystem = systemManager.registerSystem<AnimationSystem>(componentManager);
 
     // Create the map
     MapLoader mapLoader = MapLoader(textureManager, entityFactory);
     mapLoader.LoadMap("map1.txt");
+
+    auto en = entityFactory.createFireBug(glm::vec2(100, 100), textureManager);
+
+    animationSystem.addEntity(en);
 
     // put all the entities in the render system
     for (auto& entity : entityManager.getEntities()) {

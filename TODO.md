@@ -1,0 +1,41 @@
+## To do (not in order)
+- [ ] Add a proper README.md
+- [x] Setup engine to draw tiles
+- [x] Load path definitions from file
+- [x] Implement one static animated enemy
+- [ ] Implement enemy spawning
+- [ ] Implement enemy path following
+- [ ] Path finding a*
+- [ ] Add one tower
+- [ ] Implement tower shooting
+- [ ] Quadtree
+- [ ] Transition tiles (grass -> path) with corners/edges blended
+- [x] Refactor to ECS
+- [ ] Add tower stats
+- [ ] Add particles (money, fire, explosion)
+- [ ] Add tower menu
+- [ ] Add multiple tower upgrade paths (from file)
+- [ ] Add combos (fire + poison = explosion, water + electricity = stun)
+- [ ] Draggable tower placement
+
+### ECS to do
+- [ ] Add components
+    - [x] Position (everything)
+    - [x] Texture (everything)
+    - [ ] Health (enemy, tower)
+    - [ ] Movement (enemy)
+    - [ ] Collision (projectile, enemy)
+    - [ ] Shooting (tower)
+- [ ] Add systems
+    - [x] RenderingSystem
+    - [ ] PathfindingSystem
+        - can be a set of points that the enemy follows
+        - stored some map, with a pointer to the next point
+        - when the enemy is (near) the point, it moves to the next point
+        - when it reaches the end it does damage to the player
+    - [ ] CollisionSystem
+    - [ ] ShootingSystem
+        - All towers need to check if they can shoot at the enemy
+    - [ ] SpawningSystem
+    - [x] MovementSystem
+    - [x] AnimationSystem

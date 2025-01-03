@@ -1,22 +1,6 @@
 # Synergy Towers
-
-## To do (not in order)
-- [ ] Add a proper README.md
-- [x] Setup engine to draw tiles
-- [x] Load path definitions from file
-- [ ] Implement one enemy with health and movement
-- [ ] Path finding a-star
-- [ ] Add one tower
-- [ ] Implement tower shooting
-- [ ] Quadtree
-- [ ] Transition tiles (grass -> path) with corners/edges blended
-- [x] Refactor to ECS
-- [ ] Add tower stats
-- [ ] Add particles (money, fire, explosion)
-- [ ] Add tower menu
-- [ ] Add multiple tower upgrade paths (from file)
-- [ ] Add combos (fire + poison = explosion, water + electricity = stun)
-- [ ] Draggable tower placement
+## A 2D tower defence game about combining elements to create powerful attacks
+Currently in early development
 
 ## Running
 ```bash

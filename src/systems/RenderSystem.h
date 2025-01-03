@@ -4,7 +4,6 @@
 #include <vector>
 #include <map>
 #include "../shader/Shader.h"
-#include "../enemy/Enemy.h"
 #include "../ecs/System.h"
 #include "../ecs/ComponentManager.h"
 #include "../components/PositionComponent.h"
