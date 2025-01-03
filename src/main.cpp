@@ -6,7 +6,9 @@
 #include "shader/Shader.h"
 #include "texture/TextureManager.h"
 #include "tile/TileFactory.h"
+#include "tile/Tile.h"
 #include "systems/RenderSystem.h"
+#include "map/MapLoader.h"
 
 const int screenWidth = 800;
 const int screenHeight = 800;
@@ -38,14 +40,8 @@ int main() {
 
     Shader shader("vertex.glsl", "fragment.glsl");
 
-    std::vector<std::vector<Tile>> tiles;
-    for (int i = 0; i < 10; ++i) {
-        std::vector<Tile> row;
-        for (int j = 0; j < 10; ++j) {
-            row.push_back(TileFactory::createGrassTile(glm::vec2(i * 80, j * 80), textureManager));
-        }
-        tiles.push_back(row);
-    }
+    std::vector<Tile> tiles;
+    MapLoader mapLoader = MapLoader("map1.txt", tiles, textureManager);
 
     RenderSystem renderSystem(shader);
 

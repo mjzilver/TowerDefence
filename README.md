@@ -1,14 +1,15 @@
 # Synergy Towers
 
-## To do
+## To do (not in order)
 - [ ] Add a proper README.md
 - [x] Setup engine to draw tiles
-- [ ] Load path definitions from file
+- [x] Load path definitions from file
+- [ ] Implement one enemy with health and movement
 - [ ] Path finding a-star
 - [ ] Add one tower
 - [ ] Implement tower shooting
 - [ ] Quadtree
-- [ ] Implement one enemy with health and movement
+- [ ] Transition tiles (grass -> path) with corners/edges blended
 - [ ] Refactor to ECS
 - [ ] Add tower stats
 - [ ] Add particles (money, fire, explosion)

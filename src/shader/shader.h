@@ -13,7 +13,6 @@ private:
 
     const std::string SHADER_PATH = "resources/shaders/";
 
-
     std::string readFile(const std::string& filepath);
     void compileShader(const char* shaderSource, GLuint shaderID);
     void checkCompileErrors(GLuint shader, const std::string& type);

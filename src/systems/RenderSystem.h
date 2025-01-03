@@ -8,7 +8,7 @@
 class RenderSystem {
 public:
     RenderSystem(Shader& shader);
-    void renderTiles(const std::vector<std::vector<Tile>>& tiles);
+    void renderTiles(const std::vector<Tile>& tiles);
     GLuint createSquareVAO(const Tile& tile);
     void drawSquare(GLuint shaderProgram, GLuint VAO, const Tile& tile);
 

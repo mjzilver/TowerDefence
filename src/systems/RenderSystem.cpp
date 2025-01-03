@@ -62,12 +62,10 @@ void RenderSystem::drawSquare(GLuint shaderProgram, GLuint VAO, const Tile& tile
     glBindVertexArray(0);
 }
 
-void RenderSystem::renderTiles(const std::vector<std::vector<Tile>>& tiles) {
-    for (const auto& row : tiles) {
-        for (const auto& tile : row) {
-            GLuint squareVAO = createSquareVAO(tile);
-            drawSquare(shader.getProgram(), squareVAO, tile);
-            glDeleteVertexArrays(1, &squareVAO);
-        }
+void RenderSystem::renderTiles(const std::vector<Tile>& tiles) {
+    for (const auto& tile : tiles) {
+        GLuint squareVAO = createSquareVAO(tile);
+        drawSquare(shader.getProgram(), squareVAO, tile);
+        glDeleteVertexArrays(1, &squareVAO);
     }
 }
