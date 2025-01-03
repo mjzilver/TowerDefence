@@ -1,4 +1,5 @@
 #include "TileFactory.h"
+#include "../utils/TextureCoords.h"
 
 // TODO
 const int textureSize = 64;
@@ -8,9 +9,7 @@ Tile TileFactory::createTile(glm::vec2 position, TextureManager& textureManager,
     tile.size = glm::vec2(Tile::TILE_SIZE, Tile::TILE_SIZE);
     tile.texture = textureManager.loadTexture(textureName);
 
-    int textureTopY = tile.texture.size.y - textureSize;
-
-    tile.textureCoords = glm::vec4(textureX * textureSize, textureTopY - (textureSize * textureY), textureSize, textureSize);
+    tile.textureCoords = getTextureCoords(textureX, textureY, textureSize, textureSize, tile.texture.size.x, tile.texture.size.y);
 
     return tile;
 }

@@ -57,8 +57,18 @@ int main() {
 
     enemies.push_back(EnemyFactory::createFireBug(glm::vec2(0, 0), textureManager));
 
+    long long ticks = 0;
+
     while (!glfwWindowShouldClose(window)) {
+        ticks++;
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // tick based animation
+        if (ticks % enemies[0].frameSpeed == 0) {
+            enemies[0].frame = (enemies[0].frame + 1) % enemies[0].frameCount;
+            enemies[0].updateTextureCoords();
+        }
         
         renderSystem.addRenderBatch(&shader, map.tiles, 0);
         renderSystem.addRenderBatch(&shader, std::vector<Tile>{enemies[0].toTile()}, 1);

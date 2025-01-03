@@ -92,7 +92,15 @@ void RenderSystem::render() {
 
             // Send transformation to the shader
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(normalizedPosition, 0.0f));
+
+            // Flip the texture if the tile is facing west (for animated enemies)
+            if (tile.direction == Direction::West) {
+                model = glm::translate(model, glm::vec3(normalizedPosition.x, normalizedPosition.y, 0.0f)); 
+                model = glm::scale(model, glm::vec3(-1.0f, 1.0f, 1.0f)); 
+            } else {
+                model = glm::translate(model, glm::vec3(normalizedPosition, 0.0f));
+            }
+            
             model = glm::scale(model, glm::vec3(normalizedSize, 1.0f));
 
             GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");

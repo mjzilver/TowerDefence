@@ -26,8 +26,6 @@ unsigned char* TextureManager::loadPngImage(const std::string& filePath, unsigne
 
 Texture TextureManager::loadTexture(const std::string& filePath) {
     if (textureCache.find(filePath) != textureCache.end()) {
-        std::cout << "Using cached texture: " << filePath << std::endl;
-        std::cout << "Texture id: " << textureCache[filePath].id << std::endl;
         return textureCache[filePath];
     }
 
