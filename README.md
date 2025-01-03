@@ -10,7 +10,7 @@
 - [ ] Implement tower shooting
 - [ ] Quadtree
 - [ ] Transition tiles (grass -> path) with corners/edges blended
-- [ ] Refactor to ECS
+- [x] Refactor to ECS
 - [ ] Add tower stats
 - [ ] Add particles (money, fire, explosion)
 - [ ] Add tower menu
@@ -24,10 +24,10 @@
     make
 ```
 
-#### Attributions
+### Attributions
 
-##### tile assets:
+#### tile assets:
 https://foozlecc.itch.io/
 
-##### stb_image 
+#### stb_image 
 https://github.com/nothings/stb

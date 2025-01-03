@@ -4,20 +4,21 @@
 
 #include <string>
 #include <vector>
-#include "../tile/Tile.h"
 #include "../texture/TextureManager.h"
-#include "Map.h"
+#include "../systems/EntityFactory.h"
 
 class MapLoader {
 public:
-    MapLoader(TextureManager& textureManager);
+    MapLoader(TextureManager& textureManager, EntityFactory& entityFactory) 
+        : textureManager(textureManager), entityFactory(entityFactory) {}
 
-    Map LoadMap(const std::string& mapName);
+    void LoadMap(const std::string& mapName);
 private:
     const std::string MAP_PATH = "resources/maps/";
     TextureManager& textureManager;
+    EntityFactory& entityFactory;
 
     std::string readFile(const std::string& filepath);
     
-    Map parseMap(const std::string& mapData);
+    void parseMap(const std::string& mapData);
 };

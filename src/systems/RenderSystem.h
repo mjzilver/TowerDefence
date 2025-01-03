@@ -3,25 +3,34 @@
 #include <GL/glew.h>
 #include <vector>
 #include <map>
-#include "../tile/Tile.h"
 #include "../shader/Shader.h"
 #include "../enemy/Enemy.h"
+#include "../ecs/System.h"
+#include "../ecs/ComponentManager.h"
+#include "../components/PositionComponent.h"
+#include "../components/TextureComponent.h"
+#include "../components/SizeComponent.h"
 
-struct RenderBatch {
-    Shader* shader;
-    std::vector<GLuint> VAOs;
-    std::vector<Tile> tiles;
-    int zIndex;
-};
-
-class RenderSystem {
+class RenderSystem : public System {
 public:
-    RenderSystem();
+    RenderSystem(ComponentManager& componentManager) 
+        : componentManager(componentManager) {}
 
-    void addRenderBatch(Shader* shader, const std::vector<Tile>& tiles, int zIndex = 1);
-    void render();
+    void renderEntity(
+        PositionComponent* position, 
+        TextureComponent* texture, 
+        SizeComponent* size,
+        Shader* shader
+    );
+
+    void render(Shader* shader);
+
+    void update(float deltaTime) override {
+        return;
+    }
 
 private:
-    std::vector<RenderBatch> renderBatches;
+    ComponentManager& componentManager;
+
     std::map<Shader*, GLuint> shaderVAOs; 
 };

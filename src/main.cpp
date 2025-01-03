@@ -11,8 +11,12 @@
 #include "shader/Shader.h"
 #include "systems/RenderSystem.h"
 #include "texture/TextureManager.h"
-#include "tile/Tile.h"
-#include "tile/TileFactory.h"
+
+#include "ecs/EntityManager.h"
+#include "ecs/ComponentManager.h"
+#include "ecs/SystemManager.h"
+#include "systems/RenderSystem.h"
+#include "systems/EntityFactory.h"
 
 const int screenWidth = 800;
 const int screenHeight = 800;
@@ -48,35 +52,46 @@ int main() {
 
     Shader shader("vertex.glsl", "fragment.glsl");
 
-    MapLoader mapLoader = MapLoader(textureManager);
-    Map map = mapLoader.LoadMap("map1.txt");
+    EntityManager entityManager;
+    ComponentManager componentManager;
+    SystemManager systemManager;
+    EntityFactory entityFactory(componentManager, entityManager);
 
-    RenderSystem renderSystem;
+    auto& renderSystem = systemManager.registerSystem<RenderSystem>(componentManager);
 
-    std::vector<Enemy> enemies;
+    // Create the map
+    MapLoader mapLoader = MapLoader(textureManager, entityFactory);
+    mapLoader.LoadMap("map1.txt");
 
-    enemies.push_back(EnemyFactory::createFireBug(glm::vec2(0, 0), textureManager));
+    // put all the entities in the render system
+    for (auto& entity : entityManager.getEntities()) {
+        renderSystem.addEntity(entity);
+    }
 
-    long long ticks = 0;
-
+    double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {
-        ticks++;
+        double currentTime = glfwGetTime();
+        double deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
 
+        // cornflower blue 
+        glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // tick based animation
-        if (ticks % enemies[0].frameSpeed == 0) {
-            enemies[0].frame = (enemies[0].frame + 1) % enemies[0].frameCount;
-            enemies[0].updateTextureCoords();
-        }
-        
-        renderSystem.addRenderBatch(&shader, map.tiles, 0);
-        renderSystem.addRenderBatch(&shader, std::vector<Tile>{enemies[0].toTile()}, 1);
-
-        renderSystem.render();
-
+        systemManager.updateSystems(deltaTime);
+ 
+        // rendersystem is special - needs to be last
+        renderSystem.render(&shader);
+     
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        // print fps every second
+        static double lastPrint = 0;
+        if (currentTime - lastPrint >= 1.0) {
+            std::cout << "FPS: " << 1.0 / deltaTime << std::endl;
+            lastPrint = currentTime;
+        }
     }
 
     glfwTerminate();

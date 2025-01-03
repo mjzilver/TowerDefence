@@ -3,7 +3,6 @@
 #include <glm/glm.hpp>
 
 #include "../texture/Texture.h"
-#include "../tile/Tile.h"
 #include "../utils/Direction.h"
 #include "../utils/TextureCoords.h"
 
@@ -72,15 +71,15 @@ struct Enemy {
 
     // cast to tile
     // TODO: fix using ECS
-    Tile toTile() const {
-        Tile tile;
-        tile.position = position;
-        tile.size = size;
-        tile.texture = texture;
-        tile.textureCoords = textureCoords;
-        tile.direction = direction;
-        return tile;
-    }
+    // Tile toTile() const {
+    //     Tile tile;
+    //     tile.position = position;
+    //     tile.size = size;
+    //     tile.texture = texture;
+    //     tile.textureCoords = textureCoords;
+    //     tile.direction = direction;
+    //     return tile;
+    // }
 
     const int textureWidth = 128;
     const int textureHeight = 64;
