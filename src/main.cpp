@@ -1,26 +1,23 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <ctime>
 #include <glm/glm.hpp>
 #include <iostream>
 #include <vector>
-#include <ctime>
 
-
+#include "ecs/ComponentManager.h"
+#include "ecs/EntityFactory.h"
+#include "ecs/EntityManager.h"
+#include "ecs/SystemManager.h"
 #include "map/MapLoader.h"
 #include "shader/Shader.h"
-#include "systems/RenderSystem.h"
-#include "texture/TextureManager.h"
-
-#include "ecs/EntityManager.h"
-#include "ecs/ComponentManager.h"
-#include "ecs/SystemManager.h"
-#include "ecs/EntityFactory.h"
-
-#include "systems/RenderSystem.h"
 #include "systems/AnimationSystem.h"
 #include "systems/MovementSystem.h"
 #include "systems/PathfindingSystem.h"
+#include "systems/RenderSystem.h"
+#include "systems/ShootingSystem.h"
+#include "texture/TextureManager.h"
 
 const int screenWidth = 800;
 const int screenHeight = 800;
@@ -59,31 +56,28 @@ int main() {
     EntityManager entityManager;
     ComponentManager componentManager;
     SystemManager systemManager;
-    EntityFactory entityFactory(componentManager, entityManager);
+    EntityFactory entityFactory(componentManager, entityManager, textureManager);
 
-    auto& renderSystem = systemManager.registerSystem<RenderSystem>(componentManager);
-    auto& animationSystem = systemManager.registerSystem<AnimationSystem>(componentManager);
-    auto& movementSystem = systemManager.registerSystem<MovementSystem>(componentManager);
-    auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>(componentManager);
+    auto& renderSystem = systemManager.registerSystem<RenderSystem>(&entityManager, componentManager);
+    auto& animationSystem = systemManager.registerSystem<AnimationSystem>(&entityManager, componentManager);
+    auto& movementSystem = systemManager.registerSystem<MovementSystem>(&entityManager, componentManager);
+    auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>(&entityManager, componentManager);
+    auto& shootingSystem = systemManager.registerSystem<ShootingSystem>(&entityManager, componentManager, entityFactory);
 
     // Create the map
-    MapLoader mapLoader = MapLoader(textureManager, entityFactory);
+    MapLoader mapLoader = MapLoader(entityFactory);
     mapLoader.LoadMap("map1.txt");
+
+    // place a debug tower
+    entityFactory.createTower(glm::vec2(400, 100));
+    entityFactory.createTower(glm::vec2(400, 500));
 
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    for (int i = 0; i < 20; ++i) {
+    for (int i = 0; i < 1; ++i) {
         float x = static_cast<float>(std::rand() % screenWidth);
         float y = static_cast<float>(std::rand() % screenHeight);
-        auto en = entityFactory.createFireBug(glm::vec2(x, y), textureManager);
-        animationSystem.addEntity(en);
-        movementSystem.addEntity(en);
-    }
-
-    // put all the entities in the render system
-    for (auto& entity : entityManager.getEntities()) {
-        renderSystem.addEntity(entity);
-        pathfindingSystem.addEntity(entity);
+        auto en = entityFactory.createFireBug(glm::vec2(x, y));
     }
 
     // generate the path (once per map)
@@ -95,15 +89,15 @@ int main() {
         double deltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
-        // cornflower blue 
+        // cornflower blue
         glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         systemManager.updateSystems(deltaTime);
- 
+
         // rendersystem is special - needs to be last
         renderSystem.render(&shader);
-     
+
         glfwSwapBuffers(window);
         glfwPollEvents();
 

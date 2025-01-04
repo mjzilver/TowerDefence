@@ -9,13 +9,12 @@
 
 class MapLoader {
 public:
-    MapLoader(TextureManager& textureManager, EntityFactory& entityFactory) 
-        : textureManager(textureManager), entityFactory(entityFactory) {}
+    MapLoader(EntityFactory& entityFactory) 
+        : entityFactory(entityFactory) {}
 
     void LoadMap(const std::string& mapName);
 private:
     const std::string MAP_PATH = "resources/maps/";
-    TextureManager& textureManager;
     EntityFactory& entityFactory;
 
     std::string readFile(const std::string& filepath);

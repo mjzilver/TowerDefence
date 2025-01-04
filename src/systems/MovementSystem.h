@@ -11,7 +11,7 @@ public:
     MovementSystem(ComponentManager& componentManager) : componentManager(componentManager) {}
 
     void update(float deltaTime) override {
-        for (Entity entity : entities) {
+        for (Entity entity : getEntities()) {
             auto* position = componentManager.getComponent<PositionComponent>(entity);
             auto* velocity = componentManager.getComponent<VelocityComponent>(entity);
             auto* direction = componentManager.getComponent<DirectionComponent>(entity);

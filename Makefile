@@ -1,5 +1,6 @@
 TARGET = SynergyTowers
 BUILD_DIR = build
+CPP_FILES = $(shell find src -type f -name '*.cpp')
 
 .PHONY: all
 all: build run
@@ -21,3 +22,22 @@ run:
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR)
+
+.PHONY: format
+format:
+	clang-format -i $(CPP_FILES)
+
+# ---------
+# Debugging
+# ---------
+
+.PHONY: build-debug
+build-debug: $(BUILD_DIR)/Makefile
+	cd $(BUILD_DIR) && cmake -DCMAKE_BUILD_TYPE=Debug .. && $(MAKE)
+
+.PHONY: run-debug
+run-debug:
+	cd $(BUILD_DIR) && gdb ./$(TARGET)
+
+.PHONY: debug
+debug: build-debug run-debug

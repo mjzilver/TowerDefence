@@ -1,16 +1,16 @@
 #include "PathfindingSystem.h"
 
 #include "../components/DirectionComponent.h"
-#include "../components/PositionComponent.h"
-#include "../components/VelocityComponent.h"
-#include "../components/SizeComponent.h"
-#include "../components/PathfindingComponent.h"
-#include "../components/SpeedComponent.h"
 #include "../components/FlagComponent.h"
+#include "../components/PathfindingComponent.h"
+#include "../components/PositionComponent.h"
+#include "../components/SizeComponent.h"
+#include "../components/SpeedComponent.h"
+#include "../components/VelocityComponent.h"
 #include "../ecs/Component.h"
 
 void PathfindingSystem::update(float deltaTime) {
-    for (Entity entity : entities) {
+    for (Entity entity : getEntities()) {
         auto* position = componentManager.getComponent<PositionComponent>(entity);
         auto* size = componentManager.getComponent<SizeComponent>(entity);
         auto* velocity = componentManager.getComponent<VelocityComponent>(entity);
@@ -40,14 +40,14 @@ void PathfindingSystem::update(float deltaTime) {
                         dy /= distance;
                         velocity->x = dx * speed->speed;
                         velocity->y = dy * speed->speed;
-                    } else {  
+                    } else {
                         // if the entity is at the end of the path, stop moving
                         if (pathTiles[pathfinding->currentIndex] == end) {
                             // Remove the pathfinding component
                             componentManager.removeComponent<PathfindingComponent>(entity);
                             velocity->x = 0;
                             velocity->y = 0;
-                        } 
+                        }
                         pathfinding->currentIndex++;
                     }
                 }
@@ -59,7 +59,7 @@ void PathfindingSystem::update(float deltaTime) {
 void PathfindingSystem::generatePath() {
     std::vector<Entity> unsortedPathTiles;
 
-    for (Entity entity : entities) {
+    for (Entity entity : getEntities()) {
         auto* flag = componentManager.getComponent<FlagComponent>(entity);
 
         if (flag) {

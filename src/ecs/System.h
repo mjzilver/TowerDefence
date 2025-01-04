@@ -3,15 +3,21 @@
 #include <unordered_set>
 
 #include "Component.h"
+#include "EntityManager.h"
 
 class System {
 public:
     virtual ~System() = default;
     virtual void update(float deltaTime) = 0;
 
-    void addEntity(Entity entity) { entities.insert(entity); }
-    void removeEntity(Entity entity) { entities.erase(entity); }
+    std::unordered_set<Entity> getEntities() {
+        return this->entityManager->getEntities();
+    }
+
+    void SetEntityManager(EntityManager* entityManager) {
+        this->entityManager = entityManager;
+    }
 
 protected:
-    std::unordered_set<Entity> entities;
+    EntityManager* entityManager;
 };

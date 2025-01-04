@@ -18,31 +18,20 @@ struct AnimationComponent : public Component {
     // TODO: make state a map not a hardcoded enum
     State state;
 
+    bool loop = true;
+
     // holds framecount per state
     std::map<State, int> frameCount;
+    std::map<std::pair<State, Direction>, int> stateDirectionRowMap;
 
     // get framecount for current state
     int getFrameCount() {
         return frameCount[state];
     }
 
+    // TODO: make it so a row doesnt need a direction
     // get row for current state and direction
     int getRow(Direction dir) {
-        std::map<std::pair<State, Direction>, int> stateDirectionRowMap = {
-            {{Idle, Direction::South}, 0},
-            {{Idle, Direction::North}, 1},
-            {{Idle, Direction::East}, 2},
-            {{Idle, Direction::West}, 2},
-            {{Walking, Direction::South}, 3},
-            {{Walking, Direction::North}, 4},
-            {{Walking, Direction::East}, 5},
-            {{Walking, Direction::West}, 5},
-            {{Dead, Direction::South}, 6},
-            {{Dead, Direction::North}, 7},
-            {{Dead, Direction::East}, 8},
-            {{Dead, Direction::West}, 8}
-        };
-
         auto it = stateDirectionRowMap.find({state, dir});
         if (it != stateDirectionRowMap.end()) {
             return it->second;

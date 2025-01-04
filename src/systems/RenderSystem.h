@@ -9,6 +9,7 @@
 #include "../components/PositionComponent.h"
 #include "../components/TextureComponent.h"
 #include "../components/SizeComponent.h"
+#include "../components/RotationComponent.h"
 
 class RenderSystem : public System {
 public:
@@ -19,6 +20,7 @@ public:
         PositionComponent* position, 
         TextureComponent* texture, 
         SizeComponent* size,
+        RotationComponent* rotation,
         Shader* shader
     );
 

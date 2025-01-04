@@ -1,13 +1,12 @@
 ## To do (not in order)
-- [ ] Add a proper README.md
 - [x] Setup engine to draw tiles
 - [x] Load path definitions from file
 - [x] Implement one static animated enemy
 - [ ] Implement enemy spawning
 - [x] Implement enemy path following
 - [x] Path finding
-- [ ] Add one tower
-- [ ] Implement tower shooting
+- [x] Add one tower
+- [x] Implement tower shooting
 - [ ] Quadtree
 - [ ] Transition tiles (grass -> path) with corners/edges blended
 - [x] Refactor to ECS
@@ -22,16 +21,15 @@
 - [ ] Add components
     - [x] Position (everything)
     - [x] Texture (everything)
-    - [ ] Health (enemy, tower)
-    - [ ] Movement (enemy)
+    - [x] Health (enemy, tower)
+    - [x] Movement (enemy)
     - [ ] Collision (projectile, enemy)
-    - [ ] Shooting (tower)
+    - [x] Shooting (tower)
 - [ ] Add systems
     - [x] RenderingSystem
     - [x] PathfindingSystem
     - [ ] CollisionSystem
-    - [ ] ShootingSystem
-        - All towers need to check if they can shoot at the enemy
+    - [x] ShootingSystem
     - [ ] SpawningSystem
     - [x] MovementSystem
     - [x] AnimationSystem

@@ -1,7 +1,8 @@
 #include "Shader.h"
+
 #include <fstream>
-#include <sstream>
 #include <iostream>
+#include <sstream>
 
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
     const std::string full_vertex_path = SHADER_PATH + vertexPath;
@@ -22,9 +23,7 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
     glDeleteShader(fragmentShader);
 }
 
-GLuint Shader::getProgram() const {
-    return programID;
-}
+GLuint Shader::getProgram() const { return programID; }
 
 std::string Shader::readFile(const std::string& filepath) {
     std::ifstream file(filepath);

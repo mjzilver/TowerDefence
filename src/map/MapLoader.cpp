@@ -1,4 +1,5 @@
 #include "MapLoader.h"
+
 #include <fstream>
 #include <sstream>
 
@@ -21,7 +22,7 @@ void MapLoader::parseMap(const std::string& mapData) {
     std::istringstream stream(mapData);
     std::string line;
     int y = 0;
-    
+
     while (std::getline(stream, line)) {
         std::istringstream lineStream(line);
         std::string tileType;
@@ -34,20 +35,20 @@ void MapLoader::parseMap(const std::string& mapData) {
             glm::vec2 position(x * TILE_SIZE, y * TILE_SIZE);
 
             switch (tileType[0]) {
-            case 'g':
-                entityFactory.createGrassTile(position, textureManager);
-                break;
-            case 'p':
-                entityFactory.createPathTile(position, textureManager);
-                break;
-            case 'S':
-                entityFactory.createStartTile(position, textureManager);
-                break;
-            case 'E':
-                entityFactory.createEndTile(position, textureManager);
-                break;
-            default:
-                throw std::runtime_error("Invalid tile type: " + tileType);
+                case 'g':
+                    entityFactory.createGrassTile(position);
+                    break;
+                case 'p':
+                    entityFactory.createPathTile(position);
+                    break;
+                case 'S':
+                    entityFactory.createStartTile(position);
+                    break;
+                case 'E':
+                    entityFactory.createEndTile(position);
+                    break;
+                default:
+                    throw std::runtime_error("Invalid tile type: " + tileType);
             }
             x++;
         }

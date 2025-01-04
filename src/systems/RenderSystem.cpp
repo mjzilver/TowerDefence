@@ -1,9 +1,9 @@
 #include "RenderSystem.h"
 
-#include <glm/glm.hpp>
-#include <iostream>
-#include <glm/gtc/matrix_transform.hpp>
 #include <algorithm>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 const int screenWidth = 800;
 const int screenHeight = 800;
@@ -39,12 +39,8 @@ GLuint createUnitSquareVAO() {
     return VAO;
 }
 
-void RenderSystem::renderEntity(
-    PositionComponent* position, 
-    TextureComponent* texture, 
-    SizeComponent* size,
-    Shader* shader
-) {
+void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* texture, SizeComponent* size, RotationComponent* rotation,
+                                Shader* shader) {
     // Bind the texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture->texture.id);
@@ -55,33 +51,36 @@ void RenderSystem::renderEntity(
 
     // Convert from pixel to normalized coordinates
     glm::vec2 normalizedPosition =
-        glm::vec2((position->x + size->w * 0.5f) / screenWidth * 2.0f - 1.0f,
-                  -(position->y + size->h * 0.5f) / screenHeight * 2.0f + 1.0f);
+        glm::vec2((position->x + size->w * 0.5f) / screenWidth * 2.0f - 1.0f, -(position->y + size->h * 0.5f) / screenHeight * 2.0f + 1.0f);
 
     // Convert from pixel to normalized size
-    glm::vec2 normalizedSize = glm::vec2(size->w / screenWidth * 2.0f,
-                                         size->h / screenHeight * 2.0f);
+    glm::vec2 normalizedSize = glm::vec2(size->w / screenWidth * 2.0f, size->h / screenHeight * 2.0f);
 
     // offset is x and y divided by the texture size (where the correct texture starts in the atlas)
-    glm::vec2 texCoordOffset = glm::vec2(texture->coords.x / texture->texture.size.x,
-                                         texture->coords.y / texture->texture.size.y);
+    glm::vec2 texCoordOffset = glm::vec2(texture->coords.x / texture->texture.size.x, texture->coords.y / texture->texture.size.y);
 
     // scaling the texture to fit the tile (how many times the texture fits in the tile)
-    glm::vec2 texCoordScale = glm::vec2(texture->coords.z / texture->texture.size.x,
-                                        texture->coords.w / texture->texture.size.y);
+    glm::vec2 texCoordScale = glm::vec2(texture->coords.z / texture->texture.size.x, texture->coords.w / texture->texture.size.y);
 
     // Create the model transformation matrix
     glm::mat4 model = glm::mat4(1.0f);
 
-    // Flip the texture if needed
-    if (texture->flipped) {
-        model = glm::translate(model, glm::vec3(normalizedPosition.x, normalizedPosition.y, 0.0f)); 
-        model = glm::scale(model, glm::vec3(-1.0f, 1.0f, 1.0f)); 
-    } else {
-        model = glm::translate(model, glm::vec3(normalizedPosition, 0.0f));
+    // Apply translation
+    model = glm::translate(model, glm::vec3(normalizedPosition, 0.0f));
+
+    // Apply rotation (if provided)
+    if (rotation) {
+        float angleRadians = glm::radians(rotation->angle);  // Convert degrees to radians
+        model = glm::rotate(model, angleRadians, glm::vec3(0.0f, 0.0f, 1.0f));
     }
-    
+
+    // Apply scaling
     model = glm::scale(model, glm::vec3(normalizedSize, 1.0f));
+
+    // Apply flipping (if needed)
+    if (texture->flipped) {
+        model = glm::scale(model, glm::vec3(-1.0f, 1.0f, 1.0f));  // Flip horizontally
+    }
 
     GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
@@ -96,6 +95,7 @@ void RenderSystem::renderEntity(
 }
 
 void RenderSystem::render(Shader* shader) {
+    auto entities = getEntities();
     // sort entities by z-index
     std::vector<Entity> sortedEntities(entities.begin(), entities.end());
     std::sort(sortedEntities.begin(), sortedEntities.end(), [this](Entity a, Entity b) {
@@ -115,8 +115,8 @@ void RenderSystem::render(Shader* shader) {
     if (shaderVAOs.find(shader) == shaderVAOs.end()) {
         // Create a single VAO for this shader if it doesn't already exist
         shaderVAOs[shader] = createUnitSquareVAO();
-    } 
-    
+    }
+
     VAO = shaderVAOs[shader];
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
@@ -126,9 +126,10 @@ void RenderSystem::render(Shader* shader) {
         auto* position = componentManager.getComponent<PositionComponent>(entity);
         auto* texture = componentManager.getComponent<TextureComponent>(entity);
         auto* size = componentManager.getComponent<SizeComponent>(entity);
+        auto* rotation = componentManager.getComponent<RotationComponent>(entity);
 
         if (position && texture && size) {
-            renderEntity(position, texture, size, shader);
+            renderEntity(position, texture, size, rotation, shader);
         }
     }
 
