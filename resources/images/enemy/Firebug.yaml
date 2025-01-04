@@ -17,14 +17,17 @@ states:
     idle:
         frames: 6
         sprite_col: 0
+        loop: true
 
     walking:
         frames: 8
         sprite_col: 3
+        loop: true
 
     dead:
         frames: 11
         sprite_col: 6
+        loop: false
 
 # col, row
 direction_offset:

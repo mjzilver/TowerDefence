@@ -9,4 +9,5 @@ struct TextureComponent : public Component {
     Texture texture;
     glm::vec4 coords;
     int zIndex = 1;
+    bool flipped = false;
 };

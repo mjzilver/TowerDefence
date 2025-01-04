@@ -3,5 +3,5 @@
 enum State {
     Idle,
     Walking,
-    Attacking,
+    Dead,
 };

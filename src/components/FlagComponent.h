@@ -6,6 +6,7 @@
 enum FlagType {
     Start,
     End,
+    Path,
 };
 
 struct FlagComponent : public Component {

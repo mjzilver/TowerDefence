@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include <vector>
+#include <ctime>
+
 
 #include "map/MapLoader.h"
 #include "shader/Shader.h"
@@ -17,6 +19,8 @@
 
 #include "systems/RenderSystem.h"
 #include "systems/AnimationSystem.h"
+#include "systems/MovementSystem.h"
+#include "systems/PathfindingSystem.h"
 
 const int screenWidth = 800;
 const int screenHeight = 800;
@@ -59,19 +63,31 @@ int main() {
 
     auto& renderSystem = systemManager.registerSystem<RenderSystem>(componentManager);
     auto& animationSystem = systemManager.registerSystem<AnimationSystem>(componentManager);
+    auto& movementSystem = systemManager.registerSystem<MovementSystem>(componentManager);
+    auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>(componentManager);
 
     // Create the map
     MapLoader mapLoader = MapLoader(textureManager, entityFactory);
     mapLoader.LoadMap("map1.txt");
 
-    auto en = entityFactory.createFireBug(glm::vec2(100, 100), textureManager);
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    animationSystem.addEntity(en);
+    for (int i = 0; i < 20; ++i) {
+        float x = static_cast<float>(std::rand() % screenWidth);
+        float y = static_cast<float>(std::rand() % screenHeight);
+        auto en = entityFactory.createFireBug(glm::vec2(x, y), textureManager);
+        animationSystem.addEntity(en);
+        movementSystem.addEntity(en);
+    }
 
     // put all the entities in the render system
     for (auto& entity : entityManager.getEntities()) {
         renderSystem.addEntity(entity);
+        pathfindingSystem.addEntity(entity);
     }
+
+    // generate the path (once per map)
+    pathfindingSystem.generatePath();
 
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {

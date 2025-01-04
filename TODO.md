@@ -4,8 +4,8 @@
 - [x] Load path definitions from file
 - [x] Implement one static animated enemy
 - [ ] Implement enemy spawning
-- [ ] Implement enemy path following
-- [ ] Path finding a*
+- [x] Implement enemy path following
+- [x] Path finding
 - [ ] Add one tower
 - [ ] Implement tower shooting
 - [ ] Quadtree
@@ -28,11 +28,7 @@
     - [ ] Shooting (tower)
 - [ ] Add systems
     - [x] RenderingSystem
-    - [ ] PathfindingSystem
-        - can be a set of points that the enemy follows
-        - stored some map, with a pointer to the next point
-        - when the enemy is (near) the point, it moves to the next point
-        - when it reaches the end it does damage to the player
+    - [x] PathfindingSystem
     - [ ] CollisionSystem
     - [ ] ShootingSystem
         - All towers need to check if they can shoot at the enemy

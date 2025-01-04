@@ -6,6 +6,9 @@
 #include "../components/DirectionComponent.h"
 #include "../components/FlagComponent.h"
 #include "../components/AnimationComponent.h"
+#include "../components/PathfindingComponent.h"
+#include "../components/VelocityComponent.h"
+#include "../components/SpeedComponent.h"
 
 #include "../utils/TextureCoords.h"
 #include "../utils/Direction.h"	
@@ -51,6 +54,10 @@ Entity EntityFactory::createPathTile(glm::vec2 position, TextureManager& texture
     sizeComponent.h = TILE_SIZE;
     componentManager.addComponent(entity, sizeComponent);
 
+    FlagComponent flagComponent;
+    flagComponent.type = FlagType::Path;
+    componentManager.addComponent(entity, flagComponent);
+
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("tiles/Grass.png");
     textureComponent.coords = getTextureCoords(9, 2, TEXTURE_SIZE, TEXTURE_SIZE, textureComponent.texture.size.x, textureComponent.texture.size.y);
@@ -71,6 +78,15 @@ Entity EntityFactory::createFireBug(glm::vec2 position, TextureManager& textureM
     positionComponent.x = position.x;
     positionComponent.y = position.y;
     componentManager.addComponent(entity, positionComponent);
+
+    VelocityComponent velocityComponent;
+    velocityComponent.x = 0;
+    velocityComponent.y = 0;
+    componentManager.addComponent(entity, velocityComponent);
+
+    SpeedComponent speedComponent;
+    speedComponent.speed = 175;
+    componentManager.addComponent(entity, speedComponent);
 
     SizeComponent sizeComponent;
     sizeComponent.w = ENEMY_WIDTH;
@@ -95,9 +111,9 @@ Entity EntityFactory::createFireBug(glm::vec2 position, TextureManager& textureM
     WalkingFacingSouth = 3,
     WalkingFacingNorth = 4,
     WalkingFacingEast = 5,
-    AttackingFacingSouth = 6,
-    AttackingFacingNorth = 7,
-    AttackingFacingEast = 8,
+    DyingFacingSouth = 6,
+    DyingFacingNorth = 7,
+    DyingFacingEast = 8,
     */
 
     AnimationComponent animationComponent;
@@ -107,14 +123,20 @@ Entity EntityFactory::createFireBug(glm::vec2 position, TextureManager& textureM
     animationComponent.frameCount = std::map<State, int>{
         {State::Idle, 6},
         {State::Walking, 8},
-        {State::Attacking, 11},
+        {State::Dead, 11},
     };
-    animationComponent.frameDuration = 0.5f; // seconds
+    animationComponent.frameDuration = 0.2f; // seconds
     animationComponent.baseTextureCoords = glm::vec2(0, 0);
     animationComponent.state = State::Walking;
     componentManager.addComponent(entity, animationComponent);
 
     // Add hitbox (about 50% of the size)
-    
+
+    // no goal for now
+    PathfindingComponent pathfindingComponent;
+    pathfindingComponent.x = 0;
+    pathfindingComponent.y = 0;
+    componentManager.addComponent(entity, pathfindingComponent);
+
     return entity;
 }
