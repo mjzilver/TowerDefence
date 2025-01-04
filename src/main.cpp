@@ -15,6 +15,7 @@
 #include "systems/AnimationSystem.h"
 #include "systems/MovementSystem.h"
 #include "systems/PathfindingSystem.h"
+#include "systems/CollisionSystem.h"
 #include "systems/RenderSystem.h"
 #include "systems/ShootingSystem.h"
 #include "texture/TextureManager.h"
@@ -63,6 +64,7 @@ int main() {
     auto& movementSystem = systemManager.registerSystem<MovementSystem>(&entityManager, componentManager);
     auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>(&entityManager, componentManager);
     auto& shootingSystem = systemManager.registerSystem<ShootingSystem>(&entityManager, componentManager, entityFactory);
+    auto& collisionSystem = systemManager.registerSystem<CollisionSystem>(&entityManager, componentManager);
 
     // Create the map
     MapLoader mapLoader = MapLoader(entityFactory);
@@ -74,7 +76,7 @@ int main() {
 
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 5; ++i) {
         float x = static_cast<float>(std::rand() % screenWidth);
         float y = static_cast<float>(std::rand() % screenHeight);
         auto en = entityFactory.createFireBug(glm::vec2(x, y));

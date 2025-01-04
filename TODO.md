@@ -7,6 +7,8 @@
 - [x] Path finding
 - [x] Add one tower
 - [x] Implement tower shooting
+- [x] Implement collision detection
+- [ ] Implement tower upgrades
 - [ ] Quadtree
 - [ ] Transition tiles (grass -> path) with corners/edges blended
 - [x] Refactor to ECS
@@ -16,20 +18,5 @@
 - [ ] Add multiple tower upgrade paths (from file)
 - [ ] Add combos (fire + poison = explosion, water + electricity = stun)
 - [ ] Draggable tower placement
-
-### ECS to do
-- [ ] Add components
-    - [x] Position (everything)
-    - [x] Texture (everything)
-    - [x] Health (enemy, tower)
-    - [x] Movement (enemy)
-    - [ ] Collision (projectile, enemy)
-    - [x] Shooting (tower)
-- [ ] Add systems
-    - [x] RenderingSystem
-    - [x] PathfindingSystem
-    - [ ] CollisionSystem
-    - [x] ShootingSystem
-    - [ ] SpawningSystem
-    - [x] MovementSystem
-    - [x] AnimationSystem
+- [ ] Event system (tower placed, enemy killed, collision)
+- [ ] Particle system (triggered by events)

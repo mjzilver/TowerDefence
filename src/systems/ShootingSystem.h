@@ -76,7 +76,7 @@ public:
                         velocity.y = (dyTarget / distanceToTarget) * weapon->projectileSpeed;
                         float angle = glm::degrees(std::atan2(velocity.x, velocity.y)) + 180;
 
-                        entityFactory.createTowerProjectile(startX, startY, targetX, velocity.x, velocity.y, angle);
+                        entityFactory.createTowerProjectile(startX, startY, targetX, velocity.x, velocity.y, angle, weapon->damage);
 
                         // rotate the weapon to face the target
                         if (rotation) {

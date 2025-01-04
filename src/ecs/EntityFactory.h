@@ -36,7 +36,7 @@ public:
     Entity createFireBug(glm::vec2 position);
 
     Entity createTower(glm::vec2 position);
-    Entity createTowerProjectile(float x, float y, float targetX, float velocityX, float velocityY, float angle);
+    Entity createTowerProjectile(float x, float y, float targetX, float velocityX, float velocityY, float angle, int damage);
 
 private:
     ComponentManager& componentManager;

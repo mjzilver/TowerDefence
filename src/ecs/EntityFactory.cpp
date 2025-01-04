@@ -2,6 +2,7 @@
 
 #include "../components/AnimationComponent.h"
 #include "../components/ChildComponent.h"
+#include "../components/CollisionComponent.h"
 #include "../components/DirectionComponent.h"
 #include "../components/FlagComponent.h"
 #include "../components/HealthComponent.h"
@@ -13,6 +14,7 @@
 #include "../components/TextureComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../components/WeaponComponent.h"
+#include "../components/DamageComponent.h"
 #include "../utils/Direction.h"
 #include "../utils/State.h"
 #include "../utils/TextureCoords.h"
@@ -134,6 +136,16 @@ Entity EntityFactory::createFireBug(glm::vec2 position) {
     pathfindingComponent.y = 0;
     componentManager.addComponent(entity, pathfindingComponent);
 
+    const float HITBOX_SCALE = 0.5f;
+
+    // hitbox is smaller than the texture
+    CollisionComponent collisionComponent;
+    collisionComponent.x = ENEMY_WIDTH * (1.0f - HITBOX_SCALE) / 2.0f;
+    collisionComponent.y = ENEMY_HEIGHT * (1.0f - HITBOX_SCALE) / 2.0f;
+    collisionComponent.w = ENEMY_WIDTH * HITBOX_SCALE;
+    collisionComponent.h = ENEMY_HEIGHT * HITBOX_SCALE;
+    componentManager.addComponent(entity, collisionComponent);
+
     return entity;
 }
 
@@ -219,7 +231,7 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     return entity;
 }
 
-Entity EntityFactory::createTowerProjectile(float x, float y, float targetX, float velocityX, float velocityY, float angle) {
+Entity EntityFactory::createTowerProjectile(float x, float y, float targetX, float velocityX, float velocityY, float angle, int damage) {
     Entity entity = entityManager.createEntity();
 
     static const int TEXTURE_WIDTH = 8;
@@ -248,6 +260,10 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float targetX, flo
     velocityComponent.y = velocityY;
     componentManager.addComponent(entity, velocityComponent);
 
+    DamageComponent damageComponent;
+    damageComponent.damage = damage;
+    componentManager.addComponent(entity, damageComponent);
+
     AnimationComponent animationComponent;
     animationComponent.frame = 0;
     animationComponent.time = 0;
@@ -263,6 +279,14 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float targetX, flo
     RotationComponent rotationComponent;
     rotationComponent.angle = angle;
     componentManager.addComponent(entity, rotationComponent);
+
+    // hitbox is the same as the texture
+    CollisionComponent collisionComponent;
+    collisionComponent.x = 0;
+    collisionComponent.y = 0;
+    collisionComponent.w = PROJECTILE_WIDTH;
+    collisionComponent.h = PROJECTILE_HEIGHT;
+    componentManager.addComponent(entity, collisionComponent);
 
     return entity;
 }
