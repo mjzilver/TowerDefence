@@ -5,8 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
-const int screenWidth = 800;
-const int screenHeight = 800;
+#include "../utils/Globals.h"
 
 GLuint createUnitSquareVAO() {
     float vertices[] = {
@@ -51,10 +50,10 @@ void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* t
 
     // Convert from pixel to normalized coordinates
     glm::vec2 normalizedPosition =
-        glm::vec2((position->x + size->w * 0.5f) / screenWidth * 2.0f - 1.0f, -(position->y + size->h * 0.5f) / screenHeight * 2.0f + 1.0f);
+        glm::vec2((position->x + size->w * 0.5f) / SCREEN_WIDTH * 2.0f - 1.0f, -(position->y + size->h * 0.5f) / SCREEN_HEIGHT * 2.0f + 1.0f);
 
     // Convert from pixel to normalized size
-    glm::vec2 normalizedSize = glm::vec2(size->w / screenWidth * 2.0f, size->h / screenHeight * 2.0f);
+    glm::vec2 normalizedSize = glm::vec2(size->w / SCREEN_WIDTH * 2.0f, size->h / SCREEN_HEIGHT * 2.0f);
 
     // offset is x and y divided by the texture size (where the correct texture starts in the atlas)
     glm::vec2 texCoordOffset = glm::vec2(texture->coords.x / texture->texture.size.x, texture->coords.y / texture->texture.size.y);
@@ -96,7 +95,7 @@ void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* t
 
 void RenderSystem::render(Shader* shader) {
     auto entities = getEntities();
-    // sort entities by z-index
+    
     std::vector<Entity> sortedEntities(entities.begin(), entities.end());
     std::sort(sortedEntities.begin(), sortedEntities.end(), [this](Entity a, Entity b) {
         auto* positionA = this->componentManager.getComponent<TextureComponent>(a);

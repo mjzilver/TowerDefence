@@ -20,10 +20,11 @@
 #include "systems/RenderSystem.h"
 #include "systems/ShootingSystem.h"
 #include "systems/StateSystem.h"
+#include "systems/ClickSystem.h"
 #include "texture/TextureManager.h"
+#include "utils/Globals.h"
 
-const int screenWidth = 800;
-const int screenHeight = 800;
+#define WIREFRAME 0
 
 int main() {
     TextureManager textureManager;
@@ -33,7 +34,7 @@ int main() {
         return -1;
     }
 
-    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "Synergy Towers", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Synergy Towers", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -73,6 +74,16 @@ int main() {
     auto& collisionSystem = systemManager.registerSystem<CollisionSystem>(&entityManager, componentManager);
     auto& combatSystem = systemManager.registerSystem<CombatSystem>(&entityManager, componentManager);
     auto& stateSystem = systemManager.registerSystem<StateSystem>(&entityManager, componentManager);
+    auto& clickSystem = systemManager.registerSystem<ClickSystem>(&entityManager, componentManager);
+
+    // register clicksystem with opengl clicks
+    glfwSetWindowUserPointer(window, &clickSystem);
+    glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
+        double x, y;
+        glfwGetCursorPos(window, &x, &y);
+        auto clickSystem = static_cast<ClickSystem*>(glfwGetWindowUserPointer(window));
+        clickSystem->onClick(button, action, x, y);
+    });
 
     // place a debug tower
     entityFactory.createTower(glm::vec2(400, 100));
@@ -81,13 +92,18 @@ int main() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     for (int i = 0; i < 5; ++i) {
-        float x = static_cast<float>(std::rand() % screenWidth);
-        float y = static_cast<float>(std::rand() % screenHeight);
+        float x = static_cast<float>(std::rand() % SCREEN_WIDTH);
+        float y = static_cast<float>(std::rand() % SCREEN_HEIGHT);
         entityFactory.createFireBug(glm::vec2(x, y));
     }
 
     // generate the path (once per map)
     pathfindingSystem.generatePath();
+
+    // wire frame mode
+#if WIREFRAME
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+#endif
 
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {
