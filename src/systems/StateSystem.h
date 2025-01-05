@@ -2,25 +2,22 @@
 #include "../components/DamageComponent.h"
 #include "../components/DirectionComponent.h"
 #include "../components/HealthComponent.h"
+#include "../components/PathfindingComponent.h"
 #include "../components/PositionComponent.h"
 #include "../components/TextureComponent.h"
 #include "../components/VelocityComponent.h"
-#include "../components/PathfindingComponent.h"
 #include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
 #include "../event/Event.h"
 #include "../event/EventDispatcher.h"
 #include "../utils/ZLayer.h"
 
-class CombatSystem : public System {
+class StateSystem : public System {
 public:
-    CombatSystem(ComponentManager& componentManager) : componentManager(componentManager) {
-        EventDispatcher::getInstance().addListener(EventType::ProjectileHit, std::bind(&CombatSystem::onEvent, this, std::placeholders::_1));
-    }
+    StateSystem(ComponentManager& componentManager) : componentManager(componentManager) {}
 
-    void update(float deltaTime) override { return; }
+    void update(float deltaTime) override;
 
-    void onEvent(const Event& event);
 private:
     ComponentManager& componentManager;
 };

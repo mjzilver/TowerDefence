@@ -7,7 +7,7 @@ enum class EventType {
     ProjectileHit,
     EntityDestroyed, 
     RemoveEntity,
-    ParticleEffect,
+    ParticleEffect
 };
 
 struct Event {

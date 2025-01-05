@@ -1,18 +1,19 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
-#include <vector>
-#include <algorithm>
 #include <glm/glm.hpp>
+#include <vector>
 
-#include "../ecs/System.h"
-#include "../ecs/ComponentManager.h"
 #include "../ecs/Component.h"
+#include "../ecs/ComponentManager.h"
+#include "../ecs/System.h"
+#include "../map/MapLoader.h"
 
 class PathfindingSystem : public System {
 public:
-    PathfindingSystem(ComponentManager& componentManager) : componentManager(componentManager) {}
+    PathfindingSystem(ComponentManager& componentManager, MapLoader& mapLoader) : componentManager(componentManager), mapLoader(mapLoader) {}
 
     void update(float deltaTime) override;
     void generatePath();
@@ -24,4 +25,5 @@ private:
     Entity end;
 
     ComponentManager& componentManager;
+    MapLoader& mapLoader;
 };

@@ -21,3 +21,16 @@
 - [x] Event system (tower placed, enemy killed, collision)
 - [ ] Particle system (triggered by events)
 - [ ] State system (enemystate, weaponstate components)
+
+### Map editor
+- load in spritesheet
+- specify types of tiles (path, grass, water, etc) 
+    - properties (walkable, buildable, etc) 
+    - animations 
+    - locations on the spritesheet
+- layering (background, path, towers, enemies)
+- set waypoints for enemies pathfinding
+- set spawn points for enemies
+- set endgoal for enemies
+- set tower build locations
+- save map to file (easy to parse)

@@ -8,6 +8,7 @@
 #include "../components/SpeedComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../ecs/Component.h"
+#include "../utils/Globals.h"
 
 void PathfindingSystem::update(float deltaTime) {
     for (Entity entity : getEntities()) {
@@ -57,51 +58,30 @@ void PathfindingSystem::update(float deltaTime) {
 }
 
 void PathfindingSystem::generatePath() {
-    std::vector<Entity> unsortedPathTiles;
+    const auto& waypoints = mapLoader.waypoints;
 
-    for (Entity entity : getEntities()) {
-        auto* flag = componentManager.getComponent<FlagComponent>(entity);
+    for (const auto& waypoint : waypoints) {
+        Entity matchingTile = INVALID_ENTITY;
 
-        if (flag) {
-            if (flag->type == FlagType::Start) {
-                start = entity;
-            } else if (flag->type == FlagType::End) {
-                end = entity;
-            } else if (flag->type == FlagType::Path) {
-                unsortedPathTiles.push_back(entity);
+        for (Entity pathTile : entityManager->getEntities()) {
+            auto* position = componentManager.getComponent<PositionComponent>(pathTile);
+            auto* size = componentManager.getComponent<SizeComponent>(pathTile);
+            auto* flag = componentManager.getComponent<FlagComponent>(pathTile);
+
+            if (position && size && flag && (flag->type == FlagType::Path || flag->type == FlagType::Start || flag->type == FlagType::End)) {
+                if (flag->type == FlagType::Start) {
+                    start = pathTile;
+                } else if (flag->type == FlagType::End) {
+                    end = pathTile;
+                }
+
+                if (position->x == waypoint.x * TILE_SIZE && position->y == waypoint.y * TILE_SIZE) {
+                    matchingTile = pathTile;
+                    break;
+                }
             }
         }
+
+        pathTiles.push_back(matchingTile);
     }
-
-    // Initialize pathTiles and find the path from start to end
-    pathTiles.clear();
-    pathTiles.push_back(start);
-
-    while (pathTiles.back() != end) {
-        Entity current = pathTiles.back();
-
-        auto it = std::find_if(unsortedPathTiles.begin(), unsortedPathTiles.end(), [&](Entity entity) {
-            auto* currentPos = componentManager.getComponent<PositionComponent>(current);
-            auto* currentSize = componentManager.getComponent<SizeComponent>(current);
-            auto* nextPos = componentManager.getComponent<PositionComponent>(entity);
-            auto* nextSize = componentManager.getComponent<SizeComponent>(entity);
-
-            if (currentPos && currentSize && nextPos && nextSize) {
-                return (std::abs(currentPos->x - nextPos->x) == currentSize->w && currentPos->y == nextPos->y) ||
-                       (std::abs(currentPos->y - nextPos->y) == currentSize->h && currentPos->x == nextPos->x);
-            }
-            return false;
-        });
-
-        if (it != unsortedPathTiles.end()) {
-            pathTiles.push_back(*it);
-            unsortedPathTiles.erase(it);
-        } else {
-            // If no path is found, break the loop
-            break;
-        }
-    }
-
-    // Add the end tile
-    pathTiles.push_back(end);
 }

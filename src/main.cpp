@@ -19,6 +19,7 @@
 #include "systems/PathfindingSystem.h"
 #include "systems/RenderSystem.h"
 #include "systems/ShootingSystem.h"
+#include "systems/StateSystem.h"
 #include "texture/TextureManager.h"
 
 const int screenWidth = 800;
@@ -60,17 +61,18 @@ int main() {
     SystemManager systemManager;
     EntityFactory entityFactory(componentManager, entityManager, textureManager);
 
-    auto& renderSystem = systemManager.registerSystem<RenderSystem>(&entityManager, componentManager);
-    auto& animationSystem = systemManager.registerSystem<AnimationSystem>(&entityManager, componentManager);
-    auto& movementSystem = systemManager.registerSystem<MovementSystem>(&entityManager, componentManager);
-    auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>(&entityManager, componentManager);
-    auto& shootingSystem = systemManager.registerSystem<ShootingSystem>(&entityManager, componentManager, entityFactory);
-    auto& collisionSystem = systemManager.registerSystem<CollisionSystem>(&entityManager, componentManager);
-    auto& combatSystem = systemManager.registerSystem<CombatSystem>(&entityManager, componentManager);
-
     // Create the map
     MapLoader mapLoader = MapLoader(entityFactory);
     mapLoader.LoadMap("map1.txt");
+
+    auto& renderSystem = systemManager.registerSystem<RenderSystem>(&entityManager, componentManager);
+    auto& animationSystem = systemManager.registerSystem<AnimationSystem>(&entityManager, componentManager);
+    auto& movementSystem = systemManager.registerSystem<MovementSystem>(&entityManager, componentManager);
+    auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>(&entityManager, componentManager, mapLoader);
+    auto& shootingSystem = systemManager.registerSystem<ShootingSystem>(&entityManager, componentManager, entityFactory);
+    auto& collisionSystem = systemManager.registerSystem<CollisionSystem>(&entityManager, componentManager);
+    auto& combatSystem = systemManager.registerSystem<CombatSystem>(&entityManager, componentManager);
+    auto& stateSystem = systemManager.registerSystem<StateSystem>(&entityManager, componentManager);
 
     // place a debug tower
     entityFactory.createTower(glm::vec2(400, 100));
@@ -81,7 +83,7 @@ int main() {
     for (int i = 0; i < 5; ++i) {
         float x = static_cast<float>(std::rand() % screenWidth);
         float y = static_cast<float>(std::rand() % screenHeight);
-        auto en = entityFactory.createFireBug(glm::vec2(x, y));
+        entityFactory.createFireBug(glm::vec2(x, y));
     }
 
     // generate the path (once per map)

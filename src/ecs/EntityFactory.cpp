@@ -16,11 +16,10 @@
 #include "../components/VelocityComponent.h"
 #include "../components/WeaponComponent.h"
 #include "../utils/Direction.h"
+#include "../utils/Globals.h"
 #include "../utils/State.h"
 #include "../utils/TextureCoords.h"
 #include "../utils/ZLayer.h"
-
-static const int TILE_SIZE = 80;
 
 Entity EntityFactory::createGrassTile(glm::vec2 position) {
     Entity entity = entityManager.createEntity();
@@ -123,9 +122,10 @@ Entity EntityFactory::createFireBug(glm::vec2 position) {
         {State::Dead, 11},
     };
     animationComponent.stateDirectionRowMap = std::map<std::pair<State, Direction>, int>{
-        {{State::Idle, Direction::South}, 0},   {{State::Idle, Direction::North}, 1},   {{State::Idle, Direction::East}, 2},   {{State::Idle, Direction::West}, 2},
-        {{State::Active, Direction::South}, 3}, {{State::Active, Direction::North}, 4}, {{State::Active, Direction::East}, 5}, {{State::Active, Direction::West}, 5},
-        {{State::Dead, Direction::South}, 6},   {{State::Dead, Direction::North}, 7},   {{State::Dead, Direction::East}, 8},   {{State::Dead, Direction::West}, 8},
+        {{State::Idle, Direction::South}, 0},  {{State::Idle, Direction::North}, 1},   {{State::Idle, Direction::East}, 2},
+        {{State::Idle, Direction::West}, 2},   {{State::Active, Direction::South}, 3}, {{State::Active, Direction::North}, 4},
+        {{State::Active, Direction::East}, 5}, {{State::Active, Direction::West}, 5},  {{State::Dead, Direction::South}, 6},
+        {{State::Dead, Direction::North}, 7},  {{State::Dead, Direction::East}, 8},    {{State::Dead, Direction::West}, 8},
     };
     animationComponent.frameDuration = 0.2f;  // seconds
     animationComponent.baseTextureCoords = glm::vec2(0, 0);
@@ -220,7 +220,7 @@ Entity EntityFactory::createTower(glm::vec2 position) {
 
     WeaponComponent weaponComponent;
     weaponComponent.range = 300;
-    weaponComponent.damage = 35;
+    weaponComponent.damage = 25;
     weaponComponent.rateOfFire = 1.0f;
     weaponComponent.projectileSpeed = 300.0f;
     componentManager.addComponent(weapon, weaponComponent);

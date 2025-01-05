@@ -10,6 +10,10 @@ install-deps:
 	sudo apt-get update
 	sudo apt-get install libglew-dev libglfw3-dev libglm-dev libopengl-dev
 
+.PHONY: install-tools
+install-tools:
+	sudo apt-get install -y clang-format clang-tidy gdb valgrind
+
 .PHONY: build
 build:
 	mkdir -p $(BUILD_DIR)
@@ -22,6 +26,10 @@ run:
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR)
+
+# ---------
+# Formatting
+# ---------
 
 .PHONY: format
 format:
