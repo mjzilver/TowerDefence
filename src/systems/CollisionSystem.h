@@ -7,6 +7,8 @@
 #include "../components/HealthComponent.h"
 #include "../components/DamageComponent.h"
 #include "../components/RotationComponent.h"
+#include "../event/EventDispatcher.h"
+#include "../event/Event.h"
 #include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
 
@@ -15,6 +17,8 @@ public:
     CollisionSystem(ComponentManager& componentManager) : componentManager(componentManager) {}
 
     void update(float deltaTime) override {
+        auto& eventdispatcher = EventDispatcher::getInstance();
+
         for (Entity entity : getEntities()) {
             auto* position = componentManager.getComponent<PositionComponent>(entity);
             auto* velocity = componentManager.getComponent<VelocityComponent>(entity);
@@ -43,20 +47,14 @@ public:
                         float otherY = otherPosition->y + otherCollision->y;
                         float otherW = otherCollision->w;
                         float otherH = otherCollision->h;
-
-                        if (x < otherX + otherW &&
-                            x + size->w > otherX &&
-                            y < otherY + otherH &&
-                            y + size->h > otherY) {
+                        
+                        if (checkCollision(x, y, size->w, size->h, otherX, otherY, otherW, otherH)) {
                             if (collision->solid && otherCollision->solid) {
-                                otherHealth->health -= damage->damage;
-
-                                if (otherHealth->health <= 0) {
-                                    entityManager->destroyEntity(otherEntity);
-                                }
-
-                                // TODO: dispatch event instead of destroying entity
-                                entityManager->destroyEntity(entity);
+                                Event event;
+                                event.type = EventType::ProjectileHit;
+                                event.addData("projectile", &entity);
+                                event.addData("target", &otherEntity);
+                                eventdispatcher.dispatch(event);
 
                                 break;
                             }
@@ -64,10 +62,12 @@ public:
                     }
                 }
             }
-            
         }
     }
-
 private:
+    bool checkCollision(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2) {
+        return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
+    }
+
     ComponentManager& componentManager;
 };

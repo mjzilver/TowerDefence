@@ -1,15 +1,23 @@
 #pragma once
+
 #include "../components/AnimationComponent.h"
 #include "../components/DirectionComponent.h"
 #include "../components/TextureComponent.h"
 #include "../components/VelocityComponent.h"
+#include "../components/PathfindingComponent.h"
+#include "../components/HealthComponent.h"
 #include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
 #include "../utils/TextureCoords.h"
 
+#include "../event/Event.h"
+#include "../event/EventDispatcher.h"
+
 class AnimationSystem : public System {
 public:
-    AnimationSystem(ComponentManager& componentManager) : componentManager(componentManager) {}
+    AnimationSystem(ComponentManager& componentManager) : componentManager(componentManager) {
+        EventDispatcher::getInstance().addListener(EventType::EntityDestroyed, std::bind(&AnimationSystem::onEvent, this, std::placeholders::_1));
+    }
 
     void update(float deltaTime) override {
         for (Entity entity : getEntities()) {
@@ -42,7 +50,7 @@ public:
                     } else {
                         if (animation->frame < animation->getFrameCount() - 1) {
                             animation->frame++;
-                        } else {
+                        } else if (animation->state != State::Dead) {
                             animation->state = State::Idle;
                             animation->frame = 0;
                         }
@@ -59,6 +67,22 @@ public:
                                              animation->frameSize.x, animation->frameSize.y, texture->texture.size.x, texture->texture.size.y);
                     }
                 }
+            }
+        }
+    }
+
+    void onEvent(const Event& event) {
+        if (event.type == EventType::EntityDestroyed) {
+            Entity entity = *event.getData<Entity>("entity");
+            auto* animation = componentManager.getComponent<AnimationComponent>(entity);
+            auto* velocity = componentManager.getComponent<VelocityComponent>(entity);
+            auto* pathfinding = componentManager.getComponent<PathfindingComponent>(entity);
+            auto* health = componentManager.getComponent<HealthComponent>(entity);
+
+            if (animation) {
+                animation->state = State::Dead;
+                animation->loop = false;
+                animation->frame = 0;
             }
         }
     }

@@ -18,5 +18,6 @@
 - [ ] Add multiple tower upgrade paths (from file)
 - [ ] Add combos (fire + poison = explosion, water + electricity = stun)
 - [ ] Draggable tower placement
-- [ ] Event system (tower placed, enemy killed, collision)
+- [x] Event system (tower placed, enemy killed, collision)
 - [ ] Particle system (triggered by events)
+- [ ] State system (enemystate, weaponstate components)

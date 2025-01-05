@@ -1,6 +1,6 @@
 #pragma once
 
-enum State {
+enum class State {
     Idle = 0,
     Active = 1,
     Dead = 2,

@@ -13,9 +13,10 @@
 #include "map/MapLoader.h"
 #include "shader/Shader.h"
 #include "systems/AnimationSystem.h"
+#include "systems/CollisionSystem.h"
+#include "systems/CombatSystem.h"
 #include "systems/MovementSystem.h"
 #include "systems/PathfindingSystem.h"
-#include "systems/CollisionSystem.h"
 #include "systems/RenderSystem.h"
 #include "systems/ShootingSystem.h"
 #include "texture/TextureManager.h"
@@ -65,6 +66,7 @@ int main() {
     auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>(&entityManager, componentManager);
     auto& shootingSystem = systemManager.registerSystem<ShootingSystem>(&entityManager, componentManager, entityFactory);
     auto& collisionSystem = systemManager.registerSystem<CollisionSystem>(&entityManager, componentManager);
+    auto& combatSystem = systemManager.registerSystem<CombatSystem>(&entityManager, componentManager);
 
     // Create the map
     MapLoader mapLoader = MapLoader(entityFactory);
@@ -107,6 +109,7 @@ int main() {
         static double lastPrint = 0;
         if (currentTime - lastPrint >= 1.0) {
             std::cout << "FPS: " << 1.0 / deltaTime << std::endl;
+
             lastPrint = currentTime;
         }
     }

@@ -3,6 +3,7 @@
 #include "../components/AnimationComponent.h"
 #include "../components/ChildComponent.h"
 #include "../components/CollisionComponent.h"
+#include "../components/DamageComponent.h"
 #include "../components/DirectionComponent.h"
 #include "../components/FlagComponent.h"
 #include "../components/HealthComponent.h"
@@ -14,10 +15,10 @@
 #include "../components/TextureComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../components/WeaponComponent.h"
-#include "../components/DamageComponent.h"
 #include "../utils/Direction.h"
 #include "../utils/State.h"
 #include "../utils/TextureCoords.h"
+#include "../utils/ZLayer.h"
 
 static const int TILE_SIZE = 80;
 
@@ -105,7 +106,7 @@ Entity EntityFactory::createFireBug(glm::vec2 position) {
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("enemy/Firebug.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
-    textureComponent.zIndex = 2;  // render on top of the path
+    textureComponent.zIndex = ZLayer::Enemy;
     componentManager.addComponent(entity, textureComponent);
 
     DirectionComponent directionComponent;
@@ -122,9 +123,9 @@ Entity EntityFactory::createFireBug(glm::vec2 position) {
         {State::Dead, 11},
     };
     animationComponent.stateDirectionRowMap = std::map<std::pair<State, Direction>, int>{
-        {{Idle, Direction::South}, 0},   {{Idle, Direction::North}, 1},   {{Idle, Direction::East}, 2},   {{Idle, Direction::West}, 2},
-        {{Active, Direction::South}, 3}, {{Active, Direction::North}, 4}, {{Active, Direction::East}, 5}, {{Active, Direction::West}, 5},
-        {{Dead, Direction::South}, 6},   {{Dead, Direction::North}, 7},   {{Dead, Direction::East}, 8},   {{Dead, Direction::West}, 8},
+        {{State::Idle, Direction::South}, 0},   {{State::Idle, Direction::North}, 1},   {{State::Idle, Direction::East}, 2},   {{State::Idle, Direction::West}, 2},
+        {{State::Active, Direction::South}, 3}, {{State::Active, Direction::North}, 4}, {{State::Active, Direction::East}, 5}, {{State::Active, Direction::West}, 5},
+        {{State::Dead, Direction::South}, 6},   {{State::Dead, Direction::North}, 7},   {{State::Dead, Direction::East}, 8},   {{State::Dead, Direction::West}, 8},
     };
     animationComponent.frameDuration = 0.2f;  // seconds
     animationComponent.baseTextureCoords = glm::vec2(0, 0);
@@ -170,7 +171,7 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
-    textureComponent.zIndex = 3;  // render on top of the bug
+    textureComponent.zIndex = ZLayer::Tower;
     componentManager.addComponent(entity, textureComponent);
 
     Entity weapon = entityManager.createEntity();
@@ -191,7 +192,7 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     weaponTextureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Level 01 - Weapon.png");
     weaponTextureComponent.coords =
         getTextureCoords(0, 0, WEAPON_SIZE, WEAPON_SIZE, weaponTextureComponent.texture.size.x, weaponTextureComponent.texture.size.y);
-    weaponTextureComponent.zIndex = 4;  // render on top of the tower
+    weaponTextureComponent.zIndex = ZLayer::Weapon;
     componentManager.addComponent(weapon, weaponTextureComponent);
 
     AnimationComponent weaponAnimationComponent;
@@ -203,8 +204,9 @@ Entity EntityFactory::createTower(glm::vec2 position) {
         {State::Shooting, 6},
     };
     weaponAnimationComponent.stateDirectionRowMap = std::map<std::pair<State, Direction>, int>{
-        {{Idle, Direction::South}, 0},     {{Idle, Direction::North}, 0},     {{Idle, Direction::East}, 0},     {{Idle, Direction::West}, 0},
-        {{Shooting, Direction::South}, 0}, {{Shooting, Direction::North}, 0}, {{Shooting, Direction::East}, 0}, {{Shooting, Direction::West}, 0},
+        {{State::Idle, Direction::South}, 0},    {{State::Idle, Direction::North}, 0},     {{State::Idle, Direction::East}, 0},
+        {{State::Idle, Direction::West}, 0},     {{State::Shooting, Direction::South}, 0}, {{State::Shooting, Direction::North}, 0},
+        {{State::Shooting, Direction::East}, 0}, {{State::Shooting, Direction::West}, 0},
     };
     weaponAnimationComponent.frameDuration = 0.1f;  // seconds
     weaponAnimationComponent.baseTextureCoords = glm::vec2(0, 0);
@@ -218,7 +220,7 @@ Entity EntityFactory::createTower(glm::vec2 position) {
 
     WeaponComponent weaponComponent;
     weaponComponent.range = 300;
-    weaponComponent.damage = 10;
+    weaponComponent.damage = 35;
     weaponComponent.rateOfFire = 1.0f;
     weaponComponent.projectileSpeed = 300.0f;
     componentManager.addComponent(weapon, weaponComponent);
@@ -252,7 +254,7 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float targetX, flo
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Level 01 - Projectile.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
-    textureComponent.zIndex = 5;  // render on top of the tower
+    textureComponent.zIndex = ZLayer::Projectile;
     componentManager.addComponent(entity, textureComponent);
 
     VelocityComponent velocityComponent;
