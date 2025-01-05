@@ -9,6 +9,9 @@ enum class EventType {
     RemoveEntity,
     ParticleEffect,
     EntityClicked,
+    GrassTileClicked,
+    UpgradeTower,
+    TowerClicked,
 };
 
 struct Event {

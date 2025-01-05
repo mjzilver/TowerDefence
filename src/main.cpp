@@ -12,7 +12,9 @@
 #include "ecs/SystemManager.h"
 #include "map/MapLoader.h"
 #include "shader/Shader.h"
+#include "font/FontLoader.h"
 #include "systems/AnimationSystem.h"
+#include "systems/ClickSystem.h"
 #include "systems/CollisionSystem.h"
 #include "systems/CombatSystem.h"
 #include "systems/MovementSystem.h"
@@ -20,7 +22,6 @@
 #include "systems/RenderSystem.h"
 #include "systems/ShootingSystem.h"
 #include "systems/StateSystem.h"
-#include "systems/ClickSystem.h"
 #include "texture/TextureManager.h"
 #include "utils/Globals.h"
 
@@ -56,17 +57,21 @@ int main() {
     glDepthFunc(GL_LESS);
 
     Shader shader("vertex.glsl", "fragment.glsl");
+    Shader hoverShader("vertex.glsl", "hover_fragment.glsl");
+    Shader textShader("text_vertex.glsl", "text_fragment.glsl");
+    Shader menuShader("menu_vertex.glsl", "menu_fragment.glsl");
 
     EntityManager entityManager;
     ComponentManager componentManager;
     SystemManager systemManager;
     EntityFactory entityFactory(componentManager, entityManager, textureManager);
+    FontLoader fontLoader(12);
 
     // Create the map
     MapLoader mapLoader = MapLoader(entityFactory);
     mapLoader.LoadMap("map1.txt");
 
-    auto& renderSystem = systemManager.registerSystem<RenderSystem>(&entityManager, componentManager);
+    auto& renderSystem = systemManager.registerSystem<RenderSystem>(&entityManager, componentManager, fontLoader);
     auto& animationSystem = systemManager.registerSystem<AnimationSystem>(&entityManager, componentManager);
     auto& movementSystem = systemManager.registerSystem<MovementSystem>(&entityManager, componentManager);
     auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>(&entityManager, componentManager, mapLoader);
@@ -83,6 +88,12 @@ int main() {
         glfwGetCursorPos(window, &x, &y);
         auto clickSystem = static_cast<ClickSystem*>(glfwGetWindowUserPointer(window));
         clickSystem->onClick(button, action, x, y);
+    });
+
+    // register mouse hover
+    glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
+        auto clickSystem = static_cast<ClickSystem*>(glfwGetWindowUserPointer(window));
+        clickSystem->onHover(x, y);
     });
 
     // place a debug tower
@@ -105,6 +116,11 @@ int main() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 #endif
 
+    renderSystem.registerShader("default", &shader);
+    renderSystem.registerShader("hover", &hoverShader);
+    renderSystem.registerShader("text", &textShader);
+    renderSystem.registerShader("menu", &menuShader);
+
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {
         double currentTime = glfwGetTime();
@@ -118,7 +134,7 @@ int main() {
         systemManager.updateSystems(deltaTime);
 
         // rendersystem is special - needs to be last
-        renderSystem.render(&shader);
+        renderSystem.render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

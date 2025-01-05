@@ -2,6 +2,7 @@
 
 #include "../components/AnimationComponent.h"
 #include "../components/ChildComponent.h"
+#include "../components/ClickableComponent.h"
 #include "../components/CollisionComponent.h"
 #include "../components/DamageComponent.h"
 #include "../components/DirectionComponent.h"
@@ -10,16 +11,21 @@
 #include "../components/PathfindingComponent.h"
 #include "../components/PositionComponent.h"
 #include "../components/RotationComponent.h"
+#include "../components/ShaderComponent.h"
 #include "../components/SizeComponent.h"
 #include "../components/SpeedComponent.h"
 #include "../components/TextureComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../components/WeaponComponent.h"
+#include "../components/MenuComponent.h"
+
 #include "../utils/Direction.h"
 #include "../utils/Globals.h"
 #include "../utils/State.h"
 #include "../utils/TextureCoords.h"
 #include "../utils/ZLayer.h"
+
+#include "../event/Event.h"
 
 Entity EntityFactory::createGrassTile(glm::vec2 position) {
     Entity entity = entityManager.createEntity();
@@ -40,6 +46,14 @@ Entity EntityFactory::createGrassTile(glm::vec2 position) {
     textureComponent.texture = textureManager.loadTexture("tiles/Grass.png");
     textureComponent.coords = getTextureCoords(2, 1, TEXTURE_SIZE, TEXTURE_SIZE, textureComponent.texture.size.x, textureComponent.texture.size.y);
     componentManager.addComponent(entity, textureComponent);
+
+    ClickableComponent clickableComponent;
+    clickableComponent.clickedEvent = EventType::GrassTileClicked;
+    componentManager.addComponent(entity, clickableComponent);
+
+    ShaderComponent shaderComponent;
+    shaderComponent.name = "default";
+    componentManager.addComponent(entity, shaderComponent);
 
     return entity;
 }
@@ -229,6 +243,28 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     ChildComponent childComponent;
     childComponent.child = weapon;
     componentManager.addComponent(entity, childComponent);
+
+    ClickableComponent clickableComponent;
+    clickableComponent.clickedEvent = EventType::TowerClicked;
+    componentManager.addComponent(entity, clickableComponent);
+
+    ShaderComponent shaderComponent;
+    shaderComponent.name = "default";
+    componentManager.addComponent(entity, shaderComponent);
+
+    MenuComponent menuComponent;
+    menuComponent.visible = true;
+    menuComponent.title = "Tower";
+    menuComponent.position = {0, 0};
+    menuComponent.size = {60, 50};
+    Button upgradeButton;
+    upgradeButton.text = "Upgrade";
+    upgradeButton.position = {0, 10};
+    upgradeButton.size = {50, 20};
+    upgradeButton.event = EventType::UpgradeTower;
+    upgradeButton.entity = entity;
+    menuComponent.buttons.push_back(upgradeButton);
+    componentManager.addComponent(entity, menuComponent);
 
     return entity;
 }

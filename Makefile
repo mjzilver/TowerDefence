@@ -7,8 +7,8 @@ all: build run
 
 .PHONY: install-deps
 install-deps:
-	sudo apt-get update
-	sudo apt-get install libglew-dev libglfw3-dev libglm-dev libopengl-dev
+	sudo apt-get update 
+	sudo apt-get install libglew-dev libglfw3-dev libglm-dev libopengl-dev libfreetype6 libfreetype6-dev fonts-dejavu-core
 
 .PHONY: install-tools
 install-tools:
