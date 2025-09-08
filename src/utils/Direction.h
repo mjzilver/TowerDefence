@@ -1,8 +1,8 @@
 #pragma once
 
 enum Direction {
-    South = 0,
-    North = 1,
-    East = 2,
-    West = 3,
+    SOUTH = 0,
+    NORTH = 1,
+    EAST = 2,
+    WEST = 3,
 };

@@ -7,7 +7,6 @@ uniform sampler2D textureSampler;
 void main() {
     vec4 texColor = texture(textureSampler, TexCoord);
 
-    // Alpha = transparency
     if (texColor.a < 0.1) {
         discard;
     }

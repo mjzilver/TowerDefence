@@ -1,8 +1,10 @@
 #include "StateSystem.h"
 
 #include "../components/AnimationComponent.h"
+#include "../components/VelocityComponent.h"
+#include "../ecs/ComponentManager.h"
 
-void StateSystem::update(float deltaTime) {
+void StateSystem::update(float) {
     for (Entity entity : getEntities()) {
         auto* velocity = componentManager.getComponent<VelocityComponent>(entity);
         auto* animation = componentManager.getComponent<AnimationComponent>(entity);
@@ -10,9 +12,9 @@ void StateSystem::update(float deltaTime) {
         if (animation) {
             if (velocity) {
                 if (velocity->x != 0 || velocity->y != 0) {
-                    animation->state = State::Active;
+                    animation->state = State::ACTIVE;
                 } else {
-                    animation->state = State::Idle;
+                    animation->state = State::IDLE;
                 }
             }
         }

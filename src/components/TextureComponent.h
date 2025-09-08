@@ -9,6 +9,6 @@
 struct TextureComponent : public Component {
     Texture texture;
     glm::vec4 coords;
-    ZLayer zIndex = ZLayer::Ground;
+    ZLayer zIndex = ZLayer::GROUND;
     bool flipped = false;
 };

@@ -6,7 +6,7 @@ class ClickSystem : public System {
 public:
     ClickSystem(ComponentManager& componentManager) : componentManager(componentManager) {}
 
-    void update(float deltaTime) override { return; }
+    void update(float) override { return; }
 
     void onClick(int button, int action, double x, double y);
 

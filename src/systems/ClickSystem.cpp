@@ -1,22 +1,16 @@
 #include "ClickSystem.h"
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "../components/AnimationComponent.h"
 #include "../components/ClickableComponent.h"
-#include "../components/DirectionComponent.h"
-#include "../components/HealthComponent.h"
-#include "../components/PathfindingComponent.h"
 #include "../components/PositionComponent.h"
 #include "../components/ShaderComponent.h"
 #include "../components/SizeComponent.h"
 #include "../components/TextureComponent.h"
-#include "../components/VelocityComponent.h"
 #include "../ecs/ComponentManager.h"
 #include "../event/Event.h"
 #include "../event/EventDispatcher.h"
-#include "../utils/TextureCoords.h"
 #include "CollisionSystem.h"
 
 void ClickSystem::onClick(int button, int action, double x, double y) {

@@ -4,14 +4,14 @@
 #include <unordered_map>
 
 enum class EventType {
-    ProjectileHit,
-    EntityDestroyed, 
-    RemoveEntity,
-    ParticleEffect,
-    EntityClicked,
-    GrassTileClicked,
-    UpgradeTower,
-    TowerClicked,
+    PROJECTILE_HIT,
+    ENTITY_DESTROYED, 
+    REMOVE_ENTITY,
+    PARTICLE_EFFECT,
+    ENTITY_CLICKED,
+    GRASS_TILE_CLICKED,
+    UPGRADE_TOWER,
+    TOWER_CLICKED,
 };
 
 struct Event {

@@ -11,7 +11,7 @@ public:
     T& registerSystem(EntityManager* em, Args&&... args) {
         auto system = std::make_unique<T>(std::forward<Args>(args)...);
         T* systemPtr = system.get();
-        systemPtr->SetEntityManager(em);
+        systemPtr->setEntityManager(em);
         systems[std::type_index(typeid(T))] = std::move(system);
         return *systemPtr;
     }

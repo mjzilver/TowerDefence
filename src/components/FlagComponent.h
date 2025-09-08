@@ -4,9 +4,9 @@
 #include "../utils/Direction.h"
 
 enum FlagType {
-    Start,
-    End,
-    Path,
+    START,
+    END,
+    PATH,
 };
 
 struct FlagComponent : public Component {

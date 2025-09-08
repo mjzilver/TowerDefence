@@ -1,6 +1,16 @@
 #include "CollisionSystem.h"
 
-void CollisionSystem::update(float deltaTime) {
+#include "../event/EventDispatcher.h"
+#include "../event/Event.h"
+
+#include "../components/CollisionComponent.h"
+#include "../components/DamageComponent.h"
+#include "../components/HealthComponent.h"
+#include "../components/PositionComponent.h"
+#include "../components/SizeComponent.h"
+#include "../components/VelocityComponent.h"
+
+void CollisionSystem::update(float) {
     auto& eventdispatcher = EventDispatcher::getInstance();
 
     for (Entity entity : getEntities()) {
@@ -33,7 +43,7 @@ void CollisionSystem::update(float deltaTime) {
                     if (checkCollision(x, y, size->w, size->h, otherX, otherY, otherW, otherH)) {
                         if (collision->solid && otherCollision->solid) {
                             Event event;
-                            event.type = EventType::ProjectileHit;
+                            event.type = EventType::PROJECTILE_HIT;
                             event.addData("projectile", &entity);
                             event.addData("target", &otherEntity);
                             eventdispatcher.dispatch(event);

@@ -17,9 +17,7 @@
 #include "../components/TextureComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../components/WeaponComponent.h"
-#include "../components/MenuComponent.h"
 
-#include "../utils/Direction.h"
 #include "../utils/Globals.h"
 #include "../utils/State.h"
 #include "../utils/TextureCoords.h"
@@ -48,7 +46,7 @@ Entity EntityFactory::createGrassTile(glm::vec2 position) {
     componentManager.addComponent(entity, textureComponent);
 
     ClickableComponent clickableComponent;
-    clickableComponent.clickedEvent = EventType::GrassTileClicked;
+    clickableComponent.clickedEvent = EventType::GRASS_TILE_CLICKED;
     componentManager.addComponent(entity, clickableComponent);
 
     ShaderComponent shaderComponent;
@@ -74,7 +72,7 @@ Entity EntityFactory::createPathTile(glm::vec2 position) {
     componentManager.addComponent(entity, sizeComponent);
 
     FlagComponent flagComponent;
-    flagComponent.type = FlagType::Path;
+    flagComponent.type = FlagType::PATH;
     componentManager.addComponent(entity, flagComponent);
 
     TextureComponent textureComponent;
@@ -119,11 +117,11 @@ Entity EntityFactory::createFireBug(glm::vec2 position) {
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("enemy/Firebug.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
-    textureComponent.zIndex = ZLayer::Enemy;
+    textureComponent.zIndex = ZLayer::ENEMY;
     componentManager.addComponent(entity, textureComponent);
 
     DirectionComponent directionComponent;
-    directionComponent.direction = Direction::South;
+    directionComponent.direction = Direction::SOUTH;
     componentManager.addComponent(entity, directionComponent);
 
     AnimationComponent animationComponent;
@@ -131,19 +129,19 @@ Entity EntityFactory::createFireBug(glm::vec2 position) {
     animationComponent.time = 0;
     animationComponent.frameSize = glm::vec2(TEXTURE_WIDTH, TEXTURE_HEIGHT);
     animationComponent.frameCount = std::map<State, int>{
-        {State::Idle, 6},
-        {State::Active, 8},
-        {State::Dead, 11},
+        {State::IDLE, 6},
+        {State::ACTIVE, 8},
+        {State::DEAD, 11},
     };
     animationComponent.stateDirectionRowMap = std::map<std::pair<State, Direction>, int>{
-        {{State::Idle, Direction::South}, 0},  {{State::Idle, Direction::North}, 1},   {{State::Idle, Direction::East}, 2},
-        {{State::Idle, Direction::West}, 2},   {{State::Active, Direction::South}, 3}, {{State::Active, Direction::North}, 4},
-        {{State::Active, Direction::East}, 5}, {{State::Active, Direction::West}, 5},  {{State::Dead, Direction::South}, 6},
-        {{State::Dead, Direction::North}, 7},  {{State::Dead, Direction::East}, 8},    {{State::Dead, Direction::West}, 8},
+        {{State::IDLE, Direction::SOUTH}, 0},  {{State::IDLE, Direction::NORTH}, 1},   {{State::IDLE, Direction::EAST}, 2},
+        {{State::IDLE, Direction::WEST}, 2},   {{State::ACTIVE, Direction::SOUTH}, 3}, {{State::ACTIVE, Direction::NORTH}, 4},
+        {{State::ACTIVE, Direction::EAST}, 5}, {{State::ACTIVE, Direction::WEST}, 5},  {{State::DEAD, Direction::SOUTH}, 6},
+        {{State::DEAD, Direction::NORTH}, 7},  {{State::DEAD, Direction::EAST}, 8},    {{State::DEAD, Direction::WEST}, 8},
     };
     animationComponent.frameDuration = 0.2f;  // seconds
     animationComponent.baseTextureCoords = glm::vec2(0, 0);
-    animationComponent.state = State::Active;
+    animationComponent.state = State::ACTIVE;
     componentManager.addComponent(entity, animationComponent);
 
     PathfindingComponent pathfindingComponent;
@@ -185,7 +183,7 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
-    textureComponent.zIndex = ZLayer::Tower;
+    textureComponent.zIndex = ZLayer::TOWER;
     componentManager.addComponent(entity, textureComponent);
 
     Entity weapon = entityManager.createEntity();
@@ -206,7 +204,7 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     weaponTextureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Level 01 - Weapon.png");
     weaponTextureComponent.coords =
         getTextureCoords(0, 0, WEAPON_SIZE, WEAPON_SIZE, weaponTextureComponent.texture.size.x, weaponTextureComponent.texture.size.y);
-    weaponTextureComponent.zIndex = ZLayer::Weapon;
+    weaponTextureComponent.zIndex = ZLayer::WEAPON;
     componentManager.addComponent(weapon, weaponTextureComponent);
 
     AnimationComponent weaponAnimationComponent;
@@ -214,17 +212,17 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     weaponAnimationComponent.time = 0;
     weaponAnimationComponent.frameSize = glm::vec2(WEAPON_SIZE, WEAPON_SIZE);
     weaponAnimationComponent.frameCount = std::map<State, int>{
-        {State::Idle, 0},
-        {State::Shooting, 6},
+        {State::IDLE, 0},
+        {State::SHOOTING, 6},
     };
     weaponAnimationComponent.stateDirectionRowMap = std::map<std::pair<State, Direction>, int>{
-        {{State::Idle, Direction::South}, 0},    {{State::Idle, Direction::North}, 0},     {{State::Idle, Direction::East}, 0},
-        {{State::Idle, Direction::West}, 0},     {{State::Shooting, Direction::South}, 0}, {{State::Shooting, Direction::North}, 0},
-        {{State::Shooting, Direction::East}, 0}, {{State::Shooting, Direction::West}, 0},
+        {{State::IDLE, Direction::SOUTH}, 0},    {{State::IDLE, Direction::NORTH}, 0},     {{State::IDLE, Direction::EAST}, 0},
+        {{State::IDLE, Direction::WEST}, 0},     {{State::SHOOTING, Direction::SOUTH}, 0}, {{State::SHOOTING, Direction::NORTH}, 0},
+        {{State::SHOOTING, Direction::EAST}, 0}, {{State::SHOOTING, Direction::WEST}, 0},
     };
     weaponAnimationComponent.frameDuration = 0.1f;  // seconds
     weaponAnimationComponent.baseTextureCoords = glm::vec2(0, 0);
-    weaponAnimationComponent.state = State::Idle;
+    weaponAnimationComponent.state = State::IDLE;
     weaponAnimationComponent.loop = false;
     componentManager.addComponent(weapon, weaponAnimationComponent);
 
@@ -245,31 +243,17 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     componentManager.addComponent(entity, childComponent);
 
     ClickableComponent clickableComponent;
-    clickableComponent.clickedEvent = EventType::TowerClicked;
+    clickableComponent.clickedEvent = EventType::TOWER_CLICKED;
     componentManager.addComponent(entity, clickableComponent);
 
     ShaderComponent shaderComponent;
     shaderComponent.name = "default";
     componentManager.addComponent(entity, shaderComponent);
 
-    MenuComponent menuComponent;
-    menuComponent.visible = true;
-    menuComponent.title = "Tower";
-    menuComponent.position = {0, 0};
-    menuComponent.size = {60, 50};
-    Button upgradeButton;
-    upgradeButton.text = "Upgrade";
-    upgradeButton.position = {0, 10};
-    upgradeButton.size = {50, 20};
-    upgradeButton.event = EventType::UpgradeTower;
-    upgradeButton.entity = entity;
-    menuComponent.buttons.push_back(upgradeButton);
-    componentManager.addComponent(entity, menuComponent);
-
     return entity;
 }
 
-Entity EntityFactory::createTowerProjectile(float x, float y, float targetX, float velocityX, float velocityY, float angle, int damage) {
+Entity EntityFactory::createTowerProjectile(float x, float y, float  /*targetX*/, float velocityX, float velocityY, float angle, int damage) {
     Entity entity = entityManager.createEntity();
 
     static const int TEXTURE_WIDTH = 8;
@@ -290,7 +274,7 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float targetX, flo
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Level 01 - Projectile.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
-    textureComponent.zIndex = ZLayer::Projectile;
+    textureComponent.zIndex = ZLayer::PROJECTILE;
     componentManager.addComponent(entity, textureComponent);
 
     VelocityComponent velocityComponent;
@@ -307,11 +291,11 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float targetX, flo
     animationComponent.time = 0;
     animationComponent.frameSize = glm::vec2(TEXTURE_WIDTH, TEXTURE_HEIGHT);
     animationComponent.frameCount = std::map<State, int>{
-        {State::Active, 3},
+        {State::ACTIVE, 3},
     };
     animationComponent.frameDuration = 0.2f;  // seconds
     animationComponent.baseTextureCoords = glm::vec2(0, 0);
-    animationComponent.state = State::Active;
+    animationComponent.state = State::ACTIVE;
     componentManager.addComponent(entity, animationComponent);
 
     RotationComponent rotationComponent;

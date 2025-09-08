@@ -1,10 +1,10 @@
 #pragma once
 
 enum class ZLayer {
-    Ground = 0,
-    Dead = 1,
-    Enemy = 2,
-    Tower = 3,
-    Weapon = 4,
-    Projectile = 5,
+    GROUND = 0,
+    DEAD = 1,
+    ENEMY = 2,
+    TOWER = 3,
+    WEAPON = 4,
+    PROJECTILE = 5,
 };

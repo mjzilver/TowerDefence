@@ -1,5 +1,13 @@
 #include "ShootingSystem.h"
 
+#include "../components/AnimationComponent.h"
+#include "../components/VelocityComponent.h"
+#include "../components/WeaponComponent.h"
+#include "../components/PositionComponent.h"
+#include "../components/SizeComponent.h"
+#include "../components/RotationComponent.h"
+#include "../components/HealthComponent.h"
+
 void ShootingSystem::update(float deltaTime) {
     for (Entity entity : getEntities()) {
         auto* weapon = componentManager.getComponent<WeaponComponent>(entity);
@@ -12,14 +20,12 @@ void ShootingSystem::update(float deltaTime) {
             continue;
         }
 
-        // check if it's time to shoot
         weapon->timeSinceLastShot += deltaTime;
 
         if (weapon->timeSinceLastShot < weapon->rateOfFire) {
             continue;
         }
 
-        // loop over all other entities and check if they are in range
         for (Entity otherEntity : getEntities()) {
             if (entity == otherEntity) {
                 continue;
@@ -64,7 +70,7 @@ void ShootingSystem::update(float deltaTime) {
                     }
 
                     if (animation) {
-                        animation->state = State::Shooting;
+                        animation->state = State::SHOOTING;
                         animation->frame = 0;
                     }
 

@@ -20,17 +20,14 @@ struct AnimationComponent : public Component {
 
     bool loop = true;
 
-    // holds framecount per state
     std::map<State, int> frameCount;
     std::map<std::pair<State, Direction>, int> stateDirectionRowMap;
 
-    // get framecount for current state
     int getFrameCount() {
         return frameCount[state];
     }
 
     // TODO: make it so a row doesnt need a direction
-    // get row for current state and direction
     int getRow(Direction dir) {
         auto it = stateDirectionRowMap.find({state, dir});
         if (it != stateDirectionRowMap.end()) {

@@ -4,11 +4,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <vector>
 #include "../font/FontLoader.h"
-
+#include "../components/ShaderComponent.h"
 #include "../utils/Globals.h"
 
-GLuint createUnitSquareVAO() {
+GLuint createUnitSquareVao() {
     float vertices[] = {
         // Position          // Texture coordinates
         -0.5f, -0.5f, 0.0f, 0.0f,  // Bottom-left
@@ -17,12 +18,12 @@ GLuint createUnitSquareVAO() {
         0.5f,  0.5f,  1.0f, 1.0f   // Top-right
     };
 
-    GLuint VAO, VBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    GLuint vao, vbo;
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
 
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Vertex position attribute
@@ -34,9 +35,9 @@ GLuint createUnitSquareVAO() {
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
-    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &vbo);
 
-    return VAO;
+    return vao;
 }
 
 void RenderSystem::renderSquare(const glm::vec2& position, const glm::vec2& size, const glm::vec3& color, Shader* shader) {
@@ -64,7 +65,7 @@ void RenderSystem::renderSquare(const glm::vec2& position, const glm::vec2& size
 
     // Check if VAO exists, if not create it
     if (shaderVAOs.find(shader) == shaderVAOs.end()) {
-        shaderVAOs[shader] = createUnitSquareVAO();
+        shaderVAOs[shader] = createUnitSquareVao();
     }
 
     // Bind the VAO and draw the square
@@ -143,19 +144,19 @@ void RenderSystem::renderText(const std::string& text, const glm::vec2& position
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
     // Ensure VAO and VBO are set up correctly
-    static GLuint VAO = 0, VBO = 0;
-    if (VAO == 0 || VBO == 0) {
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    static GLuint vao = 0, vbo = 0;
+    if (vao == 0 || vbo == 0) {
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
     }
 
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     // Start position
     float x = position.x;
@@ -202,37 +203,6 @@ void RenderSystem::renderText(const std::string& text, const glm::vec2& position
 }
 
 
-void RenderSystem::renderMenu(MenuComponent* menu, Shader* shader, const glm::vec2& parentPosition) {
-    glm::vec2 menuPosition = parentPosition + menu->position;
-
-    float x = menuPosition.x;
-    float y = menuPosition.y;
-    
-    // Render buttons
-    for (const Button& button : menu->buttons) {
-        glm::vec2 buttonPosition = menuPosition + button.position;
-
-        glm::vec2 buttonTextSize = glm::vec2(button.text.size() * 12, 12);
-        glm::vec2 buttonTextPosition = buttonPosition - button.size * 0.5f;
-        buttonTextPosition.y += buttonTextSize.y;
-        renderText(button.text, buttonTextPosition, glm::vec3(1.0f, 1.0f, 1.0f), shader);
-
-        renderSquare(buttonPosition, button.size, glm::vec3(0.5f, 0.5f, 0.5f), shaderPrograms["menu"]);
-    }
-
-    // Render the menu title (first)
-    glm::vec2 titleSize = glm::vec2(menu->title.size() * 12, 12);
-    glm::vec2 titlePosition = menuPosition - menu->size * 0.5f;
-    titlePosition.y += titleSize.y;
-    renderText(menu->title, titlePosition, glm::vec3(1.0f, 1.0f, 1.0f), shader);
-
-    // render the menu background
-    renderSquare(menuPosition, menu->size, glm::vec3(0.8f, 0.8f, 0.8f), shaderPrograms["menu"]);
-
-    glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-
 void RenderSystem::render() {
     auto entities = getEntities();
 
@@ -254,7 +224,6 @@ void RenderSystem::render() {
         auto* size = componentManager.getComponent<SizeComponent>(entity);
         auto* rotation = componentManager.getComponent<RotationComponent>(entity);
         auto* shaderComponent = componentManager.getComponent<ShaderComponent>(entity);
-        auto* menu = componentManager.getComponent<MenuComponent>(entity);
 
         std::string shaderName = "default";
         if (shaderComponent) {
@@ -262,24 +231,18 @@ void RenderSystem::render() {
         }
         Shader* shader = shaderPrograms[shaderName];
         GLuint shaderProgram = shader->getProgram();
-        GLuint VAO;
+        GLuint vao;
 
         if (shaderVAOs.find(shader) == shaderVAOs.end()) {
-            shaderVAOs[shader] = createUnitSquareVAO();
+            shaderVAOs[shader] = createUnitSquareVao();
         }
 
-        VAO = shaderVAOs[shader];
+        vao = shaderVAOs[shader];
         glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
+        glBindVertexArray(vao);
 
         if (position && texture && size) {
             renderEntity(position, texture, size, rotation, shader);
-        }
-
-        // Draw menus last
-        if (menu && position) {
-            glm::vec2 parentPosition = glm::vec2(position->x, position->y);
-            renderMenu(menu, shaderPrograms["text"], parentPosition);
         }
     }
     

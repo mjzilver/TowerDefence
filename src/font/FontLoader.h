@@ -2,7 +2,7 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <glm/glm.hpp>
 #include <map>
@@ -32,5 +32,5 @@ private:
     FT_Face face;
     std::map<char, Character> characters;
 
-    std::string FONT_PATH = "resources/font/DejaVuSansMono.ttf";
+    const std::string FONT_PATH = "resources/font/DejaVuSansMono.ttf";
 };

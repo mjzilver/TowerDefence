@@ -1,11 +1,15 @@
 #include "AnimationSystem.h"
 
+#include "../components/AnimationComponent.h"
+#include "../components/DirectionComponent.h"
+#include "../components/TextureComponent.h"
+#include "../utils/TextureCoords.h"
+
 void AnimationSystem::update(float deltaTime) {
     for (Entity entity : getEntities()) {
         auto* animation = componentManager.getComponent<AnimationComponent>(entity);
         auto* texture = componentManager.getComponent<TextureComponent>(entity);
         auto* direction = componentManager.getComponent<DirectionComponent>(entity);
-        auto* velocity = componentManager.getComponent<VelocityComponent>(entity);
 
         if (animation && texture) {
             animation->time += deltaTime;
@@ -22,8 +26,8 @@ void AnimationSystem::update(float deltaTime) {
                 } else {
                     if (animation->frame < animation->getFrameCount() - 1) {
                         animation->frame++;
-                    } else if (animation->state != State::Dead) {
-                        animation->state = State::Idle;
+                    } else if (animation->state != State::DEAD) {
+                        animation->state = State::IDLE;
                         animation->frame = 0;
                     }
                 }
@@ -43,12 +47,12 @@ void AnimationSystem::update(float deltaTime) {
 }
 
 void AnimationSystem::onEvent(const Event& event) {
-    if (event.type == EventType::EntityDestroyed) {
+    if (event.type == EventType::ENTITY_DESTROYED) {
         Entity entity = *event.getData<Entity>("entity");
         auto* animation = componentManager.getComponent<AnimationComponent>(entity);
 
         if (animation) {
-            animation->state = State::Dead;
+            animation->state = State::DEAD;
             animation->loop = false;
             animation->frame = 0;
         }

@@ -44,6 +44,5 @@ public:
         components.erase(entity);
     }
 private:
-    // this holds all components
     std::unordered_map<Entity, std::unordered_map<std::type_index, std::unique_ptr<Component>>> components;
 };

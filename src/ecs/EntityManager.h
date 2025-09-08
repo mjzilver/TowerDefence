@@ -1,6 +1,5 @@
 #pragma once
 #include "Component.h"
-#include <unordered_map>
 #include <unordered_set>
 
 class EntityManager {

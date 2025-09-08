@@ -1,7 +1,6 @@
 #pragma once 
 
-#include <GL/glew.h>
-#include <vector>
+#include <glad/glad.h>
 #include <map>
 #include <unordered_map>
 
@@ -12,8 +11,6 @@
 #include "../components/TextureComponent.h"
 #include "../components/SizeComponent.h"
 #include "../components/RotationComponent.h"
-#include "../components/ShaderComponent.h"
-#include "../components/MenuComponent.h"
 #include "../font/FontLoader.h"
 
 class RenderSystem : public System {
@@ -29,13 +26,12 @@ public:
         Shader* shader
     );
 
-    void renderMenu(MenuComponent* menu, Shader* shader, const glm::vec2& parentPosition);
     void renderText(const std::string& text, const glm::vec2& position, const glm::vec3& color, Shader* shader);
     void renderSquare(const glm::vec2& position, const glm::vec2& size, const glm::vec3& color, Shader* shader);
     
     void render();
 
-    void update(float deltaTime) override {
+    void update(float) override {
         return;
     }
 

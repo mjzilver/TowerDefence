@@ -1,10 +1,9 @@
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <ctime>
 #include <glm/glm.hpp>
 #include <iostream>
-#include <vector>
 
 #include "ecs/ComponentManager.h"
 #include "ecs/EntityFactory.h"
@@ -35,7 +34,12 @@ int main() {
         return -1;
     }
 
-    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Synergy Towers", nullptr, nullptr);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Tower Defence!", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -43,23 +47,22 @@ int main() {
     }
 
     glfwMakeContextCurrent(window);
-    if (glewInit() != GLEW_OK) {
-        std::cerr << "Failed to initialize GLEW" << std::endl;
+
+    int version = gladLoadGL();
+    if (version == 0) {
+        printf("Failed to initialize OpenGL context\n");
         return -1;
     }
 
-    // transparency
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Depth testing
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
     Shader shader("vertex.glsl", "fragment.glsl");
     Shader hoverShader("vertex.glsl", "hover_fragment.glsl");
     Shader textShader("text_vertex.glsl", "text_fragment.glsl");
-    Shader menuShader("menu_vertex.glsl", "menu_fragment.glsl");
 
     EntityManager entityManager;
     ComponentManager componentManager;
@@ -67,9 +70,8 @@ int main() {
     EntityFactory entityFactory(componentManager, entityManager, textureManager);
     FontLoader fontLoader(12);
 
-    // Create the map
     MapLoader mapLoader = MapLoader(entityFactory);
-    mapLoader.LoadMap("map1.txt");
+    mapLoader.loadMap("map1.txt");
 
     auto& renderSystem = systemManager.registerSystem<RenderSystem>(&entityManager, componentManager, fontLoader);
     auto& animationSystem = systemManager.registerSystem<AnimationSystem>(&entityManager, componentManager);
@@ -81,37 +83,32 @@ int main() {
     auto& stateSystem = systemManager.registerSystem<StateSystem>(&entityManager, componentManager);
     auto& clickSystem = systemManager.registerSystem<ClickSystem>(&entityManager, componentManager);
 
-    // register clicksystem with opengl clicks
     glfwSetWindowUserPointer(window, &clickSystem);
-    glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
+    glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int) {
         double x, y;
         glfwGetCursorPos(window, &x, &y);
         auto clickSystem = static_cast<ClickSystem*>(glfwGetWindowUserPointer(window));
         clickSystem->onClick(button, action, x, y);
     });
 
-    // register mouse hover
     glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
         auto clickSystem = static_cast<ClickSystem*>(glfwGetWindowUserPointer(window));
         clickSystem->onHover(x, y);
     });
 
-    // place a debug tower
     entityFactory.createTower(glm::vec2(400, 100));
     entityFactory.createTower(glm::vec2(400, 500));
 
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 10; ++i) {
         float x = static_cast<float>(std::rand() % SCREEN_WIDTH);
         float y = static_cast<float>(std::rand() % SCREEN_HEIGHT);
         entityFactory.createFireBug(glm::vec2(x, y));
     }
 
-    // generate the path (once per map)
     pathfindingSystem.generatePath();
 
-    // wire frame mode
 #if WIREFRAME
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 #endif
@@ -119,7 +116,6 @@ int main() {
     renderSystem.registerShader("default", &shader);
     renderSystem.registerShader("hover", &hoverShader);
     renderSystem.registerShader("text", &textShader);
-    renderSystem.registerShader("menu", &menuShader);
 
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {
@@ -127,19 +123,16 @@ int main() {
         double deltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
-        // cornflower blue
         glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         systemManager.updateSystems(deltaTime);
 
-        // rendersystem is special - needs to be last
         renderSystem.render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        // print fps every second
         static double lastPrint = 0;
         if (currentTime - lastPrint >= 1.0) {
             std::cout << "FPS: " << 1.0 / deltaTime << std::endl;

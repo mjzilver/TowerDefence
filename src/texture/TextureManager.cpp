@@ -2,22 +2,21 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <GL/gl.h>
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <iostream>
-#include <vector>
 
-#include "stb_image.h"
+#include "../../third_party/stb_image.h"
 
 unsigned char* TextureManager::loadPngImage(const std::string& filePath, unsigned int& width, unsigned int& height) {
     int channels;
-    std::string full_path = TEXTURE_PATH + filePath;
+    std::string fullPath = TEXTURE_PATH + filePath;
 
     stbi_set_flip_vertically_on_load(true);  // Flip PNG images
 
-    stbi_uc* image = stbi_load(full_path.c_str(), (int*)&width, (int*)&height, &channels, STBI_rgb_alpha);
+    stbi_uc* image = stbi_load(fullPath.c_str(), (int*)&width, (int*)&height, &channels, STBI_rgb_alpha);
     if (!image) {
-        std::cerr << "Failed to load PNG image: " << full_path << std::endl;
+        std::cerr << "Failed to load PNG image: " << fullPath << std::endl;
         exit(EXIT_FAILURE);
     }
 

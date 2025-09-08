@@ -1,12 +1,38 @@
-# Synergy Towers
-## A 2D tower defence game about combining elements to create powerful attacks
+# Tower Defebnce
+## A 2D tower defence game
 Currently in early development
 
-## Running
-```bash
-    make install-deps
-    make
-```
+![Screenshot](resources/screenshot.png)
+
+## Features
+
+### Engine & Rendering
+- [x] Tile rendering engine setup
+- [ ] Transition tiles with blended corners/edges
+- [x] Load path definitions from file
+- [x] Working animation system
+
+### Enemies
+- [x] Implement one static animated enemy
+- [ ] Enemy spawning system
+- [x] Path following
+- [x] Pathfinding
+
+### Towers & Combat
+- [x] Add one tower
+- [x] Implement tower shooting
+- [x] Rotation of balista
+- [x] Arrows rotation towards target
+- [ ] Tower upgrades
+- [ ] Add tower stats
+- [ ] Draggable tower placement
+
+### Game Systems
+- [x] Refactor to ECS (Entity-Component-System)
+- [x] Event system (tower placed, enemy killed, collision)
+- [x] Collision detection
+- [ ] Quadtree optimization
+- [ ] Particle system
 
 ### Attributions
 

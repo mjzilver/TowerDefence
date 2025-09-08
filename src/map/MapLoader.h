@@ -1,11 +1,10 @@
 #pragma once
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 
 #include <string>
 #include <vector>
-#include "../texture/TextureManager.h"
 #include "../ecs/EntityFactory.h"
 
 struct Corner {
@@ -18,7 +17,7 @@ public:
     MapLoader(EntityFactory& entityFactory) 
         : entityFactory(entityFactory) {}
 
-    void LoadMap(const std::string& mapName);
+    void loadMap(const std::string& mapName);
 
     std::vector<glm::vec2> waypoints;
     std::vector<Corner> corners;

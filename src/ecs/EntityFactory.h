@@ -6,7 +6,6 @@
 #include "../texture/TextureManager.h"
 
 #include "../components/FlagComponent.h"
-#include "SystemManager.h"
 
 #include <glm/glm.hpp>
 
@@ -21,14 +20,14 @@ public:
     Entity createStartTile(glm::vec2 position) {
         Entity entity = createPathTile(position);
         FlagComponent flagComponent;
-        flagComponent.type = Start;
+        flagComponent.type = START;
         componentManager.addComponent(entity, flagComponent);
         return entity;
     }
     Entity createEndTile(glm::vec2 position) {
         Entity entity = createPathTile(position);
         FlagComponent flagComponent;
-        flagComponent.type = End;
+        flagComponent.type = END;
         componentManager.addComponent(entity, flagComponent);
         return entity;
     }

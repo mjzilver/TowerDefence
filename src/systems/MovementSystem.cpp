@@ -1,5 +1,10 @@
 #include "MovementSystem.h"
 
+#include "../components/DirectionComponent.h"
+#include "../components/PositionComponent.h"
+#include "../components/VelocityComponent.h"
+#include "../components/TextureComponent.h"
+
 void MovementSystem::update(float deltaTime) {
     for (Entity entity : getEntities()) {
         auto* position = componentManager.getComponent<PositionComponent>(entity);
@@ -17,14 +22,14 @@ void MovementSystem::update(float deltaTime) {
 
             if (direction) {
                 if (std::abs(velocity->x) > std::abs(velocity->y)) {
-                    direction->direction = (velocity->x > 0) ? Direction::East : Direction::West;
+                    direction->direction = (velocity->x > 0) ? Direction::EAST : Direction::WEST;
                 } else {
-                    direction->direction = (velocity->y > 0) ? Direction::South : Direction::North;
+                    direction->direction = (velocity->y > 0) ? Direction::SOUTH : Direction::NORTH;
                 }
 
                 // if direction is west, flip the texture
                 if (texture) {
-                    texture->flipped = direction->direction == Direction::West;
+                    texture->flipped = direction->direction == Direction::WEST;
                 }
             }
         }

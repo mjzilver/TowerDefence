@@ -14,7 +14,7 @@ public:
         return this->entityManager->getEntities();
     }
 
-    void SetEntityManager(EntityManager* entityManager) {
+    void setEntityManager(EntityManager* entityManager) {
         this->entityManager = entityManager;
     }
 

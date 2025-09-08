@@ -1,16 +1,7 @@
 #pragma once
-#include "../components/CollisionComponent.h"
-#include "../components/DamageComponent.h"
-#include "../components/DirectionComponent.h"
-#include "../components/HealthComponent.h"
-#include "../components/PositionComponent.h"
-#include "../components/RotationComponent.h"
-#include "../components/SizeComponent.h"
-#include "../components/VelocityComponent.h"
+
 #include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
-#include "../event/Event.h"
-#include "../event/EventDispatcher.h"
 
 class CollisionSystem : public System {
 public:
@@ -18,9 +9,9 @@ public:
 
     void update(float deltaTime) override;
 
-    static bool checkCollision(const float x1, const float y1, const float w1, const float h1,
-                               const float x2, const float y2, const float w2, const float h2) {
-        return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
+    static bool checkCollision(const float X1, const float Y1, const float W1, const float H1,
+                               const float X2, const float Y2, const float W2, const float H2) {
+        return X1 < X2 + W2 && X1 + W1 > X2 && Y1 < Y2 + H2 && Y1 + H1 > Y2;
     }
 
 private:

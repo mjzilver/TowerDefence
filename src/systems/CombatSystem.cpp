@@ -1,9 +1,16 @@
 #include "CombatSystem.h"
 
+#include "../components/DamageComponent.h"
+#include "../components/HealthComponent.h"
+#include "../components/TextureComponent.h"
+#include "../components/VelocityComponent.h"
+#include "../components/PathfindingComponent.h"
+#include "../utils/ZLayer.h"
+
 void CombatSystem::onEvent(const Event& event) {
     auto& eventdispatcher = EventDispatcher::getInstance();
 
-    if (event.type == EventType::ProjectileHit) {
+    if (event.type == EventType::PROJECTILE_HIT) {
         Entity projectile = *event.getData<Entity>("projectile");
         Entity target = *event.getData<Entity>("target");
 
@@ -14,18 +21,15 @@ void CombatSystem::onEvent(const Event& event) {
             targetHealth->health -= projectileDamage;
 
             if (targetHealth->health <= 0) {
-                // Dispatch an event to remove the entity and play a death animation
                 Event deathEvent;
-                deathEvent.type = EventType::EntityDestroyed;
+                deathEvent.type = EventType::ENTITY_DESTROYED;
                 deathEvent.addData<Entity>("entity", &target);
                 eventdispatcher.dispatch(deathEvent);
 
-                // Remove components from the entity
                 componentManager.removeComponent<VelocityComponent>(target);
                 componentManager.removeComponent<PathfindingComponent>(target);
                 componentManager.removeComponent<HealthComponent>(target);
-                // Set the texture to the dead texture layer
-                componentManager.getComponent<TextureComponent>(target)->zIndex = ZLayer::Dead;
+                componentManager.getComponent<TextureComponent>(target)->zIndex = ZLayer::DEAD;
             }
         }
 

@@ -10,7 +10,7 @@
 
 #include "../utils/Globals.h"
 
-void MapLoader::LoadMap(const std::string& mapName) {
+void MapLoader::loadMap(const std::string& mapName) {
     std::string mapData = readFile(MAP_PATH + mapName);
     parseMap(mapData);
 }
@@ -102,8 +102,8 @@ void MapLoader::parseCorners(std::istringstream& stream, std::vector<Corner>& co
         }
 
         if (std::regex_search(line, match, pattern)) {
-            int x = std::stoi(match[1].str());  // Extract x coordinate
-            int y = std::stoi(match[2].str());  // Extract y coordinate
+            int x = std::stoi(match[1].str());
+            int y = std::stoi(match[2].str());
             std::string type = match[3].str();  // Extract corner type (e.g., "left-top")
 
             corners.push_back({glm::vec2(x, y), type});

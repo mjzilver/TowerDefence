@@ -3,7 +3,6 @@
 #include <functional>
 #include <unordered_map>
 #include <vector>
-#include <memory>
 
 #include "Event.h"
 
@@ -11,18 +10,15 @@ class EventDispatcher {
 public:
     using EventListener = std::function<void(const Event&)>;
 
-    // Get the singleton instance
     static EventDispatcher& getInstance() {
         static EventDispatcher instance;
         return instance;
     }
 
-    // Add a listener for a specific event type
     void addListener(EventType type, EventListener listener) {
         listeners[type].push_back(std::move(listener));
     }
 
-    // Dispatch an event to all listeners of the event type
     void dispatch(const Event& event) {
         if (listeners.find(event.type) != listeners.end()) {
             for (const auto& listener : listeners[event.type]) {
