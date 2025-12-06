@@ -37,6 +37,9 @@ public:
     Entity createTower(glm::vec2 position);
     Entity createTowerProjectile(float x, float y, float targetX, float velocityX, float velocityY, float angle, int damage);
 
+    Entity createUpgradeMenuItem(glm::vec2 offset);
+    Entity createBuildTowerMenuItem(glm::vec2 offset);
+
 private:
     ComponentManager& componentManager;
     EntityManager& entityManager;

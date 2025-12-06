@@ -2,9 +2,9 @@
 
 #include "../components/DamageComponent.h"
 #include "../components/HealthComponent.h"
+#include "../components/PathfindingComponent.h"
 #include "../components/TextureComponent.h"
 #include "../components/VelocityComponent.h"
-#include "../components/PathfindingComponent.h"
 #include "../utils/ZLayer.h"
 
 void CombatSystem::onEvent(const Event& event) {

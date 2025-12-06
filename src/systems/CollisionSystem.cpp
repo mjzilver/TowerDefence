@@ -1,14 +1,13 @@
 #include "CollisionSystem.h"
 
-#include "../event/EventDispatcher.h"
-#include "../event/Event.h"
-
 #include "../components/CollisionComponent.h"
 #include "../components/DamageComponent.h"
 #include "../components/HealthComponent.h"
 #include "../components/PositionComponent.h"
 #include "../components/SizeComponent.h"
 #include "../components/VelocityComponent.h"
+#include "../event/Event.h"
+#include "../event/EventDispatcher.h"
 
 void CollisionSystem::update(float) {
     auto& eventdispatcher = EventDispatcher::getInstance();

@@ -2,8 +2,8 @@
 
 #include "../components/DirectionComponent.h"
 #include "../components/PositionComponent.h"
-#include "../components/VelocityComponent.h"
 #include "../components/TextureComponent.h"
+#include "../components/VelocityComponent.h"
 
 void MovementSystem::update(float deltaTime) {
     for (Entity entity : getEntities()) {

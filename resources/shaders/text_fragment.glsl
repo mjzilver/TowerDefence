@@ -6,8 +6,7 @@ uniform sampler2D text;
 uniform vec3 textColor;
 
 void main() {
-    vec4 sampled = texture(text, TexCoords);
-    if (sampled.a < 0.1)
-        discard; // Discard transparent characters
-    color = vec4(textColor, 1.0) * sampled;
+    float alpha = texture(text, TexCoords).r;  // ttf uses red channel only
+    color = vec4(textColor, alpha);
+    if(alpha < 0.1) discard;
 }

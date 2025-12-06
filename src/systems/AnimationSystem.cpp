@@ -1,5 +1,8 @@
 #include "AnimationSystem.h"
 
+#include <iostream>
+#include <ostream>
+
 #include "../components/AnimationComponent.h"
 #include "../components/DirectionComponent.h"
 #include "../components/TextureComponent.h"

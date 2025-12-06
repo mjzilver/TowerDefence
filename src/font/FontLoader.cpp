@@ -1,8 +1,9 @@
 #include "FontLoader.h"
 
+#include <ft2build.h>
+
 #include <iostream>
 #include <stdexcept>
-#include <ft2build.h>
 
 FontLoader::FontLoader(GLuint fontSize) {
     if (FT_Init_FreeType(&ft)) {
@@ -26,7 +27,8 @@ FontLoader::FontLoader(GLuint fontSize) {
         GLuint texture;
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_ALPHA, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE,
+                     face->glyph->bitmap.buffer);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -35,6 +37,7 @@ FontLoader::FontLoader(GLuint fontSize) {
 
         Character character = {texture, glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
                                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top), static_cast<GLuint>(face->glyph->advance.x)};
+
         characters[c] = character;
     }
 

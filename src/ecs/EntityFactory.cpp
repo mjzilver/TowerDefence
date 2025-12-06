@@ -4,6 +4,7 @@
 #include "../components/ChildComponent.h"
 #include "../components/ClickableComponent.h"
 #include "../components/CollisionComponent.h"
+#include "../components/ColorComponent.h"
 #include "../components/DamageComponent.h"
 #include "../components/DirectionComponent.h"
 #include "../components/FlagComponent.h"
@@ -14,16 +15,15 @@
 #include "../components/ShaderComponent.h"
 #include "../components/SizeComponent.h"
 #include "../components/SpeedComponent.h"
+#include "../components/TextComponent.h"
 #include "../components/TextureComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../components/WeaponComponent.h"
-
+#include "../event/Event.h"
 #include "../utils/Globals.h"
 #include "../utils/State.h"
 #include "../utils/TextureCoords.h"
 #include "../utils/ZLayer.h"
-
-#include "../event/Event.h"
 
 Entity EntityFactory::createGrassTile(glm::vec2 position) {
     Entity entity = entityManager.createEntity();
@@ -171,8 +171,8 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     static const int TOWER_HEIGHT = 128;
 
     PositionComponent positionComponent;
-    positionComponent.x = position.x;
-    positionComponent.y = position.y;
+    positionComponent.x = position.x + 8;
+    positionComponent.y = position.y + 8;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
@@ -191,8 +191,8 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     const int WEAPON_SIZE = 96;
 
     PositionComponent weaponPositionComponent;
-    weaponPositionComponent.x = position.x + (TOWER_WIDTH - WEAPON_SIZE) / 2;
-    weaponPositionComponent.y = position.y;
+    weaponPositionComponent.x = position.x + 8 + (TOWER_WIDTH - WEAPON_SIZE) / 2;
+    weaponPositionComponent.y = position.y + 8;
     componentManager.addComponent(weapon, weaponPositionComponent);
 
     SizeComponent weaponSizeComponent;
@@ -253,7 +253,7 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     return entity;
 }
 
-Entity EntityFactory::createTowerProjectile(float x, float y, float  /*targetX*/, float velocityX, float velocityY, float angle, int damage) {
+Entity EntityFactory::createTowerProjectile(float x, float y, float /*targetX*/, float velocityX, float velocityY, float angle, int damage) {
     Entity entity = entityManager.createEntity();
 
     static const int TEXTURE_WIDTH = 8;
@@ -309,6 +309,72 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float  /*targetX*/
     collisionComponent.w = PROJECTILE_WIDTH;
     collisionComponent.h = PROJECTILE_HEIGHT;
     componentManager.addComponent(entity, collisionComponent);
+
+    return entity;
+}
+
+Entity EntityFactory::createUpgradeMenuItem(glm::vec2 offset) {
+    Entity entity = entityManager.createEntity();
+
+    PositionComponent positionComponent;
+    positionComponent.x = 200;
+    positionComponent.y = offset.y - 85;
+    componentManager.addComponent(entity, positionComponent);
+
+    SizeComponent sizeComponent;
+    sizeComponent.w = 75;
+    sizeComponent.h = 75;
+    componentManager.addComponent(entity, sizeComponent);
+
+    TextComponent textComponent;
+    textComponent.text = "Upgrade";
+    textComponent.color = {0.1f, 0.1f, 0.1f};
+    componentManager.addComponent(entity, textComponent);
+
+    ClickableComponent clickableComponent;
+    clickableComponent.clickedEvent = EventType::UPGRADE_MENU_ITEM_CLICKED;
+    componentManager.addComponent(entity, clickableComponent);
+
+    ColorComponent colorComponent;
+    colorComponent.color = {0.33f, 0.33f, 0.66f};
+    componentManager.addComponent(entity, colorComponent);
+
+    ShaderComponent shaderComponent;
+    shaderComponent.name = "text";
+    componentManager.addComponent(entity, shaderComponent);
+
+    return entity;
+}
+
+Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 offset) {
+    Entity entity = entityManager.createEntity();
+
+    PositionComponent positionComponent;
+    positionComponent.x = 400;
+    positionComponent.y = offset.y - 85;
+    componentManager.addComponent(entity, positionComponent);
+
+    SizeComponent sizeComponent;
+    sizeComponent.w = 90;
+    sizeComponent.h = 75;
+    componentManager.addComponent(entity, sizeComponent);
+
+    TextComponent textComponent;
+    textComponent.text = "Build Tower";
+    textComponent.color = {0.1f, 0.1f, 0.1f};
+    componentManager.addComponent(entity, textComponent);
+
+    ClickableComponent clickableComponent;
+    clickableComponent.clickedEvent = EventType::BUILD_TOWER_MENU_ITEM_CLICKED;
+    componentManager.addComponent(entity, clickableComponent);
+
+    ColorComponent colorComponent;
+    colorComponent.color = {0.66f, 0.33f, 0.33f};
+    componentManager.addComponent(entity, colorComponent);
+
+    ShaderComponent shaderComponent;
+    shaderComponent.name = "text";
+    componentManager.addComponent(entity, shaderComponent);
 
     return entity;
 }

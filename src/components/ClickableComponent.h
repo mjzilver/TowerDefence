@@ -6,4 +6,5 @@
 struct ClickableComponent : public Component {
     EventType clickedEvent;
     bool selected = false;
+    bool hovered = false;
 };

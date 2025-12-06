@@ -9,6 +9,7 @@
 #include "../ecs/ComponentManager.h"
 #include "../components/PositionComponent.h"
 #include "../components/TextureComponent.h"
+#include "../components/TextComponent.h"
 #include "../components/SizeComponent.h"
 #include "../components/RotationComponent.h"
 #include "../font/FontLoader.h"
@@ -26,8 +27,19 @@ public:
         Shader* shader
     );
 
-    void renderText(const std::string& text, const glm::vec2& position, const glm::vec3& color, Shader* shader);
-    void renderSquare(const glm::vec2& position, const glm::vec2& size, const glm::vec3& color, Shader* shader);
+    void renderText(
+        PositionComponent* position, 
+        SizeComponent* size,
+        TextComponent* text,
+        Shader* shader
+    );
+
+    void renderSquare(
+        PositionComponent* position, 
+        SizeComponent* size,
+        const glm::vec3& color,
+        Shader* shader
+    );
     
     void render();
 

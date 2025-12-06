@@ -12,6 +12,9 @@ enum class EventType {
     GRASS_TILE_CLICKED,
     UPGRADE_TOWER,
     TOWER_CLICKED,
+    UPGRADE_MENU_ITEM_CLICKED,
+    BUILD_TOWER_MENU_ITEM_CLICKED,
+    UNSELECT
 };
 
 struct Event {

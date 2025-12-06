@@ -1,12 +1,12 @@
 #include "ShootingSystem.h"
 
 #include "../components/AnimationComponent.h"
+#include "../components/HealthComponent.h"
+#include "../components/PositionComponent.h"
+#include "../components/RotationComponent.h"
+#include "../components/SizeComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../components/WeaponComponent.h"
-#include "../components/PositionComponent.h"
-#include "../components/SizeComponent.h"
-#include "../components/RotationComponent.h"
-#include "../components/HealthComponent.h"
 
 void ShootingSystem::update(float deltaTime) {
     for (Entity entity : getEntities()) {

@@ -1,7 +1,10 @@
+// clang-format off
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+// clang-format on
 
 #include <ctime>
+#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <iostream>
 
@@ -9,9 +12,9 @@
 #include "ecs/EntityFactory.h"
 #include "ecs/EntityManager.h"
 #include "ecs/SystemManager.h"
+#include "font/FontLoader.h"
 #include "map/MapLoader.h"
 #include "shader/Shader.h"
-#include "font/FontLoader.h"
 #include "systems/AnimationSystem.h"
 #include "systems/ClickSystem.h"
 #include "systems/CollisionSystem.h"
@@ -60,9 +63,10 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    Shader shader("vertex.glsl", "fragment.glsl");
-    Shader hoverShader("vertex.glsl", "hover_fragment.glsl");
+    Shader defaultShader("default_vertex.glsl", "default_fragment.glsl");
+    Shader hoverShader("default_vertex.glsl", "hover_fragment.glsl");
     Shader textShader("text_vertex.glsl", "text_fragment.glsl");
+    Shader squareShader("square_vertex.glsl", "square_fragment.glsl");
 
     EntityManager entityManager;
     ComponentManager componentManager;
@@ -81,7 +85,7 @@ int main() {
     auto& collisionSystem = systemManager.registerSystem<CollisionSystem>(&entityManager, componentManager);
     auto& combatSystem = systemManager.registerSystem<CombatSystem>(&entityManager, componentManager);
     auto& stateSystem = systemManager.registerSystem<StateSystem>(&entityManager, componentManager);
-    auto& clickSystem = systemManager.registerSystem<ClickSystem>(&entityManager, componentManager);
+    auto& clickSystem = systemManager.registerSystem<ClickSystem>(&entityManager, componentManager, entityFactory);
 
     glfwSetWindowUserPointer(window, &clickSystem);
     glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int) {
@@ -96,8 +100,8 @@ int main() {
         clickSystem->onHover(x, y);
     });
 
-    entityFactory.createTower(glm::vec2(400, 100));
-    entityFactory.createTower(glm::vec2(400, 500));
+    entityFactory.createUpgradeMenuItem(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
+    entityFactory.createBuildTowerMenuItem(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
 
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
@@ -113,9 +117,10 @@ int main() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 #endif
 
-    renderSystem.registerShader("default", &shader);
+    renderSystem.registerShader("default", &defaultShader);
     renderSystem.registerShader("hover", &hoverShader);
     renderSystem.registerShader("text", &textShader);
+    renderSystem.registerShader("square", &squareShader);
 
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {
@@ -123,7 +128,7 @@ int main() {
         double deltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
-        glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
+        glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         systemManager.updateSystems(deltaTime);

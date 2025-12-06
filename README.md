@@ -25,7 +25,7 @@ Currently in early development
 - [x] Arrows rotation towards target
 - [ ] Tower upgrades
 - [ ] Add tower stats
-- [ ] Draggable tower placement
+- [x] Tower placement
 
 ### Game Systems
 - [x] Refactor to ECS (Entity-Component-System)
