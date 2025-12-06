@@ -16,6 +16,7 @@
 #include "map/MapLoader.h"
 #include "shader/Shader.h"
 #include "systems/AnimationSystem.h"
+#include "systems/BuildSystem.h"
 #include "systems/ClickSystem.h"
 #include "systems/CollisionSystem.h"
 #include "systems/CombatSystem.h"
@@ -77,6 +78,8 @@ int main() {
     MapLoader mapLoader = MapLoader(entityFactory);
     mapLoader.loadMap("map1.txt");
 
+    Entity currencyDisplay = entityFactory.createCurrencyDisplay(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
+
     auto& renderSystem = systemManager.registerSystem<RenderSystem>(&entityManager, componentManager, fontLoader);
     auto& animationSystem = systemManager.registerSystem<AnimationSystem>(&entityManager, componentManager);
     auto& movementSystem = systemManager.registerSystem<MovementSystem>(&entityManager, componentManager);
@@ -85,7 +88,8 @@ int main() {
     auto& collisionSystem = systemManager.registerSystem<CollisionSystem>(&entityManager, componentManager);
     auto& combatSystem = systemManager.registerSystem<CombatSystem>(&entityManager, componentManager);
     auto& stateSystem = systemManager.registerSystem<StateSystem>(&entityManager, componentManager);
-    auto& clickSystem = systemManager.registerSystem<ClickSystem>(&entityManager, componentManager, entityFactory);
+    auto& clickSystem = systemManager.registerSystem<ClickSystem>(&entityManager, componentManager);
+    auto& buildSystem = systemManager.registerSystem<BuildSystem>(&entityManager, componentManager, entityFactory, currencyDisplay);
 
     glfwSetWindowUserPointer(window, &clickSystem);
     glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int) {

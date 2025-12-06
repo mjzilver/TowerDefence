@@ -12,6 +12,7 @@
 #include "../components/TextComponent.h"
 #include "../font/FontLoader.h"
 #include "../utils/Globals.h"
+#include "../utils/String.h"
 
 GLuint createUnitSquareVao() {
     float vertices[] = {
@@ -143,7 +144,7 @@ void RenderSystem::renderText(PositionComponent* position, SizeComponent* size, 
     glm::mat4 projection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f, -1.0f, 1.0f);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
 
-    // Setup VAO/VBO (static, reused every frame)
+    // Setup VAO/VBO
     static GLuint vao = 0, vbo = 0;
     if (vao == 0) {
         glGenVertexArrays(1, &vao);
@@ -159,40 +160,58 @@ void RenderSystem::renderText(PositionComponent* position, SizeComponent* size, 
 
     const auto& characters = fontLoader.getCharacters();
 
-    // Compute total width for horizontal centering
-    float totalWidth = 0.0f;
-    for (const char& c : text->text) {
-        if (characters.find(c) != characters.end()) totalWidth += characters.at(c).advance >> 6;
-    }
+    std::vector<std::string> lines = splitLines(text->text);
 
-    // Start position centered
-    float x = position->x + size->w * 0.5f - totalWidth * 0.5f;
-    float y = position->y + size->h * 0.5f;  // center vertically
+    float lineSpacing = 8.0f;
+    float maxCharHeight = characters.at('A').size.y;
 
-    for (const char& c : text->text) {
-        if (characters.find(c) == characters.end()) continue;
-        const Character& ch = characters.at(c);
+    // Compute starting Y so all lines are vertically centered
+    float totalHeight = lines.size() * maxCharHeight + (lines.size() - 1) * lineSpacing;
+    float startY = position->y + size->h * 0.5f - totalHeight * 0.5f;
 
-        float xpos = x + ch.bearing.x;
-        float ypos = y - (ch.bearing.y);
+    float y = startY;
 
-        float w = ch.size.x;
-        float h = ch.size.y;
+    for (const std::string& line : lines) {
+        // Compute line width for horizontal centering
+        float lineWidth = 0.0f;
+        for (char c : line) {
+            auto it = characters.find(c);
+            if (it != characters.end()) {
+                lineWidth += it->second.advance >> 6;
+            }
+        }
 
-        float vertices[6][4] = {{xpos, ypos + h, 0.0f, 1.0f}, {xpos, ypos, 0.0f, 0.0f},     {xpos + w, ypos, 1.0f, 0.0f},
-                                {xpos, ypos + h, 0.0f, 1.0f}, {xpos + w, ypos, 1.0f, 0.0f}, {xpos + w, ypos + h, 1.0f, 1.0f}};
+        // Center horizontally inside the bounding box
+        float x = position->x + size->w * 0.5f - lineWidth * 0.5f;
 
-        // Bind glyph texture (single-channel red)
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, ch.textureID);
-        glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
+        // Draw characters in this line
+        for (char c : line) {
+            auto it = characters.find(c);
+            if (it == characters.end()) continue;
+            const Character& ch = it->second;
 
-        // Update VBO and draw
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+            float xpos = x + ch.bearing.x;
+            float ypos = y - ch.bearing.y;
 
-        // Advance cursor
-        x += ch.advance >> 6;  // FreeType uses 1/64 pixels
+            float w = ch.size.x;
+            float h = ch.size.y;
+
+            float vertices[6][4] = {{xpos, ypos + h, 0.0f, 1.0f}, {xpos, ypos, 0.0f, 0.0f},     {xpos + w, ypos, 1.0f, 0.0f},
+
+                                    {xpos, ypos + h, 0.0f, 1.0f}, {xpos + w, ypos, 1.0f, 0.0f}, {xpos + w, ypos + h, 1.0f, 1.0f}};
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, ch.textureID);
+            glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
+
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+
+            x += ch.advance >> 6;
+        }
+
+        // Move to next line
+        y += maxCharHeight + lineSpacing;
     }
 
     glBindVertexArray(0);
@@ -204,11 +223,19 @@ void RenderSystem::render() {
 
     std::vector<Entity> sortedEntities(entities.begin(), entities.end());
     std::sort(sortedEntities.begin(), sortedEntities.end(), [this](Entity a, Entity b) {
-        auto* positionA = this->componentManager.getComponent<TextureComponent>(a);
-        auto* positionB = this->componentManager.getComponent<TextureComponent>(b);
+        auto* textureA = this->componentManager.getComponent<TextureComponent>(a);
+        auto* textureB = this->componentManager.getComponent<TextureComponent>(b);
 
-        if (positionA && positionB) {
-            return positionA->zIndex > positionB->zIndex;
+        
+        if (textureA && textureB) {
+            if(textureA->zIndex == textureB->zIndex) {
+                auto* positionA = this->componentManager.getComponent<PositionComponent>(a);
+                auto* positionB = this->componentManager.getComponent<PositionComponent>(b);
+
+                return positionA->y > positionB->y;
+            }
+
+            return textureA->zIndex > textureB->zIndex;
         }
 
         return false;

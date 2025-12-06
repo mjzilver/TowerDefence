@@ -6,7 +6,6 @@
 // clang-format on
 
 #include "../components/ClickableComponent.h"
-#include "../components/ChildComponent.h"
 #include "../components/PositionComponent.h"
 #include "../components/ShaderComponent.h"
 #include "../components/SizeComponent.h"
@@ -102,17 +101,17 @@ void ClickSystem::onEvent(const Event& event) {
         selectedMenuItem = MenuItem::BUILD_TOWER;
     } else if (event.type == EventType::GRASS_TILE_CLICKED && selectedMenuItem == MenuItem::BUILD_TOWER) {
         Entity entity = *event.getData<Entity>("entity");
-        auto* position = componentManager.getComponent<PositionComponent>(entity);
-        auto* size = componentManager.getComponent<SizeComponent>(entity);
-        auto* child = componentManager.getComponent<ChildComponent>(entity);
 
-        if(!child) {
-            auto tower =  entityFactory.createTower({position->x, position->y - size->h + 16});
-            ChildComponent childComponent;
-            childComponent.child = tower;
-            componentManager.addComponent(entity, childComponent);
-        }
+        Event event;
+        event.type = EventType::BUILD_TOWER;
+        event.addData("entity", &entity);
+        EventDispatcher::getInstance().dispatch(event);
     } else if (event.type == EventType::TOWER_CLICKED && selectedMenuItem == MenuItem::UPGRADE_TOWER) {
         Entity entity = *event.getData<Entity>("entity");
+
+        Event event;
+        event.type = EventType::UPGRADE_TOWER;
+        event.addData("entity", &entity);
+        EventDispatcher::getInstance().dispatch(event);
     }
 }

@@ -24,6 +24,7 @@ public:
         componentManager.addComponent(entity, flagComponent);
         return entity;
     }
+    
     Entity createEndTile(glm::vec2 position) {
         Entity entity = createPathTile(position);
         FlagComponent flagComponent;
@@ -39,6 +40,9 @@ public:
 
     Entity createUpgradeMenuItem(glm::vec2 offset);
     Entity createBuildTowerMenuItem(glm::vec2 offset);
+    Entity createCurrencyDisplay(glm::vec2 offset);
+
+    Entity upgradeTower(Entity& entity);
 
 private:
     ComponentManager& componentManager;

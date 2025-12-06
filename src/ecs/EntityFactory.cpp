@@ -11,12 +11,14 @@
 #include "../components/HealthComponent.h"
 #include "../components/PathfindingComponent.h"
 #include "../components/PositionComponent.h"
+#include "../components/RewardComponent.h"
 #include "../components/RotationComponent.h"
 #include "../components/ShaderComponent.h"
 #include "../components/SizeComponent.h"
 #include "../components/SpeedComponent.h"
 #include "../components/TextComponent.h"
 #include "../components/TextureComponent.h"
+#include "../components/UpgradeComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../components/WeaponComponent.h"
 #include "../event/Event.h"
@@ -105,6 +107,10 @@ Entity EntityFactory::createFireBug(glm::vec2 position) {
     healthComponent.health = 100;
     componentManager.addComponent(entity, healthComponent);
 
+    RewardComponent rewardComponent;
+    rewardComponent.gold = 15;
+    componentManager.addComponent(entity, rewardComponent);
+
     SpeedComponent speedComponent;
     speedComponent.speed = 100;
     componentManager.addComponent(entity, speedComponent);
@@ -179,6 +185,10 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     sizeComponent.w = TOWER_WIDTH;
     sizeComponent.h = TOWER_HEIGHT;
     componentManager.addComponent(entity, sizeComponent);
+
+    UpgradeComponent upgradeComponent;
+    upgradeComponent.maxUpgradeLevel = 3;
+    componentManager.addComponent(entity, upgradeComponent);
 
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01.png");
@@ -327,7 +337,7 @@ Entity EntityFactory::createUpgradeMenuItem(glm::vec2 offset) {
     componentManager.addComponent(entity, sizeComponent);
 
     TextComponent textComponent;
-    textComponent.text = "Upgrade";
+    textComponent.text = "Upgrade\n100 gold";
     textComponent.color = {0.1f, 0.1f, 0.1f};
     componentManager.addComponent(entity, textComponent);
 
@@ -360,7 +370,7 @@ Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 offset) {
     componentManager.addComponent(entity, sizeComponent);
 
     TextComponent textComponent;
-    textComponent.text = "Build Tower";
+    textComponent.text = "Build Tower\n50 gold";
     textComponent.color = {0.1f, 0.1f, 0.1f};
     componentManager.addComponent(entity, textComponent);
 
@@ -375,6 +385,67 @@ Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 offset) {
     ShaderComponent shaderComponent;
     shaderComponent.name = "text";
     componentManager.addComponent(entity, shaderComponent);
+
+    return entity;
+}
+
+Entity EntityFactory::createCurrencyDisplay(glm::vec2 offset) {
+    Entity entity = entityManager.createEntity();
+
+    PositionComponent positionComponent;
+    positionComponent.x = 600;
+    positionComponent.y = offset.y - 85;
+    componentManager.addComponent(entity, positionComponent);
+
+    SizeComponent sizeComponent;
+    sizeComponent.w = 90;
+    sizeComponent.h = 75;
+    componentManager.addComponent(entity, sizeComponent);
+
+    TextComponent textComponent;
+    textComponent.text = "??? gold";
+    textComponent.color = {0.1f, 0.1f, 0.1f};
+    componentManager.addComponent(entity, textComponent);
+
+    ColorComponent colorComponent;
+    colorComponent.color = {0.33f, 0.66f, 0.33f};
+    componentManager.addComponent(entity, colorComponent);
+
+    ShaderComponent shaderComponent;
+    shaderComponent.name = "text";
+    componentManager.addComponent(entity, shaderComponent);
+
+    return entity;
+}
+
+Entity EntityFactory::upgradeTower(Entity& entity) {
+    componentManager.removeComponent<TextureComponent>(entity);
+    auto* upgradeComponent = componentManager.getComponent<UpgradeComponent>(entity);
+    upgradeComponent->upgradeLevel++;
+
+    static const int TEXTURE_WIDTH = 64;
+    static const int TEXTURE_HEIGHT = 128;
+    static const int TOWER_WIDTH = 64;
+    static const int TOWER_HEIGHT = 128;
+
+    TextureComponent textureComponent;
+    textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01.png");
+    textureComponent.coords = getTextureCoords(upgradeComponent->upgradeLevel - 1, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x,
+                                               textureComponent.texture.size.y);
+    textureComponent.zIndex = ZLayer::TOWER;
+    componentManager.addComponent(entity, textureComponent);
+
+    auto* childComponent = componentManager.getComponent<ChildComponent>(entity);
+    auto weaponEntity = childComponent->child;
+
+    auto* weaponPosition = componentManager.getComponent<PositionComponent>(weaponEntity);
+    weaponPosition->y -= 8;
+
+    auto* weaponComponent = componentManager.getComponent<WeaponComponent>(weaponEntity);
+    weaponComponent->damage *= 1.3f;
+    weaponComponent->projectileSpeed *= 1.2f;
+    weaponComponent->rateOfFire *= 0.8f;
+    weaponComponent->range *= 1.1f;
 
     return entity;
 }

@@ -2,16 +2,15 @@
 #include <functional>
 #include "../ecs/System.h"
 #include "../ecs/ComponentManager.h"
-#include "../ecs/EntityFactory.h"
 
 #include "../event/Event.h"
 #include "../event/EventDispatcher.h"
 
 class ClickSystem : public System {
 public:
-    ClickSystem(ComponentManager& componentManager, EntityFactory& entityFactory)
-        : componentManager(componentManager), entityFactory(entityFactory) {
+    ClickSystem(ComponentManager& componentManager) : componentManager(componentManager) {
         EventDispatcher::getInstance().addListener(EventType::GRASS_TILE_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
+        EventDispatcher::getInstance().addListener(EventType::TOWER_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
         EventDispatcher::getInstance().addListener(EventType::BUILD_TOWER_MENU_ITEM_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
         EventDispatcher::getInstance().addListener(EventType::UPGRADE_MENU_ITEM_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
         EventDispatcher::getInstance().addListener(EventType::UNSELECT, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
@@ -28,7 +27,6 @@ public:
 private:
     const int CLICK_SIZE = 1;
     ComponentManager& componentManager;
-    EntityFactory& entityFactory;
 
     enum class MenuItem { NONE, UPGRADE_TOWER, BUILD_TOWER };
     MenuItem selectedMenuItem = MenuItem::NONE;
