@@ -23,8 +23,7 @@ Currently in early development
 - [x] Implement tower shooting
 - [x] Rotation of balista
 - [x] Arrows rotation towards target
-- [ ] Tower upgrades
-- [ ] Add tower stats
+- [x] Tower upgrades
 - [x] Tower placement
 
 ### Game Systems
