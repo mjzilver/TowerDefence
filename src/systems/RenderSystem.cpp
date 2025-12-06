@@ -226,9 +226,8 @@ void RenderSystem::render() {
         auto* textureA = this->componentManager.getComponent<TextureComponent>(a);
         auto* textureB = this->componentManager.getComponent<TextureComponent>(b);
 
-        
         if (textureA && textureB) {
-            if(textureA->zIndex == textureB->zIndex) {
+            if (textureA->zIndex == textureB->zIndex) {
                 auto* positionA = this->componentManager.getComponent<PositionComponent>(a);
                 auto* positionB = this->componentManager.getComponent<PositionComponent>(b);
 

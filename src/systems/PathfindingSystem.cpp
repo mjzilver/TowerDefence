@@ -1,5 +1,7 @@
 #include "PathfindingSystem.h"
 
+#include <random>
+
 #include "../components/FlagComponent.h"
 #include "../components/PathfindingComponent.h"
 #include "../components/PositionComponent.h"
@@ -27,8 +29,8 @@ void PathfindingSystem::update(float) {
                     // Get the center positions of the entity and the target tile
                     float entityCenterX = position->x + size->w / 2.0f;
                     float entityCenterY = position->y + size->h / 2.0f;
-                    float targetCenterX = TARGET_TILE->x + TARGET_SIZE->w / 2.0f;
-                    float targetCenterY = TARGET_TILE->y + TARGET_SIZE->h / 2.0f;
+                    float targetCenterX = TARGET_TILE->x + TARGET_SIZE->w / 2.0f + pathfinding->randomOffset.x;
+                    float targetCenterY = TARGET_TILE->y + TARGET_SIZE->h / 2.0f + pathfinding->randomOffset.y;
 
                     // Calculate direction to the target
                     float dx = targetCenterX - entityCenterX;
@@ -41,12 +43,18 @@ void PathfindingSystem::update(float) {
                         velocity->x = dx * speed->speed;
                         velocity->y = dy * speed->speed;
                     } else {
-                        if (pathTiles[pathfinding->currentIndex] == end) {
+                        pathfinding->currentIndex++;
+
+                        if (pathfinding->currentIndex >= static_cast<int>(pathTiles.size())) {
                             componentManager.removeComponent<PathfindingComponent>(entity);
                             velocity->x = 0;
                             velocity->y = 0;
+                        } else {
+                            auto* nextTileSize = componentManager.getComponent<SizeComponent>(pathTiles[pathfinding->currentIndex]);
+                            if (nextTileSize) {
+                                generateRandomOffset(pathfinding, nextTileSize);
+                            }
                         }
-                        pathfinding->currentIndex++;
                     }
                 }
             }
@@ -81,4 +89,18 @@ void PathfindingSystem::generatePath() {
 
         pathTiles.push_back(matchingTile);
     }
+}
+
+void PathfindingSystem::generateRandomOffset(PathfindingComponent* pathfinding, SizeComponent* targetSize) {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    float maxOffsetX = targetSize->w * 0.25f;
+    float maxOffsetY = targetSize->h * 0.25f;
+
+    std::uniform_real_distribution<float> distX(-maxOffsetX, maxOffsetX);
+    std::uniform_real_distribution<float> distY(-maxOffsetY, maxOffsetY);
+
+    pathfinding->randomOffset.x = distX(gen);
+    pathfinding->randomOffset.y = distY(gen);
 }

@@ -1,6 +1,7 @@
 #include "CombatSystem.h"
 
 #include "../components/DamageComponent.h"
+#include "../components/DeathComponent.h"
 #include "../components/HealthComponent.h"
 #include "../components/PathfindingComponent.h"
 #include "../components/TextureComponent.h"
@@ -16,6 +17,7 @@ void CombatSystem::onEvent(const Event& event) {
 
         int projectileDamage = componentManager.getComponent<DamageComponent>(projectile)->damage;
         auto* targetHealth = componentManager.getComponent<HealthComponent>(target);
+        auto* targetDeath = componentManager.getComponent<DeathComponent>(target);
 
         if (targetHealth) {
             targetHealth->health -= projectileDamage;
@@ -30,6 +32,9 @@ void CombatSystem::onEvent(const Event& event) {
                 componentManager.removeComponent<PathfindingComponent>(target);
                 componentManager.removeComponent<HealthComponent>(target);
                 componentManager.getComponent<TextureComponent>(target)->zIndex = ZLayer::DEAD;
+                if (targetDeath) {
+                    targetDeath->hasDied = true;
+                }
             }
         }
 

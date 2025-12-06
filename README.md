@@ -1,6 +1,5 @@
 # Tower Defebnce
 ## A 2D tower defence game
-Currently in early development
 
 ![Screenshot](resources/screenshot.png)
 
@@ -14,7 +13,7 @@ Currently in early development
 
 ### Enemies
 - [x] Implement one static animated enemy
-- [ ] Enemy spawning system
+- [x] Enemy spawning system
 - [x] Path following
 - [x] Pathfinding
 

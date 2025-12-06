@@ -3,7 +3,6 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
-#include <ctime>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <iostream>
@@ -24,6 +23,7 @@
 #include "systems/PathfindingSystem.h"
 #include "systems/RenderSystem.h"
 #include "systems/ShootingSystem.h"
+#include "systems/SpawningSystem.h"
 #include "systems/StateSystem.h"
 #include "texture/TextureManager.h"
 #include "utils/Globals.h"
@@ -90,6 +90,7 @@ int main() {
     auto& stateSystem = systemManager.registerSystem<StateSystem>(&entityManager, componentManager);
     auto& clickSystem = systemManager.registerSystem<ClickSystem>(&entityManager, componentManager);
     auto& buildSystem = systemManager.registerSystem<BuildSystem>(&entityManager, componentManager, entityFactory, currencyDisplay);
+    auto& spawningSystem = systemManager.registerSystem<SpawningSystem>(&entityManager, componentManager, entityFactory, pathfindingSystem);
 
     glfwSetWindowUserPointer(window, &clickSystem);
     glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int) {
@@ -106,14 +107,6 @@ int main() {
 
     entityFactory.createUpgradeMenuItem(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
     entityFactory.createBuildTowerMenuItem(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
-
-    std::srand(static_cast<unsigned int>(std::time(nullptr)));
-
-    for (int i = 0; i < 10; ++i) {
-        float x = static_cast<float>(std::rand() % SCREEN_WIDTH);
-        float y = static_cast<float>(std::rand() % SCREEN_HEIGHT);
-        entityFactory.createFireBug(glm::vec2(x, y));
-    }
 
     pathfindingSystem.generatePath();
 

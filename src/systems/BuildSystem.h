@@ -25,5 +25,5 @@ private:
 
     Entity& currencyDisplayEntity;
 
-    int currency = 200;
+    int currency = 100;
 };

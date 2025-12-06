@@ -6,6 +6,7 @@
 #include "../components/CollisionComponent.h"
 #include "../components/ColorComponent.h"
 #include "../components/DamageComponent.h"
+#include "../components/DeathComponent.h"
 #include "../components/DirectionComponent.h"
 #include "../components/FlagComponent.h"
 #include "../components/HealthComponent.h"
@@ -106,6 +107,10 @@ Entity EntityFactory::createFireBug(glm::vec2 position) {
     HealthComponent healthComponent;
     healthComponent.health = 100;
     componentManager.addComponent(entity, healthComponent);
+
+    DeathComponent deathComponent;
+    deathComponent.remainingTime = 30.0f;
+    componentManager.addComponent(entity, deathComponent);
 
     RewardComponent rewardComponent;
     rewardComponent.gold = 15;
