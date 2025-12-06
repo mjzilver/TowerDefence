@@ -6,6 +6,7 @@
 // clang-format on
 
 #include "../components/ClickableComponent.h"
+#include "../components/ChildComponent.h"
 #include "../components/PositionComponent.h"
 #include "../components/ShaderComponent.h"
 #include "../components/SizeComponent.h"
@@ -103,8 +104,14 @@ void ClickSystem::onEvent(const Event& event) {
         Entity entity = *event.getData<Entity>("entity");
         auto* position = componentManager.getComponent<PositionComponent>(entity);
         auto* size = componentManager.getComponent<SizeComponent>(entity);
+        auto* child = componentManager.getComponent<ChildComponent>(entity);
 
-        entityFactory.createTower({position->x, position->y - size->h + 16});
+        if(!child) {
+            auto tower =  entityFactory.createTower({position->x, position->y - size->h + 16});
+            ChildComponent childComponent;
+            childComponent.child = tower;
+            componentManager.addComponent(entity, childComponent);
+        }
     } else if (event.type == EventType::TOWER_CLICKED && selectedMenuItem == MenuItem::UPGRADE_TOWER) {
         Entity entity = *event.getData<Entity>("entity");
     }
