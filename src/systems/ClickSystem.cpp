@@ -31,12 +31,16 @@ void ClickSystem::onClick(int button, int action, double x, double y) {
         return;
     }
 
-    for (Entity entity : getEntities()) {
-        auto* position = componentManager.getComponent<PositionComponent>(entity);
-        auto* size = componentManager.getComponent<SizeComponent>(entity);
-        auto* clickable = componentManager.getComponent<ClickableComponent>(entity);
+    auto* clickables = componentManager.getArray<ClickableComponent>();
+    auto* positions = componentManager.getArray<PositionComponent>();
+    auto* sizes = componentManager.getArray<SizeComponent>();
 
-        if (clickable && position && size) {
+    for (Entity entity : clickables->getEntities()) {
+        auto* position = positions->get(entity);
+        auto* size = sizes->get(entity);
+        auto* clickable = clickables->get(entity);
+
+        if (position && size) {
             float left = position->x;
             float right = position->x + size->w;
             float top = position->y;
@@ -53,14 +57,20 @@ void ClickSystem::onClick(int button, int action, double x, double y) {
 }
 
 void ClickSystem::onHover(double x, double y) {
-    for (Entity entity : getEntities()) {
-        auto* position = componentManager.getComponent<PositionComponent>(entity);
-        auto* size = componentManager.getComponent<SizeComponent>(entity);
-        auto* texture = componentManager.getComponent<TextureComponent>(entity);
-        auto* clickable = componentManager.getComponent<ClickableComponent>(entity);
-        auto* shader = componentManager.getComponent<ShaderComponent>(entity);
+    auto* clickables = componentManager.getArray<ClickableComponent>();
+    auto* positions = componentManager.getArray<PositionComponent>();
+    auto* sizes = componentManager.getArray<SizeComponent>();
+    auto* shaders = componentManager.getArray<ShaderComponent>();
+    auto* textures = componentManager.getArray<TextureComponent>();
 
-        if (clickable && position && size && texture) {
+    for (Entity entity : clickables->getEntities()) {
+        auto* position = positions->get(entity);
+        auto* size = sizes->get(entity);
+        auto* clickable = clickables->get(entity);
+        auto* texture = textures->get(entity);
+        auto* shader = shaders->get(entity);
+
+        if (position && size && texture) {
             clickable->hovered = false;
             shader->name = "default";
 
@@ -78,11 +88,11 @@ void ClickSystem::onHover(double x, double y) {
 }
 
 void ClickSystem::onEvent(const Event& event) {
-    for (Entity entity : getEntities()) {
-        auto* clickable = componentManager.getComponent<ClickableComponent>(entity);
-        if (clickable) {
-            clickable->selected = false;
-        }
+    auto* clickables = componentManager.getArray<ClickableComponent>();
+
+    for (Entity entity : clickables->getEntities()) {
+        auto* clickable = clickables->get(entity);
+        clickable->selected = false;
     }
 
     if (event.type == EventType::UNSELECT) {

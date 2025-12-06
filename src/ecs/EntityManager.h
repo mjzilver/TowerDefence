@@ -2,16 +2,14 @@
 #include "Component.h"
 #include <unordered_set>
 
+class ComponentManager;
+
 class EntityManager {
 public:
     Entity createEntity() {
         Entity entity = ++lastEntity;
         activeEntities.insert(entity);
         return entity;
-    }
-
-    void destroyEntity(Entity entity) {
-        activeEntities.erase(entity);
     }
 
     bool isEntityValid(Entity entity) const {
@@ -23,6 +21,12 @@ public:
     }
 
 private:
+    void destroyEntity(Entity entity) {
+        activeEntities.erase(entity);
+    }
+
     Entity lastEntity = INVALID_ENTITY;
     std::unordered_set<Entity> activeEntities;
+
+    friend class ComponentManager;
 };

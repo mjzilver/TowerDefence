@@ -6,13 +6,18 @@
 #include "../components/VelocityComponent.h"
 
 void MovementSystem::update(float deltaTime) {
-    for (Entity entity : getEntities()) {
-        auto* position = componentManager.getComponent<PositionComponent>(entity);
-        auto* velocity = componentManager.getComponent<VelocityComponent>(entity);
-        auto* direction = componentManager.getComponent<DirectionComponent>(entity);
-        auto* texture = componentManager.getComponent<TextureComponent>(entity);
+    auto* positions = componentManager.getArray<PositionComponent>();
+    auto* velocities = componentManager.getArray<VelocityComponent>();
+    auto* directions = componentManager.getArray<DirectionComponent>();
+    auto* textures = componentManager.getArray<TextureComponent>();
 
-        if (position && velocity) {
+    for (Entity entity : velocities->getEntities()) {
+        auto* position = positions->get(entity);
+        auto* velocity = velocities->get(entity);
+        auto* direction = directions->get(entity);
+        auto* texture = textures->get(entity);
+
+        if (position) {
             if (velocity->x == 0 && velocity->y == 0) {
                 continue;
             }

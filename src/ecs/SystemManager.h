@@ -2,24 +2,22 @@
 
 #include <unordered_map>
 #include <typeindex>
-#include <memory>
 #include "System.h"
 
 class SystemManager {
 public:
     template <typename T, typename... Args>
     T& registerSystem(EntityManager* em, Args&&... args) {
-        auto system = std::make_unique<T>(std::forward<Args>(args)...);
-        T* systemPtr = system.get();
-        systemPtr->setEntityManager(em);
+        T* system = new T(std::forward<Args>(args)...);
+        system->setEntityManager(em);
         systems[std::type_index(typeid(T))] = std::move(system);
-        return *systemPtr;
+        return *system;
     }
 
     template <typename T>
     T* getSystem() {
         auto it = systems.find(std::type_index(typeid(T)));
-        return it != systems.end() ? dynamic_cast<T*>(it->second.get()) : nullptr;
+        return it != systems.end() ? dynamic_cast<T*>(it->second) : nullptr;
     }
 
     void updateSystems(float deltaTime) {
@@ -29,5 +27,5 @@ public:
     }
 
 private:
-    std::unordered_map<std::type_index, std::unique_ptr<System>> systems;
+    std::unordered_map<std::type_index, System*> systems;
 };

@@ -132,6 +132,8 @@ int main() {
 
         renderSystem.render();
 
+        componentManager.flushDestructions(entityManager);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
 

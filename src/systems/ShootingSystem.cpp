@@ -9,12 +9,20 @@
 #include "../components/WeaponComponent.h"
 
 void ShootingSystem::update(float deltaTime) {
-    for (Entity entity : getEntities()) {
-        auto* weapon = componentManager.getComponent<WeaponComponent>(entity);
-        auto* position = componentManager.getComponent<PositionComponent>(entity);
-        auto* size = componentManager.getComponent<SizeComponent>(entity);
-        auto* rotation = componentManager.getComponent<RotationComponent>(entity);
-        auto* animation = componentManager.getComponent<AnimationComponent>(entity);
+    auto* weapons = componentManager.getArray<WeaponComponent>();
+    auto* positions = componentManager.getArray<PositionComponent>();
+    auto* sizes = componentManager.getArray<SizeComponent>();
+    auto* velocities = componentManager.getArray<VelocityComponent>();
+    auto* rotations = componentManager.getArray<RotationComponent>();
+    auto* animations = componentManager.getArray<AnimationComponent>();
+    auto* healths = componentManager.getArray<HealthComponent>();
+
+    for (Entity entity : weapons->getEntities()) {
+        auto* weapon = weapons->get(entity);
+        auto* position = positions->get(entity);
+        auto* size = sizes->get(entity);
+        auto* rotation = rotations->get(entity);
+        auto* animation = animations->get(entity);
 
         if (!weapon || !position) {
             continue;
@@ -26,15 +34,15 @@ void ShootingSystem::update(float deltaTime) {
             continue;
         }
 
-        for (Entity otherEntity : getEntities()) {
+        for (Entity otherEntity : healths->getEntities()) {
             if (entity == otherEntity) {
                 continue;
             }
 
-            auto* otherPosition = componentManager.getComponent<PositionComponent>(otherEntity);
-            auto* otherSize = componentManager.getComponent<SizeComponent>(otherEntity);
-            auto* otherVelocity = componentManager.getComponent<VelocityComponent>(otherEntity);
-            auto* otherHealth = componentManager.getComponent<HealthComponent>(otherEntity);
+            auto* otherPosition = positions->get(otherEntity);
+            auto* otherSize = sizes->get(otherEntity);
+            auto* otherVelocity = velocities->get(otherEntity);
+            auto* otherHealth = healths->get(otherEntity);
 
             if (otherPosition && otherSize && otherVelocity && otherHealth) {
                 float startX = position->x + (size->w / 2);

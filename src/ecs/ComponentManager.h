@@ -1,46 +1,55 @@
 #pragma once
 
-#include <unordered_map>
+#include <queue>
 #include <typeindex>
-#include <memory>
+#include <unordered_map>
 
 #include "Component.h"
+#include "ComponentArray.h"
+#include "EntityManager.h"
 
 class ComponentManager {
 public:
     template <typename T>
     void addComponent(Entity entity, T component) {
-        components[entity][std::type_index(typeid(T))] = std::make_unique<T>(std::move(component));
+        getArray<T>()->insert(entity, std::move(component));
     }
 
     template <typename T>
     T* getComponent(Entity entity) {
-        auto it = components.find(entity);
-        if (it == components.end()) {
-            return nullptr;
-        }
-
-        auto it2 = it->second.find(std::type_index(typeid(T)));
-        if (it2 == it->second.end()) {
-            return nullptr;
-        }
-
-        return dynamic_cast<T*>(it2->second.get());
+        return getArray<T>()->get(entity);
     }
 
     template <typename T>
     void removeComponent(Entity entity) {
-        auto it = components.find(entity);
-        if (it == components.end()) {
-            return;
+        getArray<T>()->remove(entity);
+    }
+
+    template <typename T>
+    ComponentArray<T>* getArray() {
+        auto typeIndex = std::type_index(typeid(T));
+        if (componentArrays.find(typeIndex) == componentArrays.end()) {
+            componentArrays[typeIndex] = new ComponentArray<T>();
         }
-
-        it->second.erase(std::type_index(typeid(T)));
+        return static_cast<ComponentArray<T>*>(componentArrays[typeIndex]);
     }
 
-    void removeAllComponents(Entity entity) {
-        components.erase(entity);
+    void scheduleDestruction(Entity entity) { scheduledForDestruction.push(entity); }
+
+     void flushDestructions(EntityManager& entityManager) {
+        while (!scheduledForDestruction.empty()) {
+            Entity entity = scheduledForDestruction.front();
+            scheduledForDestruction.pop();
+
+            for (auto& [type, array] : componentArrays) {
+                auto baseArray = static_cast<IComponentArray*>(array);
+                baseArray->remove(entity);
+            }
+
+            entityManager.destroyEntity(entity);
+        }
     }
-private:
-    std::unordered_map<Entity, std::unordered_map<std::type_index, std::unique_ptr<Component>>> components;
+
+    std::unordered_map<std::type_index, IComponentArray*> componentArrays;
+    std::queue<Entity> scheduledForDestruction;
 };

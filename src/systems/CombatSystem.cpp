@@ -18,34 +18,43 @@ void CombatSystem::onEvent(const Event& event) {
         Entity projectile = *event.getData<Entity>("projectile");
         Entity target = *event.getData<Entity>("target");
 
-        int projectileDamage = componentManager.getComponent<DamageComponent>(projectile)->damage;
+        auto* projectileDamageComp = componentManager.getComponent<DamageComponent>(projectile);
         auto* targetPosition = componentManager.getComponent<PositionComponent>(target);
         auto* targetSize = componentManager.getComponent<SizeComponent>(target);
         auto* targetHealth = componentManager.getComponent<HealthComponent>(target);
         auto* targetDeath = componentManager.getComponent<DeathComponent>(target);
+        auto* targetTexture = componentManager.getComponent<TextureComponent>(target);
 
-        if (targetHealth) {
-            targetHealth->health -= projectileDamage;
+        if (!projectileDamageComp || !targetPosition || !targetSize || !targetHealth || !targetTexture) {
+            return;
+        }
 
-            if (targetHealth->health <= 0) {
-                Event deathEvent;
-                deathEvent.type = EventType::ENTITY_DESTROYED;
-                deathEvent.addData<Entity>("entity", &target);
-                eventdispatcher.dispatch(deathEvent);
+        int projectileDamage = projectileDamageComp->damage;
+        targetHealth->health -= projectileDamage;
 
-                componentManager.removeComponent<VelocityComponent>(target);
-                componentManager.removeComponent<PathfindingComponent>(target);
-                componentManager.removeComponent<HealthComponent>(target);
-                componentManager.getComponent<TextureComponent>(target)->zIndex = ZLayer::DEAD;
-                if (targetDeath) {
-                    targetDeath->hasDied = true;
-                }
+        if (targetHealth->health <= 0) {
+            Event deathEvent;
+            deathEvent.type = EventType::ENTITY_DESTROYED;
+            deathEvent.addData<Entity>("entity", &target);
+            eventdispatcher.dispatch(deathEvent);
+
+            if (!targetDeath) {
+                DeathComponent deathComp;
+                deathComp.hasDied = true;
+                deathComp.remainingTime = 0.1f;
+                componentManager.addComponent(target, deathComp);
+            } else {
+                targetDeath->hasDied = true;
             }
+
+            componentManager.removeComponent<VelocityComponent>(target);
+            componentManager.removeComponent<PathfindingComponent>(target);
+            componentManager.removeComponent<HealthComponent>(target);
+            targetTexture->zIndex = ZLayer::DEAD;
         }
 
         entityFactory.createTowerProjectileImpact({targetPosition->x + targetSize->w / 2, targetPosition->y + targetSize->h / 2});
 
-        // Schedule removal
         DeathComponent deathComponent;
         deathComponent.hasDied = true;
         deathComponent.remainingTime = 0.001f;

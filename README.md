@@ -24,13 +24,13 @@
 - [x] Arrows rotation towards target
 - [x] Tower upgrades
 - [x] Tower placement
+- [x] Particles
 
 ### Game Systems
 - [x] Refactor to ECS (Entity-Component-System)
 - [x] Event system (tower placed, enemy killed, collision)
 - [x] Collision detection
 - [ ] Quadtree optimization
-- [ ] Particle system
 
 ### Attributions
 

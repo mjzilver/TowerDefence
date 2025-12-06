@@ -30,7 +30,7 @@ void SpawningSystem::update(float deltaTime) {
             enemyHealth *= randFactor(gen);
             enemySpeed = (int)(enemySpeed * randFactor(gen));
 
-            bool redTrait  = rareChance(gen) < 0.018f;
+            bool redTrait = rareChance(gen) < 0.018f;
             bool blueTrait = rareChance(gen) < 0.028f;
 
             glm::vec3 baseColor(1.0f, 1.0f, 1.0f);
@@ -55,7 +55,7 @@ void SpawningSystem::update(float deltaTime) {
 
             enemyHealth = std::min(enemyHealth, (float)maxHealth);
             enemySpeed = std::min(enemySpeed, maxSpeed);
-            enemyGold  = std::min(enemyGold, maxGold);
+            enemyGold = std::min(enemyGold, maxGold);
 
             colorComponent.color = baseColor;
 
@@ -69,41 +69,21 @@ void SpawningSystem::update(float deltaTime) {
 
         spawnInterval *= SPAWN_SCALE_FACTOR;
 
-        if (spawnInterval < MIN_SPAWN_INTERVAL)
-            spawnInterval = MIN_SPAWN_INTERVAL;
+        if (spawnInterval < MIN_SPAWN_INTERVAL) spawnInterval = MIN_SPAWN_INTERVAL;
     }
 
-    for (Entity entity : getEntities()) {
-        auto* death = componentManager.getComponent<DeathComponent>(entity);
-        if (death && death->hasDied) {
+    auto* deaths = componentManager.getArray<DeathComponent>();
+
+    for (Entity entity : deaths->getEntities()) {
+        auto* death = deaths->get(entity);
+        if (!death) continue;
+
+        if (death->hasDied) {
             if (death->remainingTime > 0) {
                 death->remainingTime -= deltaTime;
             } else {
-                componentManager.removeAllComponents(entity);
-                entityManager->destroyEntity(entity);
+                componentManager.scheduleDestruction(entity);
             }
         }
     }
 }
-
-void SpawningSystem::onEvent(const Event& event) {
-    auto& eventdispatcher = EventDispatcher::getInstance();
-
-    if (event.type == EventType::SCHEDULE_REMOVAL) {
-        Entity entity = *event.getData<Entity>("entity");
-
-        auto* death = componentManager.getComponent<DeathComponent>(entity);
-        if(death && !death->locked) {
-            death->hasDied = true;
-            death->remainingTime = 1.0f;
-            death->locked = true;
-        } else {
-            DeathComponent death;
-            death.hasDied = true;
-            death.remainingTime = 1.0f;
-            death.locked = true;
-            componentManager.addComponent(entity, death);
-        }
-    }
-}
-

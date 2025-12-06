@@ -3,6 +3,12 @@ BUILD_DIR = build
 CPP_FILES = $(shell find src -type f -name '*.cpp')
 H_FILES = $(shell find src -type f -name '*.h')
 
+CMAKE_FLAGS = -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+DEBUG_FLAGS = -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer -O1"
+RELEASE_FLAGS = -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_CXX_FLAGS="-O3 -march=native -DNDEBUG"
+
 .PHONY: all
 all: build run
 
@@ -12,7 +18,7 @@ all: build run
 .PHONY: build
 build:
 	mkdir -p $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && make
+	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(RELEASE_FLAGS) .. && make
 
 .PHONY: run
 run: build
@@ -30,7 +36,7 @@ format:
 	clang-format -i $(CPP_FILES)
 
 tidy:
-	cd $(BUILD_DIR) && cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) ..
 	clang-tidy -p $(BUILD_DIR) $(CPP_FILES) $(H_FILES) --fix
 
 # ---------
@@ -38,11 +44,17 @@ tidy:
 # ---------
 .PHONY: build-debug
 build-debug: $(BUILD_DIR)/Makefile
-	cd $(BUILD_DIR) && cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && $(MAKE)
+	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(DEBUG_FLAGS) .. && $(MAKE)
 
 .PHONY: run-debug
-run-debug:
-	cd $(BUILD_DIR) && gdb ./$(TARGET)
+run-debug: build-debug
+	cd $(BUILD_DIR) && ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 ./$(TARGET)
 
 .PHONY: debug
 debug: build-debug run-debug
+
+.PHONY: profile
+profile: build-debug
+	cd $(BUILD_DIR) && \
+	./$(TARGET) && \
+	gprof ./$(TARGET) gmon.out > profile.txt

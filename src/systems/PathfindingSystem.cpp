@@ -9,20 +9,23 @@
 #include "../components/SpeedComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../ecs/Component.h"
-#include "../event/Event.h"
-#include "../event/EventDispatcher.h"
-
 #include "../utils/Globals.h"
 
 void PathfindingSystem::update(float) {
-    for (Entity entity : getEntities()) {
-        auto* position = componentManager.getComponent<PositionComponent>(entity);
-        auto* size = componentManager.getComponent<SizeComponent>(entity);
-        auto* velocity = componentManager.getComponent<VelocityComponent>(entity);
-        auto* pathfinding = componentManager.getComponent<PathfindingComponent>(entity);
-        auto* speed = componentManager.getComponent<SpeedComponent>(entity);
+    auto* pathfinders = componentManager.getArray<PathfindingComponent>();
+    auto* positions = componentManager.getArray<PositionComponent>();
+    auto* sizes = componentManager.getArray<SizeComponent>();
+    auto* velocities = componentManager.getArray<VelocityComponent>();
+    auto* speeds = componentManager.getArray<SpeedComponent>();
 
-        if (position && velocity && pathfinding && size && speed && !pathfinding->reachedGoal) {
+    for (Entity entity : pathfinders->getEntities()) {
+        auto* position = positions->get(entity);
+        auto* size = sizes->get(entity);
+        auto* velocity = velocities->get(entity);
+        auto* pathfinding = pathfinders->get(entity);
+        auto* speed = speeds->get(entity);
+
+        if (position && velocity && size && speed && !pathfinding->reachedGoal) {
             // Check if the entity is following a valid path
             if (pathfinding->currentIndex >= 0 && pathfinding->currentIndex < static_cast<int>(pathTiles.size())) {
                 const auto* const TARGET_TILE = componentManager.getComponent<PositionComponent>(pathTiles[pathfinding->currentIndex]);
@@ -65,10 +68,7 @@ void PathfindingSystem::update(float) {
                         if (pathfinding->currentIndex >= (int)pathTiles.size()) {
                             pathfinding->reachedGoal = true;
 
-                            Event event;
-                            event.type = EventType::SCHEDULE_REMOVAL;
-                            event.addData("entity", &entity);
-                            EventDispatcher::getInstance().dispatch(event);
+                            componentManager.scheduleDestruction(entity);
                         } else {
                             auto* nextTileSize = componentManager.getComponent<SizeComponent>(pathTiles[pathfinding->currentIndex]);
                             if (nextTileSize) {

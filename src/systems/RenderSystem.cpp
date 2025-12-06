@@ -1,6 +1,7 @@
 #include "RenderSystem.h"
 
 #include <algorithm>
+#include <deque>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
@@ -225,36 +226,41 @@ void RenderSystem::renderText(PositionComponent* position, SizeComponent* size, 
 }
 
 void RenderSystem::render() {
-    auto entities = getEntities();
+    auto* positions = componentManager.getArray<PositionComponent>();
+    auto* textures = componentManager.getArray<TextureComponent>();
+    auto* sizes = componentManager.getArray<SizeComponent>();
+    auto* rotations = componentManager.getArray<RotationComponent>();
+    auto* shaders = componentManager.getArray<ShaderComponent>();
+    auto* textComp = componentManager.getArray<TextComponent>();
+    auto* colors = componentManager.getArray<ColorComponent>();
+    auto* clickable = componentManager.getArray<ClickableComponent>();
 
-    std::vector<Entity> sortedEntities(entities.begin(), entities.end());
-    std::sort(sortedEntities.begin(), sortedEntities.end(), [this](Entity a, Entity b) {
-        auto* textureA = this->componentManager.getComponent<TextureComponent>(a);
-        auto* textureB = this->componentManager.getComponent<TextureComponent>(b);
+    std::deque<Entity> entities = positions->getEntities();
+
+    std::sort(entities.begin(), entities.end(), [&](Entity a, Entity b) {
+        auto* textureA = textures->get(a);
+        auto* textureB = textures->get(b);
 
         if (textureA && textureB) {
             if (textureA->zIndex == textureB->zIndex) {
-                auto* positionA = this->componentManager.getComponent<PositionComponent>(a);
-                auto* positionB = this->componentManager.getComponent<PositionComponent>(b);
-
+                auto* positionA = positions->get(a);
+                auto* positionB = positions->get(b);
                 return positionA->y > positionB->y;
             }
-
             return textureA->zIndex > textureB->zIndex;
         }
-
         return false;
     });
 
-    for (Entity entity : sortedEntities) {
-        auto* position = componentManager.getComponent<PositionComponent>(entity);
-        auto* texture = componentManager.getComponent<TextureComponent>(entity);
-        auto* size = componentManager.getComponent<SizeComponent>(entity);
-        auto* rotation = componentManager.getComponent<RotationComponent>(entity);
-        auto* shaderComponent = componentManager.getComponent<ShaderComponent>(entity);
-        auto* textComponent = componentManager.getComponent<TextComponent>(entity);
-        auto* colorComponent = componentManager.getComponent<ColorComponent>(entity);
-        auto* clickableComponent = componentManager.getComponent<ClickableComponent>(entity);
+    for (Entity entity : entities) {
+        auto* position = positions->get(entity);
+        auto* texture = textures->get(entity);
+        auto* size = sizes->get(entity);
+        auto* rotation = rotations->get(entity);
+        auto* shaderComponent = shaders->get(entity);
+        auto* textComponent = textComp->get(entity);
+        auto* colorComponent = colors->get(entity);
+        auto* clickableComponent = clickable->get(entity);
 
         std::string shaderName = "default";
         if (shaderComponent) {

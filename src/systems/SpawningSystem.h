@@ -4,15 +4,12 @@
 #include "../ecs/EntityFactory.h"
 #include "PathfindingSystem.h"
 
-#include "../event/EventDispatcher.h"
 #include "../event/Event.h"
 
 class SpawningSystem : public System {
 public:
     SpawningSystem(ComponentManager& componentManager, EntityFactory& entityFactory, PathfindingSystem& pathfindingSystem)
-        : componentManager(componentManager), entityFactory(entityFactory), pathfindingSystem(pathfindingSystem) {
-            EventDispatcher::getInstance().addListener(EventType::SCHEDULE_REMOVAL, std::bind(&SpawningSystem::onEvent, this, std::placeholders::_1));
-    }
+        : componentManager(componentManager), entityFactory(entityFactory), pathfindingSystem(pathfindingSystem) {}
 
     void onEvent(const Event& event);
 
@@ -41,14 +38,14 @@ private:
 
     float healthStep = 0.1f;
     int speedStep = 5;
-    int goldStep = 1;
+    int goldStep = 5;
 
     float healthMultiplier = 1.0f; 
     float redShift = 1.0f;
 
     int maxHealth = 500;
     int maxSpeed = 300;
-    int maxGold = 35;
+    int maxGold = 50;
 
     float maxRedShift = 1.8f;
 };

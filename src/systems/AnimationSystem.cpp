@@ -9,12 +9,16 @@
 #include "../utils/TextureCoords.h"
 
 void AnimationSystem::update(float deltaTime) {
-    for (Entity entity : getEntities()) {
-        auto* animation = componentManager.getComponent<AnimationComponent>(entity);
-        auto* texture = componentManager.getComponent<TextureComponent>(entity);
-        auto* direction = componentManager.getComponent<DirectionComponent>(entity);
+    auto* animations = componentManager.getArray<AnimationComponent>();
+    auto* directions = componentManager.getArray<DirectionComponent>();
+    auto* textures = componentManager.getArray<TextureComponent>();
 
-        if (animation && texture) {
+    for (Entity entity : animations->getEntities()) {
+        auto* animation = animations->get(entity);
+        auto* texture = textures->get(entity);
+        auto* direction = directions->get(entity);
+
+        if (texture) {
             animation->time += deltaTime;
 
             if (animation->time >= animation->frameDuration) {
@@ -30,8 +34,7 @@ void AnimationSystem::update(float deltaTime) {
                     if (animation->frame < animation->getFrameCount() - 1) {
                         animation->frame++;
                     } else if (animation->removeAtEnd) {
-                        componentManager.removeAllComponents(entity);
-                        entityManager->destroyEntity(entity);
+                       componentManager.scheduleDestruction( entity);
                     } else if (animation->state != State::DEAD) {
                         animation->state = State::IDLE;
                         animation->frame = 0;

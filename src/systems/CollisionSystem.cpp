@@ -2,7 +2,6 @@
 
 #include "../components/CollisionComponent.h"
 #include "../components/DamageComponent.h"
-#include "../components/DeathComponent.h"
 #include "../components/HealthComponent.h"
 #include "../components/PositionComponent.h"
 #include "../components/SizeComponent.h"
@@ -12,30 +11,35 @@
 #include "../utils/Globals.h"
 
 void CollisionSystem::update(float) {
-    auto& eventdispatcher = EventDispatcher::getInstance();
+    auto* collisions = componentManager.getArray<CollisionComponent>();
+    auto* positions = componentManager.getArray<PositionComponent>();
+    auto* sizes = componentManager.getArray<SizeComponent>();
+    auto* velocities = componentManager.getArray<VelocityComponent>();
+    auto* damages = componentManager.getArray<DamageComponent>();
+    auto* healths = componentManager.getArray<HealthComponent>();
 
-    for (Entity entity : getEntities()) {
-        auto* position = componentManager.getComponent<PositionComponent>(entity);
-        auto* velocity = componentManager.getComponent<VelocityComponent>(entity);
-        auto* damage = componentManager.getComponent<DamageComponent>(entity);
-        auto* size = componentManager.getComponent<SizeComponent>(entity);
-        auto* collision = componentManager.getComponent<CollisionComponent>(entity);
+    for (Entity entity : collisions->getEntities()) {
+        auto* position = positions->get(entity);
+        auto* velocity = velocities->get(entity);
+        auto* damage = damages->get(entity);
+        auto* size = sizes->get(entity);
+        auto* collision = collisions->get(entity);
 
-        if (position && velocity && size && collision && damage) {
+        if (position && velocity && size && damage) {
             float x = position->x;
             float y = position->y;
 
-            for (Entity otherEntity : getEntities()) {
+            for (Entity otherEntity : collisions->getEntities()) {
                 if (entity == otherEntity) {
                     continue;
                 }
 
-                auto* otherPosition = componentManager.getComponent<PositionComponent>(otherEntity);
-                auto* otherSize = componentManager.getComponent<SizeComponent>(otherEntity);
-                auto* otherCollision = componentManager.getComponent<CollisionComponent>(otherEntity);
-                auto* otherHealth = componentManager.getComponent<HealthComponent>(otherEntity);
+                auto* otherPosition = positions->get(otherEntity);
+                auto* otherSize = sizes->get(otherEntity);
+                auto* otherCollision = collisions->get(otherEntity);
+                auto* otherHealth = healths->get(otherEntity);
 
-                if (otherPosition && otherSize && otherCollision && otherHealth) {
+                if (otherPosition && otherSize && otherHealth) {
                     float otherX = otherPosition->x + otherCollision->x;
                     float otherY = otherPosition->y + otherCollision->y;
                     float otherW = otherCollision->w;
@@ -47,7 +51,7 @@ void CollisionSystem::update(float) {
                             event.type = EventType::PROJECTILE_HIT;
                             event.addData("projectile", &entity);
                             event.addData("target", &otherEntity);
-                            eventdispatcher.dispatch(event);
+                            EventDispatcher::getInstance().dispatch(event);
 
                             break;
                         }
@@ -59,11 +63,7 @@ void CollisionSystem::update(float) {
             static const float OOB_MARGIN = 100.0f;
             if (position->x + size->w > SCREEN_WIDTH + OOB_MARGIN || position->x + size->w < -OOB_MARGIN ||
                 position->y + size->h > SCREEN_HEIGHT + OOB_MARGIN || position->y + size->h < -OOB_MARGIN) {
-                DeathComponent deathComponent;
-                deathComponent.hasDied = true;
-                deathComponent.remainingTime = 0.1f;
-
-                componentManager.addComponent(entity, deathComponent);
+                componentManager.scheduleDestruction(entity);
             }
         }
     }
