@@ -24,6 +24,7 @@ public:
         TextureComponent* texture, 
         SizeComponent* size,
         RotationComponent* rotation,
+        const glm::vec3* color,
         Shader* shader
     );
 

@@ -24,7 +24,7 @@ public:
         componentManager.addComponent(entity, flagComponent);
         return entity;
     }
-    
+
     Entity createEndTile(glm::vec2 position) {
         Entity entity = createPathTile(position);
         FlagComponent flagComponent;
@@ -33,10 +33,12 @@ public:
         return entity;
     }
 
-    Entity createFireBug(glm::vec2 position);
+
+    Entity createFireBug(glm::vec2 position, int health, int speed, int goldReward);
 
     Entity createTower(glm::vec2 position);
     Entity createTowerProjectile(float x, float y, float targetX, float velocityX, float velocityY, float angle, int damage);
+    Entity createTowerProjectileImpact(glm::vec2 position);
 
     Entity createUpgradeMenuItem(glm::vec2 offset);
     Entity createBuildTowerMenuItem(glm::vec2 offset);

@@ -10,5 +10,7 @@ struct PathfindingComponent : public Component {
 
     int currentIndex = 0;
 
+    bool reachedGoal = false;
+
     glm::vec2 randomOffset = {0.0f, 0.0f};
 };

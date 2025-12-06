@@ -86,7 +86,7 @@ int main() {
     auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>(&entityManager, componentManager, mapLoader);
     auto& shootingSystem = systemManager.registerSystem<ShootingSystem>(&entityManager, componentManager, entityFactory);
     auto& collisionSystem = systemManager.registerSystem<CollisionSystem>(&entityManager, componentManager);
-    auto& combatSystem = systemManager.registerSystem<CombatSystem>(&entityManager, componentManager);
+    auto& combatSystem = systemManager.registerSystem<CombatSystem>(&entityManager, componentManager, entityFactory);
     auto& stateSystem = systemManager.registerSystem<StateSystem>(&entityManager, componentManager);
     auto& clickSystem = systemManager.registerSystem<ClickSystem>(&entityManager, componentManager);
     auto& buildSystem = systemManager.registerSystem<BuildSystem>(&entityManager, componentManager, entityFactory, currencyDisplay);
@@ -137,6 +137,7 @@ int main() {
 
         static double lastPrint = 0;
         if (currentTime - lastPrint >= 1.0) {
+            std::cout << "Entities " << entityManager.getEntities().size() << "\n";
             std::cout << "FPS: " << 1.0 / deltaTime << std::endl;
 
             lastPrint = currentTime;

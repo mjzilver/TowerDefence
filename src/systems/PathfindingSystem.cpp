@@ -9,6 +9,9 @@
 #include "../components/SpeedComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../ecs/Component.h"
+#include "../event/Event.h"
+#include "../event/EventDispatcher.h"
+
 #include "../utils/Globals.h"
 
 void PathfindingSystem::update(float) {
@@ -19,7 +22,7 @@ void PathfindingSystem::update(float) {
         auto* pathfinding = componentManager.getComponent<PathfindingComponent>(entity);
         auto* speed = componentManager.getComponent<SpeedComponent>(entity);
 
-        if (position && velocity && pathfinding && size && speed) {
+        if (position && velocity && pathfinding && size && speed && !pathfinding->reachedGoal) {
             // Check if the entity is following a valid path
             if (pathfinding->currentIndex >= 0 && pathfinding->currentIndex < static_cast<int>(pathTiles.size())) {
                 const auto* const TARGET_TILE = componentManager.getComponent<PositionComponent>(pathTiles[pathfinding->currentIndex]);
@@ -37,18 +40,35 @@ void PathfindingSystem::update(float) {
                     float dy = targetCenterY - entityCenterY;
                     float distance = std::sqrt(dx * dx + dy * dy);
 
-                    if (distance > 1.0f) {
+                    const float ARRIVAL_START = 30.0f;
+                    const float SNAP_RADIUS = 3.0f;
+                    const float MIN_SPEED = 80.0f;
+
+                    if (distance > SNAP_RADIUS) {
                         dx /= distance;
                         dy /= distance;
-                        velocity->x = dx * speed->speed;
-                        velocity->y = dy * speed->speed;
+
+                        float desiredSpeed = speed->speed;
+
+                        // Begin soft braking inside arrivalStart
+                        if (distance < ARRIVAL_START) {
+                            float t = distance / ARRIVAL_START;
+                            t = t * t;  // Smoothing
+                            desiredSpeed = MIN_SPEED + (speed->speed - MIN_SPEED) * t;
+                        }
+
+                        velocity->x = dx * desiredSpeed;
+                        velocity->y = dy * desiredSpeed;
                     } else {
                         pathfinding->currentIndex++;
 
-                        if (pathfinding->currentIndex >= static_cast<int>(pathTiles.size())) {
-                            componentManager.removeComponent<PathfindingComponent>(entity);
-                            velocity->x = 0;
-                            velocity->y = 0;
+                        if (pathfinding->currentIndex >= (int)pathTiles.size()) {
+                            pathfinding->reachedGoal = true;
+
+                            Event event;
+                            event.type = EventType::SCHEDULE_REMOVAL;
+                            event.addData("entity", &entity);
+                            EventDispatcher::getInstance().dispatch(event);
                         } else {
                             auto* nextTileSize = componentManager.getComponent<SizeComponent>(pathTiles[pathfinding->currentIndex]);
                             if (nextTileSize) {

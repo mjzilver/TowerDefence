@@ -86,7 +86,7 @@ Entity EntityFactory::createPathTile(glm::vec2 position) {
     return entity;
 }
 
-Entity EntityFactory::createFireBug(glm::vec2 position) {
+Entity EntityFactory::createFireBug(glm::vec2 position, int health, int speed, int goldReward) {
     Entity entity = entityManager.createEntity();
 
     static const int TEXTURE_WIDTH = 128;
@@ -105,7 +105,7 @@ Entity EntityFactory::createFireBug(glm::vec2 position) {
     componentManager.addComponent(entity, velocityComponent);
 
     HealthComponent healthComponent;
-    healthComponent.health = 100;
+    healthComponent.health = health;
     componentManager.addComponent(entity, healthComponent);
 
     DeathComponent deathComponent;
@@ -113,11 +113,11 @@ Entity EntityFactory::createFireBug(glm::vec2 position) {
     componentManager.addComponent(entity, deathComponent);
 
     RewardComponent rewardComponent;
-    rewardComponent.gold = 15;
+    rewardComponent.gold = goldReward;
     componentManager.addComponent(entity, rewardComponent);
 
     SpeedComponent speedComponent;
-    speedComponent.speed = 100;
+    speedComponent.speed = speed;
     componentManager.addComponent(entity, speedComponent);
 
     SizeComponent sizeComponent;
@@ -324,6 +324,45 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float /*targetX*/,
     collisionComponent.w = PROJECTILE_WIDTH;
     collisionComponent.h = PROJECTILE_HEIGHT;
     componentManager.addComponent(entity, collisionComponent);
+
+    return entity;
+}
+
+Entity EntityFactory::createTowerProjectileImpact(glm::vec2 position) {
+    Entity entity = entityManager.createEntity();
+
+    static const int TEXTURE_WIDTH = 64;
+    static const int TEXTURE_HEIGHT = 64;
+
+    PositionComponent positionComponent;
+    positionComponent.x = position.x - TEXTURE_WIDTH / 2;
+    positionComponent.y = position.y - TEXTURE_HEIGHT / 2;
+    componentManager.addComponent(entity, positionComponent);
+
+    SizeComponent sizeComponent;
+    sizeComponent.w = TEXTURE_WIDTH;
+    sizeComponent.h = TEXTURE_HEIGHT;
+    componentManager.addComponent(entity, sizeComponent);
+
+    TextureComponent textureComponent;
+    textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Weapon - Impact.png");
+    textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
+    textureComponent.zIndex = ZLayer::PROJECTILE;
+    componentManager.addComponent(entity, textureComponent);
+
+    AnimationComponent animationComponent;
+    animationComponent.frame = 0;
+    animationComponent.time = 0;
+    animationComponent.frameSize = glm::vec2(TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    animationComponent.frameCount = std::map<State, int>{
+        {State::ACTIVE, 6},
+    };
+    animationComponent.frameDuration = 0.1f;  // seconds
+    animationComponent.baseTextureCoords = glm::vec2(0, 0);
+    animationComponent.state = State::ACTIVE;
+    animationComponent.loop = false;
+    animationComponent.removeAtEnd = true;
+    componentManager.addComponent(entity, animationComponent);
 
     return entity;
 }

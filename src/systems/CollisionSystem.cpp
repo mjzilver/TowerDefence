@@ -2,12 +2,14 @@
 
 #include "../components/CollisionComponent.h"
 #include "../components/DamageComponent.h"
+#include "../components/DeathComponent.h"
 #include "../components/HealthComponent.h"
 #include "../components/PositionComponent.h"
 #include "../components/SizeComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../event/Event.h"
 #include "../event/EventDispatcher.h"
+#include "../utils/Globals.h"
 
 void CollisionSystem::update(float) {
     auto& eventdispatcher = EventDispatcher::getInstance();
@@ -51,6 +53,17 @@ void CollisionSystem::update(float) {
                         }
                     }
                 }
+            }
+
+            // Schedule removal when Out Of Bounds
+            static const float OOB_MARGIN = 100.0f;
+            if (position->x + size->w > SCREEN_WIDTH + OOB_MARGIN || position->x + size->w < -OOB_MARGIN ||
+                position->y + size->h > SCREEN_HEIGHT + OOB_MARGIN || position->y + size->h < -OOB_MARGIN) {
+                DeathComponent deathComponent;
+                deathComponent.hasDied = true;
+                deathComponent.remainingTime = 0.1f;
+
+                componentManager.addComponent(entity, deathComponent);
             }
         }
     }

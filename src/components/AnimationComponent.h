@@ -19,6 +19,7 @@ struct AnimationComponent : public Component {
     State state;
 
     bool loop = true;
+    bool removeAtEnd = false;
 
     std::map<State, int> frameCount;
     std::map<std::pair<State, Direction>, int> stateDirectionRowMap;

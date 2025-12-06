@@ -1,9 +1,12 @@
 #include "CombatSystem.h"
 
+#include "../components/CollisionComponent.h"
 #include "../components/DamageComponent.h"
 #include "../components/DeathComponent.h"
 #include "../components/HealthComponent.h"
 #include "../components/PathfindingComponent.h"
+#include "../components/PositionComponent.h"
+#include "../components/SizeComponent.h"
 #include "../components/TextureComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../utils/ZLayer.h"
@@ -16,6 +19,8 @@ void CombatSystem::onEvent(const Event& event) {
         Entity target = *event.getData<Entity>("target");
 
         int projectileDamage = componentManager.getComponent<DamageComponent>(projectile)->damage;
+        auto* targetPosition = componentManager.getComponent<PositionComponent>(target);
+        auto* targetSize = componentManager.getComponent<SizeComponent>(target);
         auto* targetHealth = componentManager.getComponent<HealthComponent>(target);
         auto* targetDeath = componentManager.getComponent<DeathComponent>(target);
 
@@ -38,7 +43,14 @@ void CombatSystem::onEvent(const Event& event) {
             }
         }
 
-        entityManager->destroyEntity(projectile);
-        componentManager.removeAllComponents(projectile);
+        entityFactory.createTowerProjectileImpact({targetPosition->x + targetSize->w / 2, targetPosition->y + targetSize->h / 2});
+
+        // Schedule removal
+        DeathComponent deathComponent;
+        deathComponent.hasDied = true;
+        deathComponent.remainingTime = 0.001f;
+
+        componentManager.removeComponent<CollisionComponent>(projectile);
+        componentManager.addComponent(projectile, deathComponent);
     }
 }

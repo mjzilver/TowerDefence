@@ -29,6 +29,9 @@ void AnimationSystem::update(float deltaTime) {
                 } else {
                     if (animation->frame < animation->getFrameCount() - 1) {
                         animation->frame++;
+                    } else if (animation->removeAtEnd) {
+                        componentManager.removeAllComponents(entity);
+                        entityManager->destroyEntity(entity);
                     } else if (animation->state != State::DEAD) {
                         animation->state = State::IDLE;
                         animation->frame = 0;

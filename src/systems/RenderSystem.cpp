@@ -79,7 +79,7 @@ void RenderSystem::renderSquare(PositionComponent* position, SizeComponent* size
 }
 
 void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* texture, SizeComponent* size, RotationComponent* rotation,
-                                Shader* shader) {
+                                const glm::vec3* color, Shader* shader) {
     // Bind the texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture->texture.id);
@@ -129,6 +129,13 @@ void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* t
 
     GLuint texCoordScaleLoc = glGetUniformLocation(shaderProgram, "texCoordScale");
     glUniform2fv(texCoordScaleLoc, 1, &texCoordScale[0]);
+
+    if (color) {
+        glUniform1i(glGetUniformLocation(shaderProgram, "useRecolor"), GL_TRUE);
+        glUniform3f(glGetUniformLocation(shaderProgram, "recolor"), color->r, color->g, color->b);
+    } else {
+        glUniform1i(glGetUniformLocation(shaderProgram, "useRecolor"), GL_FALSE);
+    }
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
@@ -197,7 +204,6 @@ void RenderSystem::renderText(PositionComponent* position, SizeComponent* size, 
             float h = ch.size.y;
 
             float vertices[6][4] = {{xpos, ypos + h, 0.0f, 1.0f}, {xpos, ypos, 0.0f, 0.0f},     {xpos + w, ypos, 1.0f, 0.0f},
-
                                     {xpos, ypos + h, 0.0f, 1.0f}, {xpos + w, ypos, 1.0f, 0.0f}, {xpos + w, ypos + h, 1.0f, 1.0f}};
 
             glActiveTexture(GL_TEXTURE0);
@@ -268,7 +274,7 @@ void RenderSystem::render() {
 
         // Texture rendering
         if (position && texture && size) {
-            renderEntity(position, texture, size, rotation, shader);
+            renderEntity(position, texture, size, rotation, colorComponent ? &colorComponent->color : nullptr, shader);
         }
 
         // Button rendering
