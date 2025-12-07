@@ -34,7 +34,7 @@ void AnimationSystem::update(float deltaTime) {
                     if (animation->frame < animation->getFrameCount() - 1) {
                         animation->frame++;
                     } else if (animation->removeAtEnd) {
-                       componentManager.scheduleDestruction( entity);
+                        componentManager.scheduleDestruction(entity);
                     } else if (animation->state != State::DEAD) {
                         animation->state = State::IDLE;
                         animation->frame = 0;

@@ -246,7 +246,7 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     componentManager.addComponent(weapon, rotationComponent);
 
     WeaponComponent weaponComponent;
-    weaponComponent.range = 300;
+    weaponComponent.range = 250;
     weaponComponent.damage = 25;
     weaponComponent.rateOfFire = 1.0f;
     weaponComponent.projectileSpeed = 300.0f;
@@ -367,6 +367,39 @@ Entity EntityFactory::createTowerProjectileImpact(glm::vec2 position) {
     return entity;
 }
 
+Entity EntityFactory::createKillCounter(glm::vec2 offset) {
+    Entity entity = entityManager.createEntity();
+
+    PositionComponent positionComponent;
+    positionComponent.x = 50;
+    positionComponent.y = offset.y - 85;
+    componentManager.addComponent(entity, positionComponent);
+
+    SizeComponent sizeComponent;
+    sizeComponent.w = 75;
+    sizeComponent.h = 75;
+    componentManager.addComponent(entity, sizeComponent);
+
+    TextComponent textComponent;
+    textComponent.text = "Kills\n???";
+    textComponent.color = {0.1f, 0.1f, 0.1f};
+    componentManager.addComponent(entity, textComponent);
+
+    ClickableComponent clickableComponent;
+    clickableComponent.clickedEvent = EventType::UPGRADE_MENU_ITEM_CLICKED;
+    componentManager.addComponent(entity, clickableComponent);
+
+    ColorComponent colorComponent;
+    colorComponent.color = {0.33f, 0.33f, 0.33f};
+    componentManager.addComponent(entity, colorComponent);
+
+    ShaderComponent shaderComponent;
+    shaderComponent.name = "text";
+    componentManager.addComponent(entity, shaderComponent);
+
+    return entity;
+}
+
 Entity EntityFactory::createUpgradeMenuItem(glm::vec2 offset) {
     Entity entity = entityManager.createEntity();
 
@@ -381,7 +414,7 @@ Entity EntityFactory::createUpgradeMenuItem(glm::vec2 offset) {
     componentManager.addComponent(entity, sizeComponent);
 
     TextComponent textComponent;
-    textComponent.text = "Upgrade\n100 gold";
+    textComponent.text = "Upgrade\??? gold";
     textComponent.color = {0.1f, 0.1f, 0.1f};
     componentManager.addComponent(entity, textComponent);
 
@@ -486,10 +519,10 @@ Entity EntityFactory::upgradeTower(Entity& entity) {
     weaponPosition->y -= 8;
 
     auto* weaponComponent = componentManager.getComponent<WeaponComponent>(weaponEntity);
-    weaponComponent->damage *= 1.3f;
+    weaponComponent->damage += 10;
     weaponComponent->projectileSpeed *= 1.2f;
     weaponComponent->rateOfFire *= 0.8f;
-    weaponComponent->range *= 1.1f;
+    weaponComponent->range *= 1.2f;
 
     return entity;
 }

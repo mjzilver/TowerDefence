@@ -10,12 +10,27 @@
 void SpawningSystem::update(float deltaTime) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    static std::uniform_real_distribution<float> randFactor(0.92f, 1.12f);
+
+    static std::uniform_real_distribution<float> healthRand(0.92f, 1.08f);
+    static std::uniform_real_distribution<float> speedRand(0.90f, 1.10f);
+    static std::uniform_real_distribution<float> goldRand(0.88f, 1.12f);
     static std::uniform_real_distribution<float> rareChance(0.0f, 1.0f);
 
     spawnTimer += deltaTime;
 
     if (spawnTimer >= spawnInterval) {
+        if (spawnCount > 0) {
+            if (spawnCount % increaseHealthPer == 0) {
+                healthMultiplier += healthStep;
+            }
+            if (spawnCount % increaseSpeedPer == 0) {
+                speedStart += speedStep;
+            }
+            if (spawnCount % increaseGoldPer == 0) {
+                goldRewardStart += goldStep;
+            }
+        }
+
         Entity& start = pathfindingSystem.getStart();
         auto* position = componentManager.getComponent<PositionComponent>(start);
         auto* size = componentManager.getComponent<SizeComponent>(start);
@@ -23,36 +38,38 @@ void SpawningSystem::update(float deltaTime) {
         if (position && size) {
             ColorComponent colorComponent;
 
-            float enemyHealth = healthStart * pow(1.01f, spawnCount);
-            int enemySpeed = speedStart + spawnCount * 0.12f;
-            int enemyGold = std::max(1, (int)(goldRewardStart * pow(0.999f, spawnCount)));
+            float enemyHealth = (healthStart * healthMultiplier);
+            int enemySpeed = speedStart;
+            int enemyGold = goldRewardStart;
 
-            enemyHealth *= randFactor(gen);
-            enemySpeed = (int)(enemySpeed * randFactor(gen));
+            enemyHealth *= healthRand(gen);
+            enemySpeed = (int)(enemySpeed * speedRand(gen));
+            enemyGold = (int)(enemyGold * goldRand(gen));
 
-            bool redTrait = rareChance(gen) < 0.018f;
-            bool blueTrait = rareChance(gen) < 0.028f;
+            bool redTrait = rareChance(gen) < 0.015f;
+            bool blueTrait = rareChance(gen) < 0.020f;
 
             glm::vec3 baseColor(1.0f, 1.0f, 1.0f);
 
             if (redTrait && blueTrait) {
                 // Elite
                 baseColor = {2.2f, 2.0f, 0.64f};
-                enemyHealth *= 3.0f;
-                enemySpeed = (int)(enemySpeed * 1.6f);
-                enemyGold *= 6;
+                enemyHealth *= 2.8f;
+                enemySpeed = (int)(enemySpeed * 1.45f);
+                enemyGold *= 4;
             } else if (redTrait) {
                 // Tank
                 baseColor = {1.8f, 0.6f, 0.6f};
-                enemyHealth *= 2.2f;
-                enemyGold *= 1.8f;
+                enemyHealth *= 1.9f;
+                enemyGold *= 1.7f;
             } else if (blueTrait) {
                 // Speed
                 baseColor = {0.6f, 0.7f, 1.8f};
-                enemySpeed = (int)(enemySpeed * 1.35f);
-                enemyGold *= 2;
+                enemySpeed = (int)(enemySpeed * 1.30f);
+                enemyGold *= 1.5f;
             }
 
+            // Clamp so late game doesn't become impossible
             enemyHealth = std::min(enemyHealth, (float)maxHealth);
             enemySpeed = std::min(enemySpeed, maxSpeed);
             enemyGold = std::min(enemyGold, maxGold);
@@ -68,7 +85,6 @@ void SpawningSystem::update(float deltaTime) {
         spawnTimer -= spawnInterval;
 
         spawnInterval *= SPAWN_SCALE_FACTOR;
-
         if (spawnInterval < MIN_SPAWN_INTERVAL) spawnInterval = MIN_SPAWN_INTERVAL;
     }
 

@@ -31,7 +31,9 @@ Texture TextureManager::loadTexture(const std::string& filePath) {
     unsigned int width, height;
     unsigned char* image = loadPngImage(filePath, width, height);
 
+#if DEBUG
     std::cout << "Loaded image: " << filePath << " (" << width << "x" << height << ")" << std::endl;
+#endif
 
     GLuint textureId;
     glGenTextures(1, &textureId);

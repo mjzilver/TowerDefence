@@ -43,6 +43,7 @@ public:
     Entity createUpgradeMenuItem(glm::vec2 offset);
     Entity createBuildTowerMenuItem(glm::vec2 offset);
     Entity createCurrencyDisplay(glm::vec2 offset);
+    Entity createKillCounter(glm::vec2 offset);
 
     Entity upgradeTower(Entity& entity);
 

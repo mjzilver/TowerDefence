@@ -235,21 +235,24 @@ void RenderSystem::render() {
     auto* colors = componentManager.getArray<ColorComponent>();
     auto* clickable = componentManager.getArray<ClickableComponent>();
 
-    std::deque<Entity> entities = positions->getEntities();
+    auto entities = positions->getEntities();
 
     std::sort(entities.begin(), entities.end(), [&](Entity a, Entity b) {
-        auto* textureA = textures->get(a);
-        auto* textureB = textures->get(b);
+        auto* texA = textures->get(a);
+        auto* texB = textures->get(b);
 
-        if (textureA && textureB) {
-            if (textureA->zIndex == textureB->zIndex) {
-                auto* positionA = positions->get(a);
-                auto* positionB = positions->get(b);
-                return positionA->y > positionB->y;
-            }
-            return textureA->zIndex > textureB->zIndex;
-        }
-        return false;
+        if (!texA && !texB) return a < b;
+        if (!texA) return false;
+        if (!texB) return true;
+
+        if (texA->zIndex != texB->zIndex) return texA->zIndex > texB->zIndex;
+
+        auto* posA = positions->get(a);
+        auto* posB = positions->get(b);
+
+        if (!posA || !posB) return a < b;
+
+        return posA->y > posB->y;
     });
 
     for (Entity entity : entities) {

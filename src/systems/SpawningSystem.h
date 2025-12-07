@@ -20,32 +20,27 @@ private:
     EntityFactory& entityFactory;
     PathfindingSystem& pathfindingSystem;
 
-    float spawnTimer = -3.0f;
-    float spawnInterval = 2.75f;
-    const float MIN_SPAWN_INTERVAL = 0.35f;
-
-    const float SPAWN_SCALE_FACTOR = 0.995f; 
-
     int spawnCount = 0;
+    float spawnTimer = 0.0f;
+    float spawnInterval = 3.0f;
+    const float MIN_SPAWN_INTERVAL = 0.25f;
+    const float SPAWN_SCALE_FACTOR = 0.983f;
 
-    int healthStart = 100;
-    int speedStart = 80;
-    int goldRewardStart = 5;
+    int healthStart = 80;
+    int speedStart = 60;
+    int goldRewardStart = 10;
 
-    int increaseHealthPer = 5;
-    int increaseSpeedPer = 7;
+    int increaseHealthPer = 10;
+    int increaseSpeedPer = 20;
     int increaseGoldPer = 15;
 
-    float healthStep = 0.1f;
-    int speedStep = 5;
-    int goldStep = 5;
+    float healthStep = 0.25f;
+    int speedStep = 15;
+    int goldStep = 10;
 
-    float healthMultiplier = 1.0f; 
-    float redShift = 1.0f;
+    float healthMultiplier = 1.0f;
 
-    int maxHealth = 500;
-    int maxSpeed = 300;
-    int maxGold = 50;
-
-    float maxRedShift = 1.8f;
+    int maxHealth = 1000;
+    int maxSpeed = 240;
+    int maxGold = 300;
 };

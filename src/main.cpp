@@ -78,8 +78,6 @@ int main() {
     MapLoader mapLoader = MapLoader(entityFactory);
     mapLoader.loadMap("map1.txt");
 
-    Entity currencyDisplay = entityFactory.createCurrencyDisplay(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
-
     auto& renderSystem = systemManager.registerSystem<RenderSystem>(&entityManager, componentManager, fontLoader);
     auto& animationSystem = systemManager.registerSystem<AnimationSystem>(&entityManager, componentManager);
     auto& movementSystem = systemManager.registerSystem<MovementSystem>(&entityManager, componentManager);
@@ -89,7 +87,7 @@ int main() {
     auto& combatSystem = systemManager.registerSystem<CombatSystem>(&entityManager, componentManager, entityFactory);
     auto& stateSystem = systemManager.registerSystem<StateSystem>(&entityManager, componentManager);
     auto& clickSystem = systemManager.registerSystem<ClickSystem>(&entityManager, componentManager);
-    auto& buildSystem = systemManager.registerSystem<BuildSystem>(&entityManager, componentManager, entityFactory, currencyDisplay);
+    auto& buildSystem = systemManager.registerSystem<BuildSystem>(&entityManager, componentManager, entityFactory);
     auto& spawningSystem = systemManager.registerSystem<SpawningSystem>(&entityManager, componentManager, entityFactory, pathfindingSystem);
 
     glfwSetWindowUserPointer(window, &clickSystem);
@@ -104,9 +102,6 @@ int main() {
         auto clickSystem = static_cast<ClickSystem*>(glfwGetWindowUserPointer(window));
         clickSystem->onHover(x, y);
     });
-
-    entityFactory.createUpgradeMenuItem(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
-    entityFactory.createBuildTowerMenuItem(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
 
     pathfindingSystem.generatePath();
 
@@ -139,9 +134,6 @@ int main() {
 
         static double lastPrint = 0;
         if (currentTime - lastPrint >= 1.0) {
-            std::cout << "Entities " << entityManager.getEntities().size() << "\n";
-            std::cout << "FPS: " << 1.0 / deltaTime << std::endl;
-
             lastPrint = currentTime;
         }
     }
