@@ -347,7 +347,7 @@ Entity EntityFactory::createTowerProjectileImpact(glm::vec2 position) {
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Weapon - Impact.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
-    textureComponent.zIndex = ZLayer::PROJECTILE;
+    textureComponent.zIndex = ZLayer::PARTICLE;
     componentManager.addComponent(entity, textureComponent);
 
     AnimationComponent animationComponent;

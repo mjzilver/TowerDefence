@@ -4,7 +4,8 @@ enum class ZLayer {
     GROUND = 0,
     DEAD = 1,
     ENEMY = 2,
-    TOWER = 3,
-    WEAPON = 4,
-    PROJECTILE = 5,
+    PARTICLE = 3,
+    TOWER = 4,
+    WEAPON = 5,
+    PROJECTILE = 6,
 };
