@@ -24,7 +24,7 @@ private:
     float spawnTimer = 0.0f;
     float spawnInterval = 3.0f;
     const float MIN_SPAWN_INTERVAL = 0.25f;
-    const float SPAWN_SCALE_FACTOR = 0.983f;
+    const float SPAWN_SCALE_FACTOR = 0.988f;
 
     int healthStart = 80;
     int speedStart = 60;
@@ -34,7 +34,7 @@ private:
     int increaseSpeedPer = 20;
     int increaseGoldPer = 15;
 
-    float healthStep = 0.25f;
+    float healthStep = 0.15f;
     int speedStep = 15;
     int goldStep = 10;
 

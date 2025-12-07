@@ -385,10 +385,6 @@ Entity EntityFactory::createKillCounter(glm::vec2 offset) {
     textComponent.color = {0.1f, 0.1f, 0.1f};
     componentManager.addComponent(entity, textComponent);
 
-    ClickableComponent clickableComponent;
-    clickableComponent.clickedEvent = EventType::UPGRADE_MENU_ITEM_CLICKED;
-    componentManager.addComponent(entity, clickableComponent);
-
     ColorComponent colorComponent;
     colorComponent.color = {0.33f, 0.33f, 0.33f};
     componentManager.addComponent(entity, colorComponent);
