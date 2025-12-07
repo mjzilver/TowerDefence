@@ -27,10 +27,9 @@
 - [x] Particles
 
 ### Game Systems
-- [x] Refactor to ECS (Entity-Component-System)
-- [x] Event system (tower placed, enemy killed, collision)
+- [x] ECS 
+- [x] Event system
 - [x] Collision detection
-- [ ] Quadtree optimization
 
 ### Attributions
 
