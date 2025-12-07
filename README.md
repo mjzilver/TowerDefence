@@ -1,7 +1,7 @@
 # Tower Defebnce
 ## A 2D tower defence game
 
-![Screenshot](resources/screenshot.png)
+![Screenshot](resources/gameplay.gif)
 
 ## Features
 
