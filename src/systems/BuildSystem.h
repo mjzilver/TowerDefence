@@ -25,6 +25,10 @@ public:
 
         auto* upgradeText = componentManager.getComponent<TextComponent>(towerUpgradeButtonEntity);
         upgradeText->text = "Upgrade\n" + std::to_string(TOWER_UPGRADE_COST);
+
+#if STRESS_TEST
+        currency = 1000000;
+#endif
     }
 
     void update(float) override;    

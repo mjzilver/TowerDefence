@@ -28,6 +28,11 @@
 #include "texture/TextureManager.h"
 #include "utils/Globals.h"
 
+#if STRESS_TEST
+#include "components/ClickableComponent.h"
+#include "event/Event.h"
+#endif
+
 #define WIREFRAME 0
 
 int main() {
@@ -113,6 +118,29 @@ int main() {
     renderSystem.registerShader("hover", &hoverShader);
     renderSystem.registerShader("text", &textShader);
     renderSystem.registerShader("square", &squareShader);
+
+#if STRESS_TEST
+    for(Entity entity : entityManager.getEntities()) {
+        auto* clickable = componentManager.getComponent<ClickableComponent>(entity);
+        if(clickable && clickable->clickedEvent == EventType::GRASS_TILE_CLICKED) {
+            Event event;
+            event.type = EventType::BUILD_TOWER;
+            event.addData("entity", &entity);
+            EventDispatcher::getInstance().dispatch(event);
+        }
+    }
+
+    for(Entity entity : entityManager.getEntities()) {
+        auto* clickable = componentManager.getComponent<ClickableComponent>(entity);
+        if(clickable && clickable->clickedEvent == EventType::TOWER_CLICKED) {
+            Event event;
+            event.type = EventType::UPGRADE_TOWER;
+            event.addData("entity", &entity);
+            EventDispatcher::getInstance().dispatch(event);
+            EventDispatcher::getInstance().dispatch(event);
+        }
+    }
+#endif
 
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {

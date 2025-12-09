@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include <queue>
 #include <unordered_set>
 
 class ComponentManager;
@@ -7,7 +8,14 @@ class ComponentManager;
 class EntityManager {
 public:
     Entity createEntity() {
-        Entity entity = ++lastEntity;
+        Entity entity;
+        if(!freedEntities.empty()) {
+            entity = freedEntities.front();
+            freedEntities.pop();
+        } else {
+            entity = ++lastEntity;
+        }
+        
         activeEntities.insert(entity);
         return entity;
     }
@@ -23,10 +31,12 @@ public:
 private:
     void destroyEntity(Entity entity) {
         activeEntities.erase(entity);
+        freedEntities.push(entity);
     }
 
     Entity lastEntity = INVALID_ENTITY;
     std::unordered_set<Entity> activeEntities;
+    std::queue<Entity> freedEntities;
 
     friend class ComponentManager;
 };

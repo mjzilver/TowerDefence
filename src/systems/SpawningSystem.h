@@ -5,11 +5,18 @@
 #include "PathfindingSystem.h"
 
 #include "../event/Event.h"
+#include "../utils/Globals.h"
+
 
 class SpawningSystem : public System {
 public:
     SpawningSystem(ComponentManager& componentManager, EntityFactory& entityFactory, PathfindingSystem& pathfindingSystem)
-        : componentManager(componentManager), entityFactory(entityFactory), pathfindingSystem(pathfindingSystem) {}
+        : componentManager(componentManager), entityFactory(entityFactory), pathfindingSystem(pathfindingSystem) {
+#if STRESS_TEST
+        spawnCount = 100000;
+        spawnInterval = MIN_SPAWN_INTERVAL;
+#endif
+    }
 
     void onEvent(const Event& event);
 
