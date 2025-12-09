@@ -10,8 +10,8 @@ FontLoader::FontLoader(GLuint fontSize) {
         throw std::runtime_error("Failed to initialize FreeType");
     }
 
-    if (FT_New_Face(ft, FONT_PATH.c_str(), 0, &face)) {
-        throw std::runtime_error("Failed to load font: " + FONT_PATH);
+    if (FT_New_Face(ft, fontPath.c_str(), 0, &face)) {
+        throw std::runtime_error("Failed to load font: " + fontPath);
     }
 
     FT_Set_Pixel_Sizes(face, 0, fontSize);

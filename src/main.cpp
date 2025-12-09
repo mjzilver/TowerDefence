@@ -120,9 +120,9 @@ int main() {
     renderSystem.registerShader("square", &squareShader);
 
 #if STRESS_TEST
-    for(Entity entity : entityManager.getEntities()) {
+    for (Entity entity : entityManager.getEntities()) {
         auto* clickable = componentManager.getComponent<ClickableComponent>(entity);
-        if(clickable && clickable->clickedEvent == EventType::GRASS_TILE_CLICKED) {
+        if (clickable && clickable->clickedEvent == EventType::GRASS_TILE_CLICKED) {
             Event event;
             event.type = EventType::BUILD_TOWER;
             event.addData("entity", &entity);
@@ -130,9 +130,9 @@ int main() {
         }
     }
 
-    for(Entity entity : entityManager.getEntities()) {
+    for (Entity entity : entityManager.getEntities()) {
         auto* clickable = componentManager.getComponent<ClickableComponent>(entity);
-        if(clickable && clickable->clickedEvent == EventType::TOWER_CLICKED) {
+        if (clickable && clickable->clickedEvent == EventType::TOWER_CLICKED) {
             Event event;
             event.type = EventType::UPGRADE_TOWER;
             event.addData("entity", &entity);

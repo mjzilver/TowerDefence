@@ -28,36 +28,36 @@ void PathfindingSystem::update(float) {
         if (position && velocity && size && speed && !pathfinding->reachedGoal) {
             // Check if the entity is following a valid path
             if (pathfinding->currentIndex >= 0 && pathfinding->currentIndex < static_cast<int>(pathTiles.size())) {
-                const auto* const TARGET_TILE = componentManager.getComponent<PositionComponent>(pathTiles[pathfinding->currentIndex]);
-                const auto* const TARGET_SIZE = componentManager.getComponent<SizeComponent>(pathTiles[pathfinding->currentIndex]);
+                const auto* const targetTile = componentManager.getComponent<PositionComponent>(pathTiles[pathfinding->currentIndex]);
+                const auto* const targetSize = componentManager.getComponent<SizeComponent>(pathTiles[pathfinding->currentIndex]);
 
-                if (TARGET_TILE && TARGET_SIZE) {
+                if (targetTile && targetSize) {
                     // Get the center positions of the entity and the target tile
                     float entityCenterX = position->x + size->w / 2.0f;
                     float entityCenterY = position->y + size->h / 2.0f;
-                    float targetCenterX = TARGET_TILE->x + TARGET_SIZE->w / 2.0f + pathfinding->randomOffset.x;
-                    float targetCenterY = TARGET_TILE->y + TARGET_SIZE->h / 2.0f + pathfinding->randomOffset.y;
+                    float targetCenterX = targetTile->x + targetSize->w / 2.0f + pathfinding->randomOffset.x;
+                    float targetCenterY = targetTile->y + targetSize->h / 2.0f + pathfinding->randomOffset.y;
 
                     // Calculate direction to the target
                     float dx = targetCenterX - entityCenterX;
                     float dy = targetCenterY - entityCenterY;
                     float distance = std::sqrt(dx * dx + dy * dy);
 
-                    const float ARRIVAL_START = 30.0f;
-                    const float SNAP_RADIUS = 3.0f;
-                    const float MIN_SPEED = 80.0f;
+                    const float arrivalStart = 30.0f;
+                    const float snapRadius = 3.0f;
+                    const float minSpeed = 80.0f;
 
-                    if (distance > SNAP_RADIUS) {
+                    if (distance > snapRadius) {
                         dx /= distance;
                         dy /= distance;
 
                         float desiredSpeed = speed->speed;
 
                         // Begin soft braking inside arrivalStart
-                        if (distance < ARRIVAL_START) {
-                            float t = distance / ARRIVAL_START;
+                        if (distance < arrivalStart) {
+                            float t = distance / arrivalStart;
                             t = t * t;  // Smoothing
-                            desiredSpeed = MIN_SPEED + (speed->speed - MIN_SPEED) * t;
+                            desiredSpeed = minSpeed + (speed->speed - minSpeed) * t;
                         }
 
                         velocity->x = dx * desiredSpeed;

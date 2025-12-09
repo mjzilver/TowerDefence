@@ -18,7 +18,9 @@ CheckOptions:
     value: CamelCase
   - key: readability-identifier-naming.ParameterCase
     value: camelBack
-  - key: readability-identifier-naming.ConstantCase
+  - key: readability-identifier-naming.StaticConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.GlobalConstantCase
     value: UPPER_CASE
   - key: readability-identifier-naming.MacroCase
     value: UPPER_CASE

@@ -32,5 +32,5 @@ private:
     FT_Face face;
     std::map<char, Character> characters;
 
-    const std::string FONT_PATH = "resources/font/DejaVuSansMono.ttf";
+    const std::string fontPath = "resources/font/DejaVuSansMono.ttf";
 };

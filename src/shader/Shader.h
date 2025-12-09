@@ -11,7 +11,7 @@ public:
 private:
     GLuint programID;
 
-    const std::string SHADER_PATH = "resources/shaders/";
+    const std::string shaderPath = "resources/shaders/";
 
     std::string readFile(const std::string& filepath);
     void compileShader(const char* shaderSource, GLuint shaderID);

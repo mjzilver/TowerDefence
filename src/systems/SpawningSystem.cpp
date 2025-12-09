@@ -6,6 +6,15 @@
 #include "../components/DeathComponent.h"
 #include "../components/PositionComponent.h"
 #include "../components/SizeComponent.h"
+#include "../utils/Globals.h"
+
+SpawningSystem::SpawningSystem(ComponentManager& componentManager, EntityFactory& entityFactory, PathfindingSystem& pathfindingSystem)
+    : componentManager(componentManager), entityFactory(entityFactory), pathfindingSystem(pathfindingSystem) {
+#if STRESS_TEST
+    spawnCount = 100000;
+    spawnInterval = minSpawnInterval;
+#endif
+}
 
 void SpawningSystem::update(float deltaTime) {
     static std::random_device rd;
@@ -84,8 +93,8 @@ void SpawningSystem::update(float deltaTime) {
 
         spawnTimer -= spawnInterval;
 
-        spawnInterval *= SPAWN_SCALE_FACTOR;
-        if (spawnInterval < MIN_SPAWN_INTERVAL) spawnInterval = MIN_SPAWN_INTERVAL;
+        spawnInterval *= spawnScaleFactor;
+        if (spawnInterval < minSpawnInterval) spawnInterval = minSpawnInterval;
     }
 
     auto* deaths = componentManager.getArray<DeathComponent>();

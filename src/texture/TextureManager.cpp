@@ -10,7 +10,7 @@
 
 unsigned char* TextureManager::loadPngImage(const std::string& filePath, unsigned int& width, unsigned int& height) {
     int channels;
-    std::string fullPath = TEXTURE_PATH + filePath;
+    std::string fullPath = texturePath + filePath;
 
     stbi_set_flip_vertically_on_load(true);  // Flip PNG images
 

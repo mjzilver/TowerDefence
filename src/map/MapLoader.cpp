@@ -11,7 +11,7 @@
 #include "../utils/Globals.h"
 
 void MapLoader::loadMap(const std::string& mapName) {
-    std::string mapData = readFile(MAP_PATH + mapName);
+    std::string mapData = readFile(mapPath + mapName);
     parseMap(mapData);
 }
 

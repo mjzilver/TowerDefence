@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
+#include <functional>
+
 #include "../components/ClickableComponent.h"
 #include "../components/PositionComponent.h"
 #include "../components/ShaderComponent.h"
@@ -14,6 +16,15 @@
 #include "../event/Event.h"
 #include "../event/EventDispatcher.h"
 #include "CollisionSystem.h"
+
+ClickSystem::ClickSystem(ComponentManager& componentManager) : componentManager(componentManager) {
+    EventDispatcher::getInstance().addListener(EventType::GRASS_TILE_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
+    EventDispatcher::getInstance().addListener(EventType::TOWER_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
+    EventDispatcher::getInstance().addListener(EventType::BUILD_TOWER_MENU_ITEM_CLICKED,
+                                               std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
+    EventDispatcher::getInstance().addListener(EventType::UPGRADE_MENU_ITEM_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
+    EventDispatcher::getInstance().addListener(EventType::UNSELECT, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
+}
 
 void ClickSystem::onClick(int button, int action, double x, double y) {
     if (action != GLFW_PRESS) {
@@ -46,7 +57,7 @@ void ClickSystem::onClick(int button, int action, double x, double y) {
             float top = position->y;
             float bottom = position->y + size->h;
 
-            if (CollisionSystem::checkCollision(x, y, CLICK_SIZE, CLICK_SIZE, left, top, right - left, bottom - top)) {
+            if (CollisionSystem::checkCollision(x, y, clickSize, clickSize, left, top, right - left, bottom - top)) {
                 Event event;
                 event.type = clickable->clickedEvent;
                 event.addData("entity", &entity);
@@ -79,7 +90,7 @@ void ClickSystem::onHover(double x, double y) {
             float top = position->y;
             float bottom = position->y + size->h;
 
-            if (CollisionSystem::checkCollision(x, y, CLICK_SIZE, CLICK_SIZE, left, top, right - left, bottom - top)) {
+            if (CollisionSystem::checkCollision(x, y, clickSize, clickSize, left, top, right - left, bottom - top)) {
                 clickable->hovered = true;
                 shader->name = "hover";
             }

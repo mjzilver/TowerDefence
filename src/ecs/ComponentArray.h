@@ -45,7 +45,7 @@ public:
         entityToIndex.erase(entity);
     }
 
-    T* get(Entity entity) {
+    T* get(Entity entity) const {
         auto it = entityToIndex.find(entity);
         if (it == entityToIndex.end()) return nullptr;
         return components[it->second];

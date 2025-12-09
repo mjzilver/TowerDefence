@@ -160,14 +160,14 @@ Entity EntityFactory::createFireBug(glm::vec2 position, int health, int speed, i
     pathfindingComponent.y = 0;
     componentManager.addComponent(entity, pathfindingComponent);
 
-    const float HITBOX_SCALE = 0.5f;
+    const float hitboxScale = 0.5f;
 
     // hitbox is smaller than the texture
     CollisionComponent collisionComponent;
-    collisionComponent.x = ENEMY_WIDTH * (1.0f - HITBOX_SCALE) / 2.0f;
-    collisionComponent.y = ENEMY_HEIGHT * (1.0f - HITBOX_SCALE) / 2.0f;
-    collisionComponent.w = ENEMY_WIDTH * HITBOX_SCALE;
-    collisionComponent.h = ENEMY_HEIGHT * HITBOX_SCALE;
+    collisionComponent.x = ENEMY_WIDTH * (1.0f - hitboxScale) / 2.0f;
+    collisionComponent.y = ENEMY_HEIGHT * (1.0f - hitboxScale) / 2.0f;
+    collisionComponent.w = ENEMY_WIDTH * hitboxScale;
+    collisionComponent.h = ENEMY_HEIGHT * hitboxScale;
     componentManager.addComponent(entity, collisionComponent);
 
     return entity;
@@ -203,29 +203,29 @@ Entity EntityFactory::createTower(glm::vec2 position) {
 
     Entity weapon = entityManager.createEntity();
 
-    const int WEAPON_SIZE = 96;
+    const int weaponSize = 96;
 
     PositionComponent weaponPositionComponent;
-    weaponPositionComponent.x = position.x + 8 + (TOWER_WIDTH - WEAPON_SIZE) / 2;
+    weaponPositionComponent.x = position.x + 8 + (TOWER_WIDTH - weaponSize) / 2;
     weaponPositionComponent.y = position.y + 8;
     componentManager.addComponent(weapon, weaponPositionComponent);
 
     SizeComponent weaponSizeComponent;
-    weaponSizeComponent.w = WEAPON_SIZE;
-    weaponSizeComponent.h = WEAPON_SIZE;
+    weaponSizeComponent.w = weaponSize;
+    weaponSizeComponent.h = weaponSize;
     componentManager.addComponent(weapon, weaponSizeComponent);
 
     TextureComponent weaponTextureComponent;
     weaponTextureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Level 01 - Weapon.png");
     weaponTextureComponent.coords =
-        getTextureCoords(0, 0, WEAPON_SIZE, WEAPON_SIZE, weaponTextureComponent.texture.size.x, weaponTextureComponent.texture.size.y);
+        getTextureCoords(0, 0, weaponSize, weaponSize, weaponTextureComponent.texture.size.x, weaponTextureComponent.texture.size.y);
     weaponTextureComponent.zIndex = ZLayer::WEAPON;
     componentManager.addComponent(weapon, weaponTextureComponent);
 
     AnimationComponent weaponAnimationComponent;
     weaponAnimationComponent.frame = 0;
     weaponAnimationComponent.time = 0;
-    weaponAnimationComponent.frameSize = glm::vec2(WEAPON_SIZE, WEAPON_SIZE);
+    weaponAnimationComponent.frameSize = glm::vec2(weaponSize, weaponSize);
     weaponAnimationComponent.frameCount = std::map<State, int>{
         {State::IDLE, 0},
         {State::SHOOTING, 6},

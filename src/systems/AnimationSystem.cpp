@@ -6,17 +6,22 @@
 #include "../components/AnimationComponent.h"
 #include "../components/DirectionComponent.h"
 #include "../components/TextureComponent.h"
+#include "../event/EventDispatcher.h"
 #include "../utils/TextureCoords.h"
+
+AnimationSystem::AnimationSystem(ComponentManager& componentManager) : componentManager(componentManager) {
+    EventDispatcher::getInstance().addListener(EventType::ENTITY_DESTROYED, std::bind(&AnimationSystem::onEvent, this, std::placeholders::_1));
+}
 
 void AnimationSystem::update(float deltaTime) {
     auto* animations = componentManager.getArray<AnimationComponent>();
-    auto* directions = componentManager.getArray<DirectionComponent>();
+    const auto* directions = componentManager.getArray<DirectionComponent>();
     auto* textures = componentManager.getArray<TextureComponent>();
 
     for (Entity entity : animations->getEntities()) {
         auto* animation = animations->get(entity);
         auto* texture = textures->get(entity);
-        auto* direction = directions->get(entity);
+        const auto* direction = directions->get(entity);
 
         if (texture) {
             animation->time += deltaTime;

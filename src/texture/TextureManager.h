@@ -6,7 +6,7 @@
 
 #include "Texture.h"
 
-const std::string TEXTURE_PATH = "resources/images/";
+const std::string texturePath = "resources/images/";
 
 class TextureManager {
 public:

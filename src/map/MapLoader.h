@@ -22,7 +22,7 @@ public:
     std::vector<glm::vec2> waypoints;
     std::vector<Corner> corners;
 private:
-    const std::string MAP_PATH = "resources/maps/";
+    const std::string mapPath = "resources/maps/";
     EntityFactory& entityFactory;
 
     std::string readFile(const std::string& filepath);

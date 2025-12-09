@@ -1,20 +1,13 @@
 #pragma once
-#include <functional>
+
 #include "../ecs/System.h"
 #include "../ecs/ComponentManager.h"
 
 #include "../event/Event.h"
-#include "../event/EventDispatcher.h"
 
 class ClickSystem : public System {
 public:
-    ClickSystem(ComponentManager& componentManager) : componentManager(componentManager) {
-        EventDispatcher::getInstance().addListener(EventType::GRASS_TILE_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
-        EventDispatcher::getInstance().addListener(EventType::TOWER_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
-        EventDispatcher::getInstance().addListener(EventType::BUILD_TOWER_MENU_ITEM_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
-        EventDispatcher::getInstance().addListener(EventType::UPGRADE_MENU_ITEM_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
-        EventDispatcher::getInstance().addListener(EventType::UNSELECT, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
-    }
+    ClickSystem(ComponentManager& componentManager);
 
     void update(float) override { return; }
 
@@ -25,7 +18,7 @@ public:
     void onEvent(const Event& event);
 
 private:
-    const int CLICK_SIZE = 1;
+    const int clickSize = 1;
     ComponentManager& componentManager;
 
     enum class MenuItem { NONE, UPGRADE_TOWER, BUILD_TOWER };

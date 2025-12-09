@@ -5,11 +5,11 @@
 #include <sstream>
 
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
-    const std::string FULL_VERTEX_PATH = SHADER_PATH + vertexPath;
-    const std::string FULL_FRAGMENT_PATH = SHADER_PATH + fragmentPath;
+    const std::string fullVertexPath = shaderPath + vertexPath;
+    const std::string fullFragmentPath = shaderPath + fragmentPath;
 
-    std::string vertexCode = readFile(FULL_VERTEX_PATH);
-    std::string fragmentCode = readFile(FULL_FRAGMENT_PATH);
+    std::string vertexCode = readFile(fullVertexPath);
+    std::string fragmentCode = readFile(fullFragmentPath);
 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     compileShader(vertexCode.c_str(), vertexShader);
