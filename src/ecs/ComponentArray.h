@@ -39,6 +39,7 @@ public:
         size_t index = it->second;
 
         delete components[index];
+        components[index] = nullptr;
         entities[index] = INVALID_ENTITY;
         freeIndices.push_back(index); 
         entityToIndex.erase(entity);
@@ -52,6 +53,12 @@ public:
 
     std::deque<T*>& getAll() { return components; }
     std::deque<Entity>& getEntities() { return entities; }
+
+    ~ComponentArray() {
+        for (T* component : components) {
+            if (component) delete component;
+        }
+    }
 
 private:
     std::deque<Entity> entities;

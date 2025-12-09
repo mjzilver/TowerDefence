@@ -26,6 +26,12 @@ public:
         }
     }
 
+    ~SystemManager() {
+        for (auto& [type, system] : systems) {
+            delete system;
+        }
+    }
+
 private:
     std::unordered_map<std::type_index, System*> systems;
 };

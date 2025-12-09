@@ -42,14 +42,20 @@ public:
             scheduledForDestruction.pop();
 
             for (auto& [type, array] : componentArrays) {
-                auto baseArray = static_cast<IComponentArray*>(array);
-                baseArray->remove(entity);
+                array->remove(entity);
             }
 
             entityManager.destroyEntity(entity);
         }
     }
 
+    ~ComponentManager() {
+        for (auto& [type, array] : componentArrays) {
+            delete array;
+        }
+    }
+
+private:
     std::unordered_map<std::type_index, IComponentArray*> componentArrays;
     std::queue<Entity> scheduledForDestruction;
 };
