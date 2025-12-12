@@ -20,6 +20,8 @@ public:
 
     Entity& getStart() {return start;}
 
+    void reset() override { return; };
+
 private:
     void generateRandomOffset(PathfindingComponent* pathfinding, SizeComponent* targetSize);
 

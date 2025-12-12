@@ -1,6 +1,7 @@
 #include "SpawningSystem.h"
 
 #include <iostream>
+#include <optional>
 #include <random>
 
 #include "../components/ColorComponent.h"
@@ -27,6 +28,19 @@ void SpawningSystem::setStart() {
     glm::vec2 dir = glm::vec2(path[1].x - path[0].x, path[1].y - path[0].y);
 
     startDirection = glm::vec2((dir.x > 0) ? 1 : (dir.x < 0 ? -1 : 0), (dir.y > 0) ? 1 : (dir.y < 0 ? -1 : 0));
+}
+
+void SpawningSystem::reset() {
+    spawnCount = 0;
+    spawnTimer = 0.0f;
+    spawnInterval = 3.0f;
+    
+    healthStart = 80;
+    speedStart = 60;
+    goldRewardStart = 10;
+    healthMultiplier = 1.0f;
+
+    startDirection = std::nullopt;
 }
 
 void SpawningSystem::update(float deltaTime) {

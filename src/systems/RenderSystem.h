@@ -58,9 +58,9 @@ public:
     
     void render();
 
-    void update(float) override {
-        return;
-    }
+    void reset() override { return; };
+
+    void update(float) override {return;};
 
     void registerShader(const std::string& name, Shader* shader) {
         shaderPrograms[name] = shader;

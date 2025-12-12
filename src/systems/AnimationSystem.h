@@ -13,6 +13,8 @@ public:
 
     void onEvent(const Event& event);
 
+    void reset() override { return; };
+    
 private:
     ComponentManager& componentManager;
 };

@@ -14,7 +14,8 @@ enum class EventType {
     TOWER_CLICKED,
     UPGRADE_MENU_ITEM_CLICKED,
     BUILD_TOWER_MENU_ITEM_CLICKED,
-    UNSELECT
+    UNSELECT,
+    OPEN_MENU
 };
 
 struct Event {

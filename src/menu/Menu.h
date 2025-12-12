@@ -3,11 +3,12 @@
 // clang-format off
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-// clang-format on#include
+// clang-format on
 #include <vector>
 
 #include "../systems/CollisionSystem.h"
 #include "../systems/RenderSystem.h"
+#include "../ecs/SystemManager.h"
 #include "../map/MapLoader.h"
 #include "UIElement.h"
 #include "../utils/Globals.h"
@@ -53,7 +54,7 @@ public:
         }
     };
 
-void createMainMenu(MapLoader& mapLoader, bool& menuMode, GLFWwindow* window) {
+void createMainMenu(MapLoader& mapLoader, ComponentManager& componentManager, SystemManager& systemManager, bool& menuMode, GLFWwindow* window) {
     float centerX = (SCREEN_WIDTH - 250) * 0.5f; 
     float titleWidth = 400;
     float titleX = (SCREEN_WIDTH - titleWidth) * 0.5f;
@@ -75,21 +76,29 @@ void createMainMenu(MapLoader& mapLoader, bool& menuMode, GLFWwindow* window) {
     registerElement(title);
 
     make(130, "Map 1", {0.5f, 0.5f, 0.8f}, [&]{
+        componentManager.destroyAll();
+        systemManager.resetSystems();
         mapLoader.loadMap("map1.txt");
         menuMode = false;
     });
 
     make(210, "Map 2", {0.5f, 0.8f, 0.5f}, [&]{
+        componentManager.destroyAll();
+        systemManager.resetSystems();
         mapLoader.loadMap("map2.txt");
         menuMode = false;
     });
 
     make(290, "Map 3", {0.8f, 0.5f, 0.5f}, [&]{
+        componentManager.destroyAll();
+        systemManager.resetSystems();
         mapLoader.loadMap("map3.txt");
         menuMode = false;
     });
 
     make(370, "Map 4", {0.8f, 0.8f, 0.5f}, [&]{
+        componentManager.destroyAll();
+        systemManager.resetSystems();
         mapLoader.loadMap("map4.txt");
         menuMode = false;
     });

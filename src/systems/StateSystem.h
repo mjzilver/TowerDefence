@@ -9,6 +9,8 @@ public:
 
     void update(float deltaTime) override;
 
+    void reset() override { return; };
+
 private:
     ComponentManager& componentManager;
 };

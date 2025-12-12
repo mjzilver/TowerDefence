@@ -36,7 +36,7 @@ public:
 
     void scheduleDestruction(Entity entity) { scheduledForDestruction.push(entity); }
 
-     void flushDestructions(EntityManager& entityManager) {
+    void flushDestructions(EntityManager& entityManager) {
         while (!scheduledForDestruction.empty()) {
             Entity entity = scheduledForDestruction.front();
             scheduledForDestruction.pop();
@@ -46,6 +46,12 @@ public:
             }
 
             entityManager.destroyEntity(entity);
+        }
+    }
+
+    void destroyAll() {
+        for (auto& [type, array] : componentArrays) {
+            array->clear();
         }
     }
 

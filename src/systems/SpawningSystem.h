@@ -16,6 +16,8 @@ public:
 
     void update(float deltaTime) override;
 
+    void reset() override;
+
 private:
     ComponentManager& componentManager;
     EntityFactory& entityFactory;
@@ -34,18 +36,17 @@ private:
     int healthStart = 80;
     int speedStart = 60;
     int goldRewardStart = 10;
-
-    int increaseHealthPer = 15;
-    int increaseSpeedPer = 20;
-    int increaseGoldPer = 15;
-
-    float healthStep = 0.15f;
-    int speedStep = 15;
-    int goldStep = 10;
-
     float healthMultiplier = 1.0f;
 
-    int maxHealth = 1000;
-    int maxSpeed = 240;
-    int maxGold = 300;
+    const int increaseHealthPer = 15;
+    const int increaseSpeedPer = 20;
+    const int increaseGoldPer = 15;
+
+    const float healthStep = 0.15f;
+    const int speedStep = 15;
+    const int goldStep = 10;
+    
+    const int maxHealth = 1000;
+    const int maxSpeed = 240;
+    const int maxGold = 300;
 };

@@ -26,6 +26,8 @@ public:
         return x1 < x2 && x1 + w1 > x2 && y1 < y2 && y1 + h1 > y2;
     }
 
+    void reset() override { return; };  
+
 private:
     ComponentManager& componentManager;
 };

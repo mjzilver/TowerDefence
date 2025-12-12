@@ -11,6 +11,7 @@
 #include "../utils/Globals.h"
 
 void MapLoader::loadMap(const std::string& mapName) {
+    tiles.clear();
     std::string mapData = readFile(mapPath + mapName);
     parseMap(mapData);
 }
@@ -24,6 +25,7 @@ std::string MapLoader::readFile(const std::string& filepath) {
     buffer << file.rdbuf();
     return buffer.str();
 }
+
 void MapLoader::parseMap(const std::string& mapData) {
     std::istringstream stream(mapData);
     std::string line;

@@ -26,6 +26,12 @@ public:
         }
     }
 
+    void resetSystems() {
+        for (auto& [type, system] : systems) {
+            system->reset();
+        }
+    }
+
     ~SystemManager() {
         for (auto& [type, system] : systems) {
             delete system;

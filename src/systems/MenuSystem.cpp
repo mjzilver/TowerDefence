@@ -1,4 +1,4 @@
-#include "BuildSystem.h"
+#include "MenuSystem.h"
 
 #include <functional>
 
@@ -13,34 +13,49 @@
 #include "../event/EventDispatcher.h"
 #include "../utils/Globals.h"
 
-BuildSystem::BuildSystem(ComponentManager& componentManager, EntityFactory& entityFactory)
-    : componentManager(componentManager), entityFactory(entityFactory) {
-    EventDispatcher::getInstance().addListener(EventType::BUILD_TOWER, std::bind(&BuildSystem::onEvent, this, std::placeholders::_1));
-    EventDispatcher::getInstance().addListener(EventType::UPGRADE_TOWER, std::bind(&BuildSystem::onEvent, this, std::placeholders::_1));
-    EventDispatcher::getInstance().addListener(EventType::ENTITY_DESTROYED, std::bind(&BuildSystem::onEvent, this, std::placeholders::_1));
+MenuSystem::MenuSystem(ComponentManager& componentManager, EntityFactory& entityFactory, bool& menuMode)
+    : componentManager(componentManager), entityFactory(entityFactory), menuMode(menuMode) {
+    EventDispatcher::getInstance().addListener(EventType::BUILD_TOWER, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
+    EventDispatcher::getInstance().addListener(EventType::UPGRADE_TOWER, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
+    EventDispatcher::getInstance().addListener(EventType::ENTITY_DESTROYED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
+    EventDispatcher::getInstance().addListener(EventType::OPEN_MENU, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
+#if STRESS_TEST
+    currency = 1000000;
+#endif
 
+    createMenu();
+}
+
+void MenuSystem::reset() {
+    createMenu();
+    currency = startCurrency;
+    towerAmount = 0;
+    killCount = 0;
+    towerBuildCost = startTowerBuildCost;
+}
+
+void MenuSystem::createMenu() {
     currencyDisplayEntity = entityFactory.createCurrencyDisplay(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
     towerUpgradeButtonEntity = entityFactory.createUpgradeMenuItem(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
     towerBuildButtonEntity = entityFactory.createBuildTowerMenuItem(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
     killCounterEntity = entityFactory.createKillCounter(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
+    entityFactory.createMenuButton(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
 
     auto* upgradeText = componentManager.getComponent<TextComponent>(towerUpgradeButtonEntity);
     upgradeText->text = "Upgrade\n" + std::to_string(towerUpgradeCost);
-
-#if STRESS_TEST
-    currency = 1000000;
-#endif
 }
 
-void BuildSystem::update(float) {
+void MenuSystem::update(float) {
     auto* goldText = componentManager.getComponent<TextComponent>(currencyDisplayEntity);
-    goldText->text = std::to_string(currency) + " Gold";
-
     auto* killText = componentManager.getComponent<TextComponent>(killCounterEntity);
-    killText->text = "Kills\n" + std::to_string(killCount);
+
+    if (goldText && killText) {
+        goldText->text = std::to_string(currency) + " Gold";
+        killText->text = "Kills\n" + std::to_string(killCount);
+    }
 }
 
-void BuildSystem::onEvent(const Event& event) {
+void MenuSystem::onEvent(const Event& event) {
     if (event.type == EventType::BUILD_TOWER && currency >= towerBuildCost) {
         Entity entity = *event.getData<Entity>("entity");
         auto* position = componentManager.getComponent<PositionComponent>(entity);
@@ -81,5 +96,7 @@ void BuildSystem::onEvent(const Event& event) {
             currency += reward->gold;
             killCount++;
         }
+    } else if (event.type == EventType::OPEN_MENU) {
+        menuMode = true;
     }
 }

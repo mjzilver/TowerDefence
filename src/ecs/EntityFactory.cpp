@@ -433,7 +433,7 @@ Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 offset) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
-    positionComponent.x = 400;
+    positionComponent.x = 350;
     positionComponent.y = offset.y - 85;
     componentManager.addComponent(entity, positionComponent);
 
@@ -466,7 +466,7 @@ Entity EntityFactory::createCurrencyDisplay(glm::vec2 offset) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
-    positionComponent.x = 600;
+    positionComponent.x = 500;
     positionComponent.y = offset.y - 85;
     componentManager.addComponent(entity, positionComponent);
 
@@ -482,6 +482,39 @@ Entity EntityFactory::createCurrencyDisplay(glm::vec2 offset) {
 
     ColorComponent colorComponent;
     colorComponent.color = {0.33f, 0.66f, 0.33f};
+    componentManager.addComponent(entity, colorComponent);
+
+    ShaderComponent shaderComponent;
+    shaderComponent.name = "text";
+    componentManager.addComponent(entity, shaderComponent);
+
+    return entity;
+}
+
+Entity EntityFactory::createMenuButton(glm::vec2 offset) {
+    Entity entity = entityManager.createEntity();
+
+    PositionComponent positionComponent;
+    positionComponent.x = 650;
+    positionComponent.y = offset.y - 85;
+    componentManager.addComponent(entity, positionComponent);
+
+    SizeComponent sizeComponent;
+    sizeComponent.w = 90;
+    sizeComponent.h = 75;
+    componentManager.addComponent(entity, sizeComponent);
+
+    TextComponent textComponent;
+    textComponent.text = "Menu";
+    textComponent.color = {0.1f, 0.1, 0.1f};
+    componentManager.addComponent(entity, textComponent);
+
+    ClickableComponent clickableComponent;
+    clickableComponent.clickedEvent = EventType::OPEN_MENU;
+    componentManager.addComponent(entity, clickableComponent);
+
+    ColorComponent colorComponent;
+    colorComponent.color = {0.66f, 0.53f, 0.23f};
     componentManager.addComponent(entity, colorComponent);
 
     ShaderComponent shaderComponent;

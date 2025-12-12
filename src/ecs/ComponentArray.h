@@ -10,6 +10,7 @@ class IComponentArray {
 public:
     virtual ~IComponentArray() = default;
     virtual void remove(Entity entity) = 0;
+    virtual void clear() = 0;
 };
 
 template<typename T>
@@ -31,6 +32,13 @@ public:
 
         entityToIndex[entity] = index;
     }
+
+    void clear() override {
+        entityToIndex.clear();
+        components.clear();
+        entities.clear();
+        freeIndices.clear();
+    } 
 
     void remove(Entity entity) override {
         auto it = entityToIndex.find(entity);

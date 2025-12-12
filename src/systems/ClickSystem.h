@@ -17,6 +17,8 @@ public:
     
     void onEvent(const Event& event);
 
+    void reset() override { return; };
+
 private:
     const int clickSize = 1;
     ComponentManager& componentManager;

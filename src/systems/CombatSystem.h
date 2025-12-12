@@ -16,6 +16,9 @@ public:
     void update(float) override { return; }
 
     void onEvent(const Event& event);
+
+    void reset() override { return; };
+    
 private:
     ComponentManager& componentManager;
     EntityFactory& entityFactory;
