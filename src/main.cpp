@@ -13,6 +13,7 @@
 #include "ecs/SystemManager.h"
 #include "font/FontLoader.h"
 #include "map/MapLoader.h"
+#include "menu/Menu.h"
 #include "shader/Shader.h"
 #include "systems/AnimationSystem.h"
 #include "systems/BuildSystem.h"
@@ -32,6 +33,8 @@
 #include "components/ClickableComponent.h"
 #include "event/Event.h"
 #endif
+
+bool menuMode = true;
 
 int main() {
     TextureManager textureManager;
@@ -77,9 +80,11 @@ int main() {
     SystemManager systemManager;
     EntityFactory entityFactory(componentManager, entityManager, textureManager);
     FontLoader fontLoader(12);
-
+    Menu menu;
     MapLoader mapLoader = MapLoader(entityFactory);
-    mapLoader.loadMap("map1.txt");
+
+    menu.createMainMenu(mapLoader, menuMode, window);
+
 #if DEBUG
     mapLoader.debugPrintPath();
 #endif
@@ -96,17 +101,34 @@ int main() {
     auto& buildSystem = systemManager.registerSystem<BuildSystem>(&entityManager, componentManager, entityFactory);
     auto& spawningSystem = systemManager.registerSystem<SpawningSystem>(&entityManager, componentManager, entityFactory, mapLoader);
 
-    glfwSetWindowUserPointer(window, &clickSystem);
+    struct InputContext {
+        ClickSystem* clickSystem;
+        Menu* menu;
+    };
+
+    InputContext inputCtx{&clickSystem, &menu};
+    glfwSetWindowUserPointer(window, &inputCtx);
+
     glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int) {
         double x, y;
         glfwGetCursorPos(window, &x, &y);
-        auto clickSystem = static_cast<ClickSystem*>(glfwGetWindowUserPointer(window));
-        clickSystem->onClick(button, action, x, y);
+
+        InputContext* ctx = static_cast<InputContext*>(glfwGetWindowUserPointer(window));
+
+        if (menuMode) {
+            ctx->menu->onClick({(float)x, (float)y});
+        } else {
+            ctx->clickSystem->onClick(button, action, x, y);
+        }
     });
 
     glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
-        auto clickSystem = static_cast<ClickSystem*>(glfwGetWindowUserPointer(window));
-        clickSystem->onHover(x, y);
+        auto ctx = static_cast<InputContext*>(glfwGetWindowUserPointer(window));
+        if (menuMode) {
+            ctx->menu->onHover({(float)x, (float)y});
+        } else {
+            ctx->clickSystem->onHover(x, y);
+        }
     });
 
 #if WIREFRAME
@@ -150,10 +172,13 @@ int main() {
         glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        systemManager.updateSystems(deltaTime);
+        if (menuMode) {
+            menu.render(renderSystem);
+        } else {
+            systemManager.updateSystems(deltaTime);
 
-        renderSystem.render();
-
+            renderSystem.render();
+        }
         componentManager.flushDestructions(entityManager);
 
         glfwSwapBuffers(window);

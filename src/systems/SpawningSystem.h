@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/fwd.hpp>
+#include <optional>
 #include "../ecs/System.h"
 #include "../ecs/ComponentManager.h"
 #include "../ecs/EntityFactory.h"
@@ -20,7 +21,9 @@ private:
     EntityFactory& entityFactory;
     MapLoader& mapLoader;
 
-    glm::vec2 startDirection;
+    std::optional<glm::vec2> startDirection;
+
+    void setStart();
 
     int spawnCount = 0;
     float spawnTimer = 0.0f;

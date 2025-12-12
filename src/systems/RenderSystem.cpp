@@ -46,37 +46,37 @@ GLuint createUnitSquareVao() {
     return vao;
 }
 
-void RenderSystem::renderSquare(PositionComponent* position, SizeComponent* size, const glm::vec3& color, Shader* shader) {
+void RenderSystem::renderSquare(glm::vec4 rect, const glm::vec3& color, Shader* shader) {
     GLuint shaderProgram = shader->getProgram();
     glUseProgram(shaderProgram);
 
-    // Set color for the square
     GLuint colorLoc = glGetUniformLocation(shaderProgram, "color");
     glUniform3f(colorLoc, color.x, color.y, color.z);
 
     GLuint sizeLoc = glGetUniformLocation(shaderProgram, "bounds");
-    glUniform4f(sizeLoc, position->x, position->y, position->x + size->w, position->y + size->h);
+    glUniform4f(sizeLoc, rect.x, rect.y, rect.x + rect.z, rect.y + rect.w);
 
-    // Create the model transformation matrix
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(position->x + size->w * 0.5f, position->y + size->h * 0.5f, 0.0f));
-    model = glm::scale(model, glm::vec3(size->w, size->h, 1.0f));
+    model = glm::translate(model, glm::vec3(rect.x + rect.z * 0.5f, rect.y + rect.w * 0.5f, 0.0f));
+    model = glm::scale(model, glm::vec3(rect.z, rect.w, 1.0f));
 
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
 
     GLuint projectionLoc = glGetUniformLocation(shaderProgram, "projection");
-    glm::mat4 projection = glm::ortho(0.0f, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f, -1.0f, 1.0f);
+    glm::mat4 projection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f, -1.0f, 1.0f);
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
 
-    // Check if VAO exists, if not create it
     if (shaderVAOs.find(shader) == shaderVAOs.end()) {
         shaderVAOs[shader] = createUnitSquareVao();
     }
 
-    // Bind the VAO and draw the square
     glBindVertexArray(shaderVAOs[shader]);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glBindVertexArray(0);
+}
+
+void RenderSystem::renderSquare(PositionComponent* position, SizeComponent* size, const glm::vec3& color, Shader* shader) {
+    renderSquare(glm::vec4(position->x, position->y, size->w, size->h), color, shader);
 }
 
 void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* texture, SizeComponent* size, RotationComponent* rotation,
@@ -141,12 +141,12 @@ void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* t
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-void RenderSystem::renderText(PositionComponent* position, SizeComponent* size, TextComponent* text, Shader* shader) {
+void RenderSystem::renderText(glm::vec4 rect, std::string text, const glm::vec3& color, Shader* shader) {
     GLuint shaderProgram = shader->getProgram();
     glUseProgram(shaderProgram);
 
     // Set the text color uniform
-    glUniform3f(glGetUniformLocation(shaderProgram, "textColor"), text->color.x, text->color.y, text->color.z);
+    glUniform3f(glGetUniformLocation(shaderProgram, "textColor"), color.x, color.y, color.z);
 
     // Set projection matrix (orthographic)
     glm::mat4 projection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f, -1.0f, 1.0f);
@@ -168,14 +168,14 @@ void RenderSystem::renderText(PositionComponent* position, SizeComponent* size, 
 
     const auto& characters = fontLoader.getCharacters();
 
-    std::vector<std::string> lines = splitLines(text->text);
+    std::vector<std::string> lines = splitLines(text);
 
     float lineSpacing = 8.0f;
     float maxCharHeight = characters.at('A').size.y;
 
     // Compute starting Y so all lines are vertically centered
     float totalHeight = lines.size() * maxCharHeight + (lines.size() - 1) * lineSpacing;
-    float startY = position->y + size->h * 0.5f - totalHeight * 0.5f;
+    float startY = rect.y + rect.w * 0.5f - totalHeight * 0.5f;
 
     float y = startY;
 
@@ -190,7 +190,7 @@ void RenderSystem::renderText(PositionComponent* position, SizeComponent* size, 
         }
 
         // Center horizontally inside the bounding box
-        float x = position->x + size->w * 0.5f - lineWidth * 0.5f;
+        float x = rect.x + rect.z * 0.5f - lineWidth * 0.5f;
 
         // Draw characters in this line
         for (char c : line) {
@@ -223,6 +223,10 @@ void RenderSystem::renderText(PositionComponent* position, SizeComponent* size, 
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void RenderSystem::renderText(PositionComponent* position, SizeComponent* size, TextComponent* text, Shader* shader) {
+    renderText(glm::vec4(position->x, position->y, size->w, size->h), text->text, text->color, shader);
 }
 
 void RenderSystem::render() {

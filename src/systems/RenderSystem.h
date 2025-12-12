@@ -1,6 +1,7 @@
 #pragma once 
 
 #include <glad/glad.h>
+#include <glm/fwd.hpp>
 #include <map>
 #include <unordered_map>
 
@@ -35,9 +36,22 @@ public:
         Shader* shader
     );
 
+    void renderText(
+        glm::vec4 rect,
+        std::string text,
+        const glm::vec3& color,
+        Shader* shader
+    );
+
     void renderSquare(
         PositionComponent* position, 
         SizeComponent* size,
+        const glm::vec3& color,
+        Shader* shader
+    );
+
+    void renderSquare(
+        glm::vec4 rect,
         const glm::vec3& color,
         Shader* shader
     );
@@ -50,6 +64,10 @@ public:
 
     void registerShader(const std::string& name, Shader* shader) {
         shaderPrograms[name] = shader;
+    }
+
+    Shader* getShader(const std::string& name) {
+        return shaderPrograms[name];
     }
 
 private:

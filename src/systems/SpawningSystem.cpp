@@ -15,8 +15,14 @@ SpawningSystem::SpawningSystem(ComponentManager& componentManager, EntityFactory
     spawnCount = 100000;
     spawnInterval = minSpawnInterval;
 #endif
+}
 
+void SpawningSystem::setStart() {
     auto& path = mapLoader.getPath();
+
+    if (path.size() == 0) {
+        return;
+    }
 
     glm::vec2 dir = glm::vec2(path[1].x - path[0].x, path[1].y - path[0].y);
 
@@ -24,6 +30,11 @@ SpawningSystem::SpawningSystem(ComponentManager& componentManager, EntityFactory
 }
 
 void SpawningSystem::update(float deltaTime) {
+    if (!startDirection.has_value()) {
+        setStart();
+        return;
+    }
+
     static std::random_device rd;
     static std::mt19937 gen(rd());
 
@@ -92,7 +103,7 @@ void SpawningSystem::update(float deltaTime) {
 
             colorComponent.color = baseColor;
 
-            glm::vec2 spawnPos = glm::vec2(position->x - startDirection.x * TILE_SIZE, position->y - startDirection.y * TILE_SIZE);
+            glm::vec2 spawnPos = glm::vec2(position->x - startDirection->x * TILE_SIZE, position->y - startDirection->y * TILE_SIZE);
 
             auto enemy = entityFactory.createFireBug(spawnPos, enemyHealth, enemySpeed, enemyGold);
             componentManager.addComponent(enemy, colorComponent);
