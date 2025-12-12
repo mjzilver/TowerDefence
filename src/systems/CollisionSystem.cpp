@@ -39,7 +39,7 @@ void CollisionSystem::update(float) {
                 auto* otherCollision = collisions->get(otherEntity);
                 auto* otherHealth = healths->get(otherEntity);
 
-                if (otherPosition && otherSize && otherHealth) {
+                if (otherPosition && otherSize && otherHealth && otherCollision) {
                     float otherX = otherPosition->x + otherCollision->x;
                     float otherY = otherPosition->y + otherCollision->y;
                     float otherW = otherCollision->w;

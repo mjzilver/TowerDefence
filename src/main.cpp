@@ -33,8 +33,6 @@
 #include "event/Event.h"
 #endif
 
-#define WIREFRAME 0
-
 int main() {
     TextureManager textureManager;
 

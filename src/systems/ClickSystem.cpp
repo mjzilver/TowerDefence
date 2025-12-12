@@ -57,7 +57,7 @@ void ClickSystem::onClick(int button, int action, double x, double y) {
             float top = position->y;
             float bottom = position->y + size->h;
 
-            if (CollisionSystem::checkCollision(x, y, clickSize, clickSize, left, top, right - left, bottom - top)) {
+            if (CollisionSystem::contains(left, top, right - left, bottom - top, x, y)) {
                 Event event;
                 event.type = clickable->clickedEvent;
                 event.addData("entity", &entity);
@@ -90,7 +90,7 @@ void ClickSystem::onHover(double x, double y) {
             float top = position->y;
             float bottom = position->y + size->h;
 
-            if (CollisionSystem::checkCollision(x, y, clickSize, clickSize, left, top, right - left, bottom - top)) {
+            if (CollisionSystem::contains(left, top, right - left, bottom - top, x, y)) {
                 clickable->hovered = true;
                 shader->name = "hover";
             }

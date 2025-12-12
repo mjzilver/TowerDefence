@@ -1,5 +1,6 @@
 #include "SpawningSystem.h"
 
+#include <iostream>
 #include <random>
 
 #include "../components/ColorComponent.h"
@@ -17,12 +18,9 @@ SpawningSystem::SpawningSystem(ComponentManager& componentManager, EntityFactory
 
     auto& path = mapLoader.getPath();
 
-    startDirection = {path[0].x - path[1].x, path[0].y - path[1].y};
+    glm::vec2 dir = glm::vec2(path[1].x - path[0].x, path[1].y - path[0].y);
 
-    endDirection = {
-        path[path.size() - 1].x - path[path.size() - 2].x,
-        path[path.size() - 1].y - path[path.size() - 2].y,
-    };
+    startDirection = glm::vec2((dir.x > 0) ? 1 : (dir.x < 0 ? -1 : 0), (dir.y > 0) ? 1 : (dir.y < 0 ? -1 : 0));
 }
 
 void SpawningSystem::update(float deltaTime) {
@@ -94,11 +92,14 @@ void SpawningSystem::update(float deltaTime) {
 
             colorComponent.color = baseColor;
 
-            auto enemy = entityFactory.createFireBug({position->x - (size->w * 2) * startDirection.x, position->y + (size->h * 2) * startDirection.y},
-                                                     enemyHealth, enemySpeed, enemyGold);
+            glm::vec2 spawnPos = glm::vec2(position->x - startDirection.x * TILE_SIZE, position->y - startDirection.y * TILE_SIZE);
+
+            auto enemy = entityFactory.createFireBug(spawnPos, enemyHealth, enemySpeed, enemyGold);
             componentManager.addComponent(enemy, colorComponent);
 
             spawnCount++;
+        } else {
+            std::cerr << "start tile is invalid\n";
         }
 
         spawnTimer -= spawnInterval;

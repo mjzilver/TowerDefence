@@ -21,7 +21,6 @@ private:
     MapLoader& mapLoader;
 
     glm::vec2 startDirection;
-    glm::vec2 endDirection;
 
     int spawnCount = 0;
     float spawnTimer = 0.0f;
