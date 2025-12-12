@@ -12,7 +12,8 @@
 
 class PathfindingSystem : public System {
 public:
-    PathfindingSystem(ComponentManager& componentManager, MapLoader& mapLoader) : componentManager(componentManager), mapLoader(mapLoader) {}
+    PathfindingSystem(ComponentManager& componentManager, MapLoader& mapLoader) : componentManager(componentManager), mapLoader(mapLoader), path(mapLoader.getPath()) {
+    }
 
     void update(float deltaTime) override;
     void generatePath();
@@ -22,7 +23,7 @@ public:
 private:
     void generateRandomOffset(PathfindingComponent* pathfinding, SizeComponent* targetSize);
 
-    std::vector<Entity> pathTiles;
+    std::vector<PathSegment>& path;
 
     Entity start;
     Entity end;

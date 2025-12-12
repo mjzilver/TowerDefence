@@ -2,14 +2,13 @@
 
 #include <random>
 
-#include "../components/FlagComponent.h"
+#include "../components/DeathComponent.h"
 #include "../components/PathfindingComponent.h"
 #include "../components/PositionComponent.h"
 #include "../components/SizeComponent.h"
 #include "../components/SpeedComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../ecs/Component.h"
-#include "../utils/Globals.h"
 
 void PathfindingSystem::update(float) {
     auto* pathfinders = componentManager.getArray<PathfindingComponent>();
@@ -27,9 +26,9 @@ void PathfindingSystem::update(float) {
 
         if (position && velocity && size && speed && !pathfinding->reachedGoal) {
             // Check if the entity is following a valid path
-            if (pathfinding->currentIndex >= 0 && pathfinding->currentIndex < static_cast<int>(pathTiles.size())) {
-                const auto* const targetTile = componentManager.getComponent<PositionComponent>(pathTiles[pathfinding->currentIndex]);
-                const auto* const targetSize = componentManager.getComponent<SizeComponent>(pathTiles[pathfinding->currentIndex]);
+            if (pathfinding->currentIndex >= 0 && pathfinding->currentIndex < path.size()) {
+                const auto* const targetTile = componentManager.getComponent<PositionComponent>(path[pathfinding->currentIndex].entity);
+                const auto* const targetSize = componentManager.getComponent<SizeComponent>(path[pathfinding->currentIndex].entity);
 
                 if (targetTile && targetSize) {
                     // Get the center positions of the entity and the target tile
@@ -65,12 +64,15 @@ void PathfindingSystem::update(float) {
                     } else {
                         pathfinding->currentIndex++;
 
-                        if (pathfinding->currentIndex >= (int)pathTiles.size()) {
+                        if (pathfinding->currentIndex >= (int)path.size()) {
                             pathfinding->reachedGoal = true;
 
-                            componentManager.scheduleDestruction(entity);
+                            DeathComponent deathComp;
+                            deathComp.hasDied = true;
+                            deathComp.remainingTime = 0.3f;
+                            componentManager.addComponent(entity, deathComp);
                         } else {
-                            auto* nextTileSize = componentManager.getComponent<SizeComponent>(pathTiles[pathfinding->currentIndex]);
+                            auto* nextTileSize = componentManager.getComponent<SizeComponent>(path[pathfinding->currentIndex].entity);
                             if (nextTileSize) {
                                 generateRandomOffset(pathfinding, nextTileSize);
                             }
@@ -79,35 +81,6 @@ void PathfindingSystem::update(float) {
                 }
             }
         }
-    }
-}
-
-void PathfindingSystem::generatePath() {
-    const auto& waypoints = mapLoader.waypoints;
-
-    for (const auto& waypoint : waypoints) {
-        Entity matchingTile = INVALID_ENTITY;
-
-        for (Entity pathTile : entityManager->getEntities()) {
-            auto* position = componentManager.getComponent<PositionComponent>(pathTile);
-            auto* size = componentManager.getComponent<SizeComponent>(pathTile);
-            auto* flag = componentManager.getComponent<FlagComponent>(pathTile);
-
-            if (position && size && flag && (flag->type == FlagType::PATH || flag->type == FlagType::START || flag->type == FlagType::END)) {
-                if (flag->type == FlagType::START) {
-                    start = pathTile;
-                } else if (flag->type == FlagType::END) {
-                    end = pathTile;
-                }
-
-                if (position->x == waypoint.x * TILE_SIZE && position->y == waypoint.y * TILE_SIZE) {
-                    matchingTile = pathTile;
-                    break;
-                }
-            }
-        }
-
-        pathTiles.push_back(matchingTile);
     }
 }
 

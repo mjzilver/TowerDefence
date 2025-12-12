@@ -8,12 +8,21 @@
 #include "../components/SizeComponent.h"
 #include "../utils/Globals.h"
 
-SpawningSystem::SpawningSystem(ComponentManager& componentManager, EntityFactory& entityFactory, PathfindingSystem& pathfindingSystem)
-    : componentManager(componentManager), entityFactory(entityFactory), pathfindingSystem(pathfindingSystem) {
+SpawningSystem::SpawningSystem(ComponentManager& componentManager, EntityFactory& entityFactory, MapLoader& mapLoader)
+    : componentManager(componentManager), entityFactory(entityFactory), mapLoader(mapLoader) {
 #if STRESS_TEST
     spawnCount = 100000;
     spawnInterval = minSpawnInterval;
 #endif
+
+    auto& path = mapLoader.getPath();
+
+    startDirection = {path[0].x - path[1].x, path[0].y - path[1].y};
+
+    endDirection = {
+        path[path.size() - 1].x - path[path.size() - 2].x,
+        path[path.size() - 1].y - path[path.size() - 2].y,
+    };
 }
 
 void SpawningSystem::update(float deltaTime) {
@@ -40,7 +49,7 @@ void SpawningSystem::update(float deltaTime) {
             }
         }
 
-        Entity& start = pathfindingSystem.getStart();
+        Entity start = mapLoader.getStart().entity;
         auto* position = componentManager.getComponent<PositionComponent>(start);
         auto* size = componentManager.getComponent<SizeComponent>(start);
 
@@ -85,7 +94,8 @@ void SpawningSystem::update(float deltaTime) {
 
             colorComponent.color = baseColor;
 
-            auto enemy = entityFactory.createFireBug({position->x - size->w * 2, position->y}, enemyHealth, enemySpeed, enemyGold);
+            auto enemy = entityFactory.createFireBug({position->x - (size->w * 2) * startDirection.x, position->y + (size->h * 2) * startDirection.y},
+                                                     enemyHealth, enemySpeed, enemyGold);
             componentManager.addComponent(enemy, colorComponent);
 
             spawnCount++;

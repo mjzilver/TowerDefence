@@ -82,6 +82,9 @@ int main() {
 
     MapLoader mapLoader = MapLoader(entityFactory);
     mapLoader.loadMap("map1.txt");
+#if DEBUG
+    mapLoader.debugPrintPath();
+#endif
 
     auto& renderSystem = systemManager.registerSystem<RenderSystem>(&entityManager, componentManager, fontLoader);
     auto& animationSystem = systemManager.registerSystem<AnimationSystem>(&entityManager, componentManager);
@@ -93,7 +96,7 @@ int main() {
     auto& stateSystem = systemManager.registerSystem<StateSystem>(&entityManager, componentManager);
     auto& clickSystem = systemManager.registerSystem<ClickSystem>(&entityManager, componentManager);
     auto& buildSystem = systemManager.registerSystem<BuildSystem>(&entityManager, componentManager, entityFactory);
-    auto& spawningSystem = systemManager.registerSystem<SpawningSystem>(&entityManager, componentManager, entityFactory, pathfindingSystem);
+    auto& spawningSystem = systemManager.registerSystem<SpawningSystem>(&entityManager, componentManager, entityFactory, mapLoader);
 
     glfwSetWindowUserPointer(window, &clickSystem);
     glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int) {
@@ -107,8 +110,6 @@ int main() {
         auto clickSystem = static_cast<ClickSystem*>(glfwGetWindowUserPointer(window));
         clickSystem->onHover(x, y);
     });
-
-    pathfindingSystem.generatePath();
 
 #if WIREFRAME
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

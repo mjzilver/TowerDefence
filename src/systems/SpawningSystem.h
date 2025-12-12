@@ -1,14 +1,15 @@
 #pragma once
+#include <glm/fwd.hpp>
 #include "../ecs/System.h"
 #include "../ecs/ComponentManager.h"
 #include "../ecs/EntityFactory.h"
-#include "PathfindingSystem.h"
+#include "../map/MapLoader.h"
 
 #include "../event/Event.h"
 
 class SpawningSystem : public System {
 public:
-    SpawningSystem(ComponentManager& componentManager, EntityFactory& entityFactory, PathfindingSystem& pathfindingSystem);
+    SpawningSystem(ComponentManager& componentManager, EntityFactory& entityFactory, MapLoader& mapLoader);
 
     void onEvent(const Event& event);
 
@@ -17,7 +18,10 @@ public:
 private:
     ComponentManager& componentManager;
     EntityFactory& entityFactory;
-    PathfindingSystem& pathfindingSystem;
+    MapLoader& mapLoader;
+
+    glm::vec2 startDirection;
+    glm::vec2 endDirection;
 
     int spawnCount = 0;
     float spawnTimer = 0.0f;

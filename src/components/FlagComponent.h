@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../ecs/Component.h"
-#include "../utils/Direction.h"
 
 enum FlagType {
     START,

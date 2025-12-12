@@ -5,3 +5,4 @@ static const int SCREEN_WIDTH = 800;
 static const int SCREEN_HEIGHT = 900;
 
 #define STRESS_TEST 0
+#define DEBUG 0
