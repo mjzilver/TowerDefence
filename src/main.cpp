@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "ecs/EntityFactory.h"
 #include "ecs/SystemManager.h"
 #include "engine/GLContext.h"
@@ -66,8 +68,9 @@ int main() {
     double lastTime = glfwGetTime();
 
     while (!glfwWindowShouldClose(window)) {
-        double dt = glfwGetTime() - lastTime;
-        lastTime = glfwGetTime();
+        double currentTime = glfwGetTime();
+        double deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
 
         glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -75,7 +78,7 @@ int main() {
         if (stateSystem.getState() == EngineState::MAIN_MENU)
             menu.render(renderSystem);
         else {
-            systemManager.updateSystems(dt);
+            systemManager.updateSystems(deltaTime);
             renderSystem.render();
         }
 
@@ -83,6 +86,12 @@ int main() {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        static double lastPrint = 0;
+        if (currentTime - lastPrint >= 1.0) {
+            std::cout << "FPS: " << 1.0 / deltaTime << "\n";
+            lastPrint = currentTime;
+        }
     }
 
     glfwTerminate();

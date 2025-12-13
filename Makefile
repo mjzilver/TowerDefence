@@ -11,6 +11,7 @@ RELEASE_FLAGS = -DCMAKE_BUILD_TYPE=Release \
 PROFILE_FLAGS = -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_CXX_FLAGS="-O2 -pg" \
                 -DCMAKE_EXE_LINKER_FLAGS="-pg"
+MAKE_FLAGS = -j4
 
 .PHONY: all
 all: build run
@@ -21,7 +22,7 @@ all: build run
 .PHONY: build
 build:
 	mkdir -p $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(RELEASE_FLAGS) .. && make
+	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(RELEASE_FLAGS) .. && $(MAKE) $(MAKE_FLAGS)
 
 .PHONY: run
 run: build
@@ -48,7 +49,7 @@ tidy:
 .PHONY: build-debug
 build-debug:
 	mkdir -p $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(DEBUG_FLAGS) .. && $(MAKE)
+	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(DEBUG_FLAGS) .. && $(MAKE) $(MAKE_FLAGS)
 
 run-debug: build-debug
 	cd $(BUILD_DIR) && \
@@ -65,7 +66,7 @@ debug: build-debug run-debug
 .PHONY: build-profile
 build-profile:
 	mkdir -p $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(PROFILE_FLAGS) .. && $(MAKE)
+	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(PROFILE_FLAGS) .. && $(MAKE) $(MAKE_FLAGS)
 
 .PHONY: profile
 profile: build-profile
