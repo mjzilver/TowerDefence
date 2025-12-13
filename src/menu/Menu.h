@@ -19,10 +19,10 @@ public:
     void registerElement(UIElement* e) { elements.push_back(e); }
 
     void onClick(const glm::vec2& clickPos);
+    
+    void onKeyPress(int key);
 
     void onHover(const glm::vec2& pos);
-
-    void onKeyPress(int key);
 
     void render(RenderSystem& renderSystem);
 

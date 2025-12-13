@@ -1,5 +1,4 @@
 #include <iostream>
-
 #include "ecs/EntityFactory.h"
 #include "ecs/SystemManager.h"
 #include "engine/GLContext.h"
@@ -30,7 +29,7 @@ int main() {
     Shader defaultShader("default_vertex.glsl", "default_fragment.glsl");
     Shader hoverShader("default_vertex.glsl", "hover_fragment.glsl");
     Shader textShader("text_vertex.glsl", "text_fragment.glsl");
-    Shader squareShader("square_vertex.glsl", "square_fragment.glsl");
+    Shader rectShader("rect_vertex.glsl", "rect_fragment.glsl");
 
     EntityManager entityManager;
     ComponentManager componentManager;
@@ -63,7 +62,7 @@ int main() {
     renderSystem.registerShader("default", &defaultShader);
     renderSystem.registerShader("hover", &hoverShader);
     renderSystem.registerShader("text", &textShader);
-    renderSystem.registerShader("square", &squareShader);
+    renderSystem.registerShader("rect", &rectShader);
 
     double lastTime = glfwGetTime();
 

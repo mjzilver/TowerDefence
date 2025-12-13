@@ -32,6 +32,7 @@ void Menu::onKeyPress(int key) {
             break;
     }
 }
+
 void Menu::render(RenderSystem& renderSystem) {
     for (auto* e : elements) {
         renderSystem.renderText(e->getPos(), e->getText(), e->getTextColor(), renderSystem.getShader("text"));
@@ -42,7 +43,7 @@ void Menu::render(RenderSystem& renderSystem) {
             color = color * e->getHoverColor();
         }
 
-        renderSystem.renderSquare(e->getPos(), color, renderSystem.getShader("square"));
+        renderSystem.renderRectangle(e->getPos(), color, renderSystem.getShader("rect"));
     }
 }
 

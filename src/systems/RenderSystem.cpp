@@ -11,6 +11,7 @@
 #include "../components/ColorComponent.h"
 #include "../components/ShaderComponent.h"
 #include "../components/TextComponent.h"
+#include "../components/CollisionComponent.h"
 #include "../font/FontLoader.h"
 #include "../utils/Globals.h"
 #include "../utils/String.h"
@@ -46,7 +47,7 @@ GLuint createUnitSquareVao() {
     return vao;
 }
 
-void RenderSystem::renderSquare(glm::vec4 rect, const glm::vec3& color, Shader* shader) {
+void RenderSystem::renderRectangle(glm::vec4 rect, const glm::vec3& color, Shader* shader) {
     GLuint shaderProgram = shader->getProgram();
     glUseProgram(shaderProgram);
 
@@ -75,8 +76,8 @@ void RenderSystem::renderSquare(glm::vec4 rect, const glm::vec3& color, Shader* 
     glBindVertexArray(0);
 }
 
-void RenderSystem::renderSquare(PositionComponent* position, SizeComponent* size, const glm::vec3& color, Shader* shader) {
-    renderSquare(glm::vec4(position->x, position->y, size->w, size->h), color, shader);
+void RenderSystem::renderRectangle(PositionComponent* position, SizeComponent* size, const glm::vec3& color, Shader* shader) {
+    renderRectangle(glm::vec4(position->x, position->y, size->w, size->h), color, shader);
 }
 
 void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* texture, SizeComponent* size, RotationComponent* rotation,
@@ -238,6 +239,7 @@ void RenderSystem::render() {
     auto* textComp = componentManager.getArray<TextComponent>();
     auto* colors = componentManager.getArray<ColorComponent>();
     auto* clickable = componentManager.getArray<ClickableComponent>();
+    auto* collisions = componentManager.getArray<CollisionComponent>();
 
     auto entities = positions->getEntities();
 
@@ -245,11 +247,15 @@ void RenderSystem::render() {
         auto* posA = positions->get(a);
         auto* posB = positions->get(b);
 
-        if (!posA || !posB) return a < b;
+        if (!posA && !posB) return a < b;
+        if (!posA) return false;
+        if (!posB) return true;
 
         if (posA->zIndex != posB->zIndex) return posA->zIndex > posB->zIndex;
 
-        return posA->y > posB->y;
+        if (posA->y != posB->y) return posA->y > posB->y;
+
+        return a < b;
     });
 
     for (Entity entity : entities) {
@@ -261,6 +267,7 @@ void RenderSystem::render() {
         auto* textComponent = textComp->get(entity);
         auto* colorComponent = colors->get(entity);
         auto* clickableComponent = clickable->get(entity);
+        auto* collision = collisions->get(entity);
 
         std::string shaderName = "default";
         if (shaderComponent) {
@@ -291,10 +298,19 @@ void RenderSystem::render() {
                 color.b = colorComponent->color.b * 1.5f;
             }
 
-            renderSquare(position, size, color, shaderPrograms["square"]);
+            renderRectangle(position, size, color, shaderPrograms["rect"]);
         } else if (position && texture && size && shader) {
             // Texture rendering
             renderEntity(position, texture, size, rotation, colorComponent ? &colorComponent->color : nullptr, shader);
+        }
+
+        if(debugRender) {
+            if (!position || !collision) continue;
+
+            glm::vec4 rect{position->x + collision->x, position->y + collision->y, collision->w, collision->h};
+            glm::vec3 color{1.0f, 0.0f, 0.0f};
+
+            renderRectangle(rect, color, shaderPrograms["rect"]);
         }
     }
 

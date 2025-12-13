@@ -43,14 +43,14 @@ public:
         Shader* shader
     );
 
-    void renderSquare(
+    void renderRectangle(
         PositionComponent* position, 
         SizeComponent* size,
         const glm::vec3& color,
         Shader* shader
     );
 
-    void renderSquare(
+    void renderRectangle(
         glm::vec4 rect,
         const glm::vec3& color,
         Shader* shader
@@ -69,11 +69,12 @@ public:
     Shader* getShader(const std::string& name) {
         return shaderPrograms[name];
     }
-
 private:
     ComponentManager& componentManager;
     FontLoader& fontLoader;
-    
+
+    bool debugRender = false;
+
     // hash map to store the shader programs
     std::unordered_map<std::string, Shader*> shaderPrograms;
     std::map<Shader*, GLuint> shaderVAOs; 

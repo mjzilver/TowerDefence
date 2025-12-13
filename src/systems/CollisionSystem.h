@@ -4,12 +4,21 @@
 #include <glm/vec4.hpp>
 #include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
+#include "../engine/QuadTree.h"
+#include "../utils/Globals.h"
 
 class CollisionSystem : public System {
 public:
-    CollisionSystem(ComponentManager& componentManager) : componentManager(componentManager) {}
+    CollisionSystem(ComponentManager& componentManager) : componentManager(componentManager), quadTree(componentManager, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}) {}
 
     void update(float deltaTime) override;
+
+    static bool checkCollision(const glm::vec4& a, const glm::vec4& b) {
+        return a.x <= b.x + b.z &&
+            a.x + a.z >= b.x &&
+            a.y <= b.y + b.w &&
+            a.y + a.w >= b.y;
+    }
 
     static bool checkCollision(const float x1, const float y1, const float w1, const float h1,
                                const float x2, const float y2, const float w2, const float h2) {
@@ -30,4 +39,5 @@ public:
 
 private:
     ComponentManager& componentManager;
+    QuadTree quadTree;
 };

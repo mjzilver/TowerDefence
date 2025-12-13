@@ -4,6 +4,7 @@
 #include "../components/DamageComponent.h"
 #include "../components/HealthComponent.h"
 #include "../components/PositionComponent.h"
+#include "../components/RotationComponent.h"
 #include "../components/SizeComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../event/Event.h"
@@ -11,12 +12,19 @@
 #include "../utils/Globals.h"
 
 void CollisionSystem::update(float) {
+    quadTree.clear();
+
     auto* collisions = componentManager.getArray<CollisionComponent>();
     auto* positions = componentManager.getArray<PositionComponent>();
     auto* sizes = componentManager.getArray<SizeComponent>();
     auto* velocities = componentManager.getArray<VelocityComponent>();
     auto* damages = componentManager.getArray<DamageComponent>();
     auto* healths = componentManager.getArray<HealthComponent>();
+    auto* rotations = componentManager.getArray<RotationComponent>();
+
+    for (Entity entity : collisions->getEntities()) {
+        quadTree.insert(entity);
+    }
 
     for (Entity entity : collisions->getEntities()) {
         auto* pos = positions->get(entity);
@@ -31,7 +39,8 @@ void CollisionSystem::update(float) {
             float w = col->w;
             float h = col->h;
 
-            for (Entity otherEntity : collisions->getEntities()) {
+            std::vector<Entity> nearby = quadTree.query({x, y, w, h});
+            for (Entity otherEntity : nearby) {
                 if (entity == otherEntity) {
                     continue;
                 }

@@ -332,7 +332,7 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float /*targetX*/,
     componentManager.addComponent(entity, rotationComponent);
 
     CollisionComponent collisionComponent;
-    collisionComponent.x = 0;
+    collisionComponent.x = -PROJECTILE_WIDTH;
     collisionComponent.y = 0;
     collisionComponent.w = PROJECTILE_WIDTH * 3;
     collisionComponent.h = PROJECTILE_HEIGHT;
@@ -399,7 +399,7 @@ Entity EntityFactory::createRectangle(const glm::vec2& position, const glm::vec2
     componentManager.addComponent(entity, colorComponent);
 
     ShaderComponent shaderComponent;
-    shaderComponent.name = "square";
+    shaderComponent.name = "rect";
     componentManager.addComponent(entity, shaderComponent);
 
     return entity;
