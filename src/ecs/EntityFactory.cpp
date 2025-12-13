@@ -394,7 +394,7 @@ Entity EntityFactory::createRectangle(const glm::vec2& position, const glm::vec2
 
     SizeComponent sizeComponent;
     sizeComponent.w = size.x;
-    sizeComponent.h = size.y; 
+    sizeComponent.h = size.y;
     componentManager.addComponent(entity, sizeComponent);
 
     ColorComponent colorComponent;

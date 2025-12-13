@@ -1,11 +1,11 @@
 #include "Menu.h"
 
+#include "../event/Event.h"
+#include "../event/EventDispatcher.h"
 #include "../systems/CollisionSystem.h"
 #include "../utils/Globals.h"
 #include "UIButton.h"
 #include "UILabel.h"
-#include "../event/Event.h"
-#include "../event/EventDispatcher.h"
 
 void Menu::onClick(const glm::vec2& clickPos) {
     for (auto* e : elements) {
@@ -24,13 +24,11 @@ void Menu::onHover(const glm::vec2& pos) {
 }
 
 void Menu::onKeyPress(int key) {
-    switch (key)
-    {
+    switch (key) {
         case GLFW_KEY_C:
             Event event;
             event.type = EventType::ACTIVATE_CHEATS;
             EventDispatcher::getInstance().dispatch(event);
-
             break;
     }
 }

@@ -280,7 +280,7 @@ void RenderSystem::render() {
 
         // Button rendering
         if (position && shader && size && colorComponent && !texture) {
-            if(textComponent) {
+            if (textComponent) {
                 renderText(position, size, textComponent, shader);
             }
 

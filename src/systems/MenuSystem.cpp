@@ -143,7 +143,7 @@ void MenuSystem::onEvent(const Event& event) {
 
             if (clickable->clickedEvent == EventType::GRASS_TILE_CLICKED) {
                 buildClick(entity);
-            } 
+            }
         }
 
         for (Entity entity : clickables->getEntities()) {
