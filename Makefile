@@ -8,6 +8,9 @@ DEBUG_FLAGS = -DCMAKE_BUILD_TYPE=Debug \
               -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer -O1"
 RELEASE_FLAGS = -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_CXX_FLAGS="-O3 -march=native -DNDEBUG"
+PROFILE_FLAGS = -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_CXX_FLAGS="-O2 -pg" \
+                -DCMAKE_EXE_LINKER_FLAGS="-pg"
 
 .PHONY: all
 all: build run
@@ -47,15 +50,25 @@ build-debug:
 	mkdir -p $(BUILD_DIR)
 	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(DEBUG_FLAGS) .. && $(MAKE)
 
-.PHONY: run-debug
 run-debug: build-debug
-	cd $(BUILD_DIR) && ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 ./$(TARGET)
+	cd $(BUILD_DIR) && \
+	LSAN_OPTIONS=suppressions=../lsan.supp \
+	ASAN_OPTIONS=detect_leaks=1:abort_on_error=0 \
+	./TowerDefence 2> >(tee asan.log >&2)
 
 .PHONY: debug
 debug: build-debug run-debug
 
+# ---------
+# Profiling
+# ---------
+.PHONY: build-profile
+build-profile:
+	mkdir -p $(BUILD_DIR)
+	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(PROFILE_FLAGS) .. && $(MAKE)
+
 .PHONY: profile
-profile: build-debug
+profile: build-profile
 	cd $(BUILD_DIR) && \
 	./$(TARGET) && \
 	gprof ./$(TARGET) gmon.out > profile.txt

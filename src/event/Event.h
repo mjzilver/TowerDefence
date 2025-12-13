@@ -8,6 +8,7 @@ enum class EventType {
     ENTITY_DESTROYED, 
     GRASS_TILE_CLICKED,
     TOWER_CLICKED,
+    ACTIVATE_CHEATS,
     UNSELECT
 };
 

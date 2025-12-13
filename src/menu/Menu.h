@@ -22,6 +22,8 @@ public:
 
     void onHover(const glm::vec2& pos);
 
+    void onKeyPress(int key);
+
     void render(RenderSystem& renderSystem);
 
     void createMainMenu(MapLoader& mapLoader, ComponentManager& componentManager, SystemManager& systemManager, StateSystem& stateSystem, GLFWwindow* window);

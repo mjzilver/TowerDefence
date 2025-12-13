@@ -1,5 +1,7 @@
 #include "InputRouter.h"
 
+#include <GLFW/glfw3.h>
+
 void installInputCallbacks(GLFWwindow* window, InputContext* ctx) {
     glfwSetWindowUserPointer(window, ctx);
 
@@ -21,5 +23,15 @@ void installInputCallbacks(GLFWwindow* window, InputContext* ctx) {
             ctx->menu->onHover({x, y});
         else
             ctx->click->onHover(x, y);
+    });
+
+    glfwSetKeyCallback(window, [](GLFWwindow* win, int key, int scancode, int action, int mods) {
+        (void)scancode;
+        (void)mods;
+        
+        if (action == GLFW_PRESS) {
+            auto* ctx = static_cast<InputContext*>(glfwGetWindowUserPointer(win));
+            ctx->menu->onKeyPress(key);
+        }
     });
 }

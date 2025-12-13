@@ -17,7 +17,7 @@ void MovementSystem::update(float deltaTime) {
         auto* direction = directions->get(entity);
         auto* texture = textures->get(entity);
 
-        if (position) {
+        if (position && velocity) {
             if (velocity->x == 0 && velocity->y == 0) {
                 continue;
             }
