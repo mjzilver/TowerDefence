@@ -11,12 +11,7 @@
 #include "../utils/Globals.h"
 
 SpawningSystem::SpawningSystem(ComponentManager& componentManager, EntityFactory& entityFactory, MapLoader& mapLoader)
-    : componentManager(componentManager), entityFactory(entityFactory), mapLoader(mapLoader) {
-#if STRESS_TEST
-    spawnCount = 100000;
-    spawnInterval = minSpawnInterval;
-#endif
-}
+    : componentManager(componentManager), entityFactory(entityFactory), mapLoader(mapLoader) {}
 
 void SpawningSystem::setStart() {
     auto& path = mapLoader.getPath();
@@ -34,7 +29,7 @@ void SpawningSystem::reset() {
     spawnCount = 0;
     spawnTimer = 0.0f;
     spawnInterval = 3.0f;
-    
+
     healthStart = 80;
     speedStart = 60;
     goldRewardStart = 10;

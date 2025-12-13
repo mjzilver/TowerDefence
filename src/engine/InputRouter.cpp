@@ -8,8 +8,8 @@ void installInputCallbacks(GLFWwindow* window, InputContext* ctx) {
         glfwGetCursorPos(win, &x, &y);
         auto* ctx = static_cast<InputContext*>(glfwGetWindowUserPointer(win));
 
-        if (*ctx->menuMode)
-            ctx->menu->onClick({(float)x, (float)y});
+        if (ctx->stateSystem->getState() == EngineState::MAIN_MENU)
+            ctx->menu->onClick({x, y});
         else
             ctx->click->onClick(button, action, x, y);
     });
@@ -17,7 +17,7 @@ void installInputCallbacks(GLFWwindow* window, InputContext* ctx) {
     glfwSetCursorPosCallback(window, [](GLFWwindow* win, double x, double y) {
         auto* ctx = static_cast<InputContext*>(glfwGetWindowUserPointer(win));
 
-        if (*ctx->menuMode)
+        if (ctx->stateSystem->getState() == EngineState::MAIN_MENU)
             ctx->menu->onHover({x, y});
         else
             ctx->click->onHover(x, y);

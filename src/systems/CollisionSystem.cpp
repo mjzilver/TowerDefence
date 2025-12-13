@@ -25,7 +25,7 @@ void CollisionSystem::update(float) {
         auto* size = sizes->get(entity);
         auto* collision = collisions->get(entity);
 
-        if (position && velocity && size && damage) {
+        if (position && velocity && size && damage && collision) {
             float x = position->x;
             float y = position->y;
 

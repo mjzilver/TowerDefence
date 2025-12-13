@@ -20,7 +20,6 @@
 #include "utils/Globals.h"
 
 int main() {
-    bool menuMode = true;
     GLContext glContext;
 
     GLFWwindow* window = glContext.initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Tower Defence!");
@@ -37,11 +36,10 @@ int main() {
 
     TextureManager textureManager;
     EntityFactory entityFactory(componentManager, entityManager, textureManager);
-    FontLoader fontLoader(12);
+    FontLoader fontLoader(14);
     MapLoader mapLoader(entityFactory);
 
     Menu menu;
-    menu.createMainMenu(mapLoader, componentManager, systemManager, menuMode, window);
 
     auto& renderSystem = systemManager.registerSystem<RenderSystem>(&entityManager, componentManager, fontLoader);
     auto& animationSystem = systemManager.registerSystem<AnimationSystem>(&entityManager, componentManager);
@@ -52,10 +50,12 @@ int main() {
     auto& combatSystem = systemManager.registerSystem<CombatSystem>(&entityManager, componentManager, entityFactory);
     auto& stateSystem = systemManager.registerSystem<StateSystem>(&entityManager, componentManager);
     auto& clickSystem = systemManager.registerSystem<ClickSystem>(&entityManager, componentManager);
-    auto& menuSystem = systemManager.registerSystem<MenuSystem>(&entityManager, componentManager, entityFactory, menuMode);
+    auto& menuSystem = systemManager.registerSystem<MenuSystem>(&entityManager, componentManager, entityFactory, stateSystem);
     auto& spawningSystem = systemManager.registerSystem<SpawningSystem>(&entityManager, componentManager, entityFactory, mapLoader);
 
-    InputContext inputCtx{&clickSystem, &menu, &menuMode};
+    menu.createMainMenu(mapLoader, componentManager, systemManager, stateSystem, window);
+
+    InputContext inputCtx{&clickSystem, &menu, &stateSystem};
     installInputCallbacks(window, &inputCtx);
 
     renderSystem.registerShader("default", &defaultShader);
@@ -72,7 +72,7 @@ int main() {
         glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (menuMode)
+        if (stateSystem.getState() == EngineState::MAIN_MENU)
             menu.render(renderSystem);
         else {
             systemManager.updateSystems(dt);

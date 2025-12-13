@@ -21,3 +21,9 @@ void StateSystem::update(float) {
         }
     }
 }
+
+EngineState& StateSystem::getState() { return engineState; };
+
+void StateSystem::startGame() { engineState = EngineState::GAMEPLAY; }
+
+void StateSystem::openMainMenu() { engineState = EngineState::MAIN_MENU; }

@@ -86,6 +86,22 @@ Entity EntityFactory::createPathTile(glm::vec2 position) {
     return entity;
 }
 
+Entity EntityFactory::createStartTile(glm::vec2 position) {
+    Entity entity = createPathTile(position);
+    FlagComponent flagComponent;
+    flagComponent.type = START;
+    componentManager.addComponent(entity, flagComponent);
+    return entity;
+}
+
+Entity EntityFactory::createEndTile(glm::vec2 position) {
+    Entity entity = createPathTile(position);
+    FlagComponent flagComponent;
+    flagComponent.type = END;
+    componentManager.addComponent(entity, flagComponent);
+    return entity;
+}
+
 Entity EntityFactory::createFireBug(glm::vec2 position, int health, int speed, int goldReward) {
     Entity entity = entityManager.createEntity();
 
@@ -367,16 +383,16 @@ Entity EntityFactory::createTowerProjectileImpact(glm::vec2 position) {
     return entity;
 }
 
-Entity EntityFactory::createKillCounter(glm::vec2 offset) {
+Entity EntityFactory::createKillCounter(glm::vec2 pos) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
-    positionComponent.x = 50;
-    positionComponent.y = offset.y - 85;
+    positionComponent.x = pos.x;
+    positionComponent.y = pos.y;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
-    sizeComponent.w = 75;
+    sizeComponent.w = 100;
     sizeComponent.h = 75;
     componentManager.addComponent(entity, sizeComponent);
 
@@ -396,16 +412,16 @@ Entity EntityFactory::createKillCounter(glm::vec2 offset) {
     return entity;
 }
 
-Entity EntityFactory::createUpgradeMenuItem(glm::vec2 offset) {
+Entity EntityFactory::createUpgradeMenuItem(glm::vec2 pos, std::function<void()> onClick) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
-    positionComponent.x = 200;
-    positionComponent.y = offset.y - 85;
+    positionComponent.x = pos.x;
+    positionComponent.y = pos.y;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
-    sizeComponent.w = 75;
+    sizeComponent.w = 100;
     sizeComponent.h = 75;
     componentManager.addComponent(entity, sizeComponent);
 
@@ -415,7 +431,8 @@ Entity EntityFactory::createUpgradeMenuItem(glm::vec2 offset) {
     componentManager.addComponent(entity, textComponent);
 
     ClickableComponent clickableComponent;
-    clickableComponent.clickedEvent = EventType::UPGRADE_MENU_ITEM_CLICKED;
+    clickableComponent.type = ClickableType::FUNCTION;
+    clickableComponent.onClick = onClick;
     componentManager.addComponent(entity, clickableComponent);
 
     ColorComponent colorComponent;
@@ -429,16 +446,16 @@ Entity EntityFactory::createUpgradeMenuItem(glm::vec2 offset) {
     return entity;
 }
 
-Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 offset) {
+Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 pos, std::function<void()> onClick) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
-    positionComponent.x = 350;
-    positionComponent.y = offset.y - 85;
+    positionComponent.x = pos.x;
+    positionComponent.y = pos.y;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
-    sizeComponent.w = 90;
+    sizeComponent.w = 100;
     sizeComponent.h = 75;
     componentManager.addComponent(entity, sizeComponent);
 
@@ -448,7 +465,8 @@ Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 offset) {
     componentManager.addComponent(entity, textComponent);
 
     ClickableComponent clickableComponent;
-    clickableComponent.clickedEvent = EventType::BUILD_TOWER_MENU_ITEM_CLICKED;
+    clickableComponent.type = ClickableType::FUNCTION;
+    clickableComponent.onClick = onClick;
     componentManager.addComponent(entity, clickableComponent);
 
     ColorComponent colorComponent;
@@ -462,16 +480,16 @@ Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 offset) {
     return entity;
 }
 
-Entity EntityFactory::createCurrencyDisplay(glm::vec2 offset) {
+Entity EntityFactory::createCurrencyDisplay(glm::vec2 pos) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
-    positionComponent.x = 500;
-    positionComponent.y = offset.y - 85;
+    positionComponent.x = pos.x;
+    positionComponent.y = pos.y;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
-    sizeComponent.w = 90;
+    sizeComponent.w = 100;
     sizeComponent.h = 75;
     componentManager.addComponent(entity, sizeComponent);
 
@@ -491,16 +509,16 @@ Entity EntityFactory::createCurrencyDisplay(glm::vec2 offset) {
     return entity;
 }
 
-Entity EntityFactory::createMenuButton(glm::vec2 offset) {
+Entity EntityFactory::createMenuButton(glm::vec2 pos, std::function<void()> onClick) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
-    positionComponent.x = 650;
-    positionComponent.y = offset.y - 85;
+    positionComponent.x = pos.x;
+    positionComponent.y = pos.y;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
-    sizeComponent.w = 90;
+    sizeComponent.w = 100;
     sizeComponent.h = 75;
     componentManager.addComponent(entity, sizeComponent);
 
@@ -510,7 +528,8 @@ Entity EntityFactory::createMenuButton(glm::vec2 offset) {
     componentManager.addComponent(entity, textComponent);
 
     ClickableComponent clickableComponent;
-    clickableComponent.clickedEvent = EventType::OPEN_MENU;
+    clickableComponent.type = ClickableType::FUNCTION;
+    clickableComponent.onClick = onClick;
     componentManager.addComponent(entity, clickableComponent);
 
     ColorComponent colorComponent;

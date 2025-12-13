@@ -2,9 +2,19 @@
 
 #include "../ecs/Component.h"
 #include "../event/Event.h"
+#include <functional>
+
+enum class ClickableType {
+    EVENT,
+    FUNCTION
+};
 
 struct ClickableComponent : public Component {
-    EventType clickedEvent;
-    bool selected = false;
     bool hovered = false;
+    bool selected = false;
+
+    EventType clickedEvent;
+    ClickableType type = ClickableType::EVENT;
+
+    std::function<void()> onClick;
 };

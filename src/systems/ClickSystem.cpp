@@ -17,14 +17,7 @@
 #include "../event/EventDispatcher.h"
 #include "CollisionSystem.h"
 
-ClickSystem::ClickSystem(ComponentManager& componentManager) : componentManager(componentManager) {
-    EventDispatcher::getInstance().addListener(EventType::GRASS_TILE_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
-    EventDispatcher::getInstance().addListener(EventType::TOWER_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
-    EventDispatcher::getInstance().addListener(EventType::BUILD_TOWER_MENU_ITEM_CLICKED,
-                                               std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
-    EventDispatcher::getInstance().addListener(EventType::UPGRADE_MENU_ITEM_CLICKED, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
-    EventDispatcher::getInstance().addListener(EventType::UNSELECT, std::bind(&ClickSystem::onEvent, this, std::placeholders::_1));
-}
+ClickSystem::ClickSystem(ComponentManager& componentManager) : componentManager(componentManager) {}
 
 void ClickSystem::onClick(int button, int action, double x, double y) {
     if (action != GLFW_PRESS) {
@@ -58,10 +51,14 @@ void ClickSystem::onClick(int button, int action, double x, double y) {
             float bottom = position->y + size->h;
 
             if (CollisionSystem::contains(left, top, right - left, bottom - top, x, y)) {
-                Event event;
-                event.type = clickable->clickedEvent;
-                event.addData("entity", &entity);
-                EventDispatcher::getInstance().dispatch(event);
+                if (clickable->type == ClickableType::EVENT) {
+                    Event event;
+                    event.type = clickable->clickedEvent;
+                    event.addData("entity", &entity);
+                    EventDispatcher::getInstance().dispatch(event);
+                } else if (clickable->type == ClickableType::FUNCTION) {
+                    clickable->onClick();
+                }
             }
         }
     }
@@ -95,44 +92,5 @@ void ClickSystem::onHover(double x, double y) {
                 shader->name = "hover";
             }
         }
-    }
-}
-
-void ClickSystem::onEvent(const Event& event) {
-    auto* clickables = componentManager.getArray<ClickableComponent>();
-
-    for (Entity entity : clickables->getEntities()) {
-        auto* clickable = clickables->get(entity);
-        clickable->selected = false;
-    }
-
-    if (event.type == EventType::UNSELECT) {
-        selectedMenuItem = MenuItem::NONE;
-    } else if (event.type == EventType::UPGRADE_MENU_ITEM_CLICKED) {
-        Entity entity = *event.getData<Entity>("entity");
-        auto* clickable = componentManager.getComponent<ClickableComponent>(entity);
-
-        clickable->selected = true;
-        selectedMenuItem = MenuItem::UPGRADE_TOWER;
-    } else if (event.type == EventType::BUILD_TOWER_MENU_ITEM_CLICKED) {
-        Entity entity = *event.getData<Entity>("entity");
-        auto* clickable = componentManager.getComponent<ClickableComponent>(entity);
-
-        clickable->selected = true;
-        selectedMenuItem = MenuItem::BUILD_TOWER;
-    } else if (event.type == EventType::GRASS_TILE_CLICKED && selectedMenuItem == MenuItem::BUILD_TOWER) {
-        Entity entity = *event.getData<Entity>("entity");
-
-        Event event;
-        event.type = EventType::BUILD_TOWER;
-        event.addData("entity", &entity);
-        EventDispatcher::getInstance().dispatch(event);
-    } else if (event.type == EventType::TOWER_CLICKED && selectedMenuItem == MenuItem::UPGRADE_TOWER) {
-        Entity entity = *event.getData<Entity>("entity");
-
-        Event event;
-        event.type = EventType::UPGRADE_TOWER;
-        event.addData("entity", &entity);
-        EventDispatcher::getInstance().dispatch(event);
     }
 }

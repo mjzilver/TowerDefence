@@ -6,11 +6,12 @@
 
 #include "../menu/Menu.h"
 #include "../systems/ClickSystem.h"
+#include "../systems/StateSystem.h"
 
 struct InputContext {
     ClickSystem* click;
     Menu* menu;
-    bool* menuMode;
+    StateSystem* stateSystem;
 };
 
 void installInputCallbacks(GLFWwindow* win, InputContext* ctx);

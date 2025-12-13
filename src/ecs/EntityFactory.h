@@ -5,8 +5,7 @@
 #include "Component.h"
 #include "../texture/TextureManager.h"
 
-#include "../components/FlagComponent.h"
-
+#include <functional>
 #include <glm/glm.hpp>
 
 class EntityFactory {
@@ -17,22 +16,8 @@ public:
     Entity createGrassTile(glm::vec2 position);
     Entity createPathTile(glm::vec2 position);
 
-    Entity createStartTile(glm::vec2 position) {
-        Entity entity = createPathTile(position);
-        FlagComponent flagComponent;
-        flagComponent.type = START;
-        componentManager.addComponent(entity, flagComponent);
-        return entity;
-    }
-
-    Entity createEndTile(glm::vec2 position) {
-        Entity entity = createPathTile(position);
-        FlagComponent flagComponent;
-        flagComponent.type = END;
-        componentManager.addComponent(entity, flagComponent);
-        return entity;
-    }
-
+    Entity createStartTile(glm::vec2 position);
+    Entity createEndTile(glm::vec2 position);
 
     Entity createFireBug(glm::vec2 position, int health, int speed, int goldReward);
 
@@ -40,11 +25,11 @@ public:
     Entity createTowerProjectile(float x, float y, float targetX, float velocityX, float velocityY, float angle, int damage);
     Entity createTowerProjectileImpact(glm::vec2 position);
 
-    Entity createUpgradeMenuItem(glm::vec2 offset);
-    Entity createBuildTowerMenuItem(glm::vec2 offset);
-    Entity createCurrencyDisplay(glm::vec2 offset);
-    Entity createKillCounter(glm::vec2 offset);
-    Entity createMenuButton(glm::vec2 offset);
+    Entity createUpgradeMenuItem(glm::vec2 pos, std::function<void()> onClick);
+    Entity createBuildTowerMenuItem(glm::vec2 pos, std::function<void()> onClick);
+    Entity createCurrencyDisplay(glm::vec2 pos);
+    Entity createKillCounter(glm::vec2 pos);
+    Entity createMenuButton(glm::vec2 pos, std::function<void()> onClick);
 
     Entity upgradeTower(Entity& entity);
 

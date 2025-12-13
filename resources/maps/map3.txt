@@ -1,3 +1,4 @@
+g g g g g g g g g g
 g g p p p p p p p S
 g g p g g g g g g g
 g g p g g g g g g g
@@ -5,6 +6,5 @@ g g p g g g g g g g
 g g p g g g g g g g
 g g p g g g g g g g
 g g p g g g g g g g
-g g p g g g g g g g
-g g p g g g g g g g
 g g p p p p p p p E
+g g g g g g g g g g
