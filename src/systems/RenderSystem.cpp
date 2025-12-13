@@ -46,7 +46,7 @@ GLuint createUnitSquareVao() {
     return vao;
 }
 
-void RenderSystem::renderSquare(glm::vec4 rect, const glm::vec3& color, Shader* shader) {
+void RenderSystem::renderRectangle(glm::vec4 rect, const glm::vec3& color, Shader* shader) {
     GLuint shaderProgram = shader->getProgram();
     glUseProgram(shaderProgram);
 
@@ -75,8 +75,8 @@ void RenderSystem::renderSquare(glm::vec4 rect, const glm::vec3& color, Shader* 
     glBindVertexArray(0);
 }
 
-void RenderSystem::renderSquare(PositionComponent* position, SizeComponent* size, const glm::vec3& color, Shader* shader) {
-    renderSquare(glm::vec4(position->x, position->y, size->w, size->h), color, shader);
+void RenderSystem::renderRectangle(PositionComponent* position, SizeComponent* size, const glm::vec3& color, Shader* shader) {
+    renderRectangle(glm::vec4(position->x, position->y, size->w, size->h), color, shader);
 }
 
 void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* texture, SizeComponent* size, RotationComponent* rotation,
@@ -245,11 +245,15 @@ void RenderSystem::render() {
         auto* posA = positions->get(a);
         auto* posB = positions->get(b);
 
-        if (!posA || !posB) return a < b;
+        if (!posA && !posB) return a < b;
+        if (!posA) return false;
+        if (!posB) return true;
 
         if (posA->zIndex != posB->zIndex) return posA->zIndex > posB->zIndex;
 
-        return posA->y > posB->y;
+        if (posA->y != posB->y) return posA->y > posB->y;
+
+        return a < b;
     });
 
     for (Entity entity : entities) {
@@ -280,7 +284,7 @@ void RenderSystem::render() {
 
         // Button rendering
         if (position && shader && size && colorComponent && !texture) {
-            if(textComponent) {
+            if (textComponent) {
                 renderText(position, size, textComponent, shader);
             }
 
@@ -291,7 +295,7 @@ void RenderSystem::render() {
                 color.b = colorComponent->color.b * 1.5f;
             }
 
-            renderSquare(position, size, color, shaderPrograms["square"]);
+            renderRectangle(position, size, color, shaderPrograms["rect"]);
         } else if (position && texture && size && shader) {
             // Texture rendering
             renderEntity(position, texture, size, rotation, colorComponent ? &colorComponent->color : nullptr, shader);

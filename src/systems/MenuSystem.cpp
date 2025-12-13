@@ -20,6 +20,7 @@ MenuSystem::MenuSystem(ComponentManager& componentManager, EntityFactory& entity
     EventDispatcher::getInstance().addListener(EventType::GRASS_TILE_CLICKED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
     EventDispatcher::getInstance().addListener(EventType::TOWER_CLICKED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
     EventDispatcher::getInstance().addListener(EventType::UNSELECT, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
+    EventDispatcher::getInstance().addListener(EventType::ACTIVATE_CHEATS, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
 
     createMenu();
 }
@@ -132,6 +133,17 @@ void MenuSystem::onEvent(const Event& event) {
         }
     } else if (event.type == EventType::UNSELECT) {
         unselect();
+    } else if (event.type == EventType::ACTIVATE_CHEATS) {
+        currency = 1000000;
+        auto* clickables = componentManager.getArray<ClickableComponent>();
+
+        for (Entity entity : clickables->getEntities()) {
+            auto* clickable = clickables->get(entity);
+
+            if(clickable->clickedEvent == EventType::GRASS_TILE_CLICKED) {
+                buildClick(entity);
+            }
+        }
     }
 }
 

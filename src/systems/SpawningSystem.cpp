@@ -8,10 +8,14 @@
 #include "../components/DeathComponent.h"
 #include "../components/PositionComponent.h"
 #include "../components/SizeComponent.h"
+#include "../event/Event.h"
+#include "../event/EventDispatcher.h"
 #include "../utils/Globals.h"
 
 SpawningSystem::SpawningSystem(ComponentManager& componentManager, EntityFactory& entityFactory, MapLoader& mapLoader)
-    : componentManager(componentManager), entityFactory(entityFactory), mapLoader(mapLoader) {}
+    : componentManager(componentManager), entityFactory(entityFactory), mapLoader(mapLoader) {
+    EventDispatcher::getInstance().addListener(EventType::ACTIVATE_CHEATS, std::bind(&SpawningSystem::onEvent, this, std::placeholders::_1));
+}
 
 void SpawningSystem::setStart() {
     auto& path = mapLoader.getPath();
@@ -143,3 +147,16 @@ void SpawningSystem::update(float deltaTime) {
         }
     }
 }
+
+void SpawningSystem::onEvent(const Event& event) {
+    if (event.type == EventType::ACTIVATE_CHEATS) {
+        spawnCount = 100000;
+        spawnTimer = 0.0f;
+        spawnInterval = minSpawnInterval;
+
+        healthStart = maxHealth;
+        speedStart = maxSpeed;
+        goldRewardStart = maxGold;
+        healthMultiplier = maxHealth;
+    }
+};

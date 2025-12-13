@@ -2,6 +2,9 @@
 
 #include "../systems/CollisionSystem.h"
 #include "../utils/Globals.h"
+#include "../event/Event.h"
+#include "../event/EventDispatcher.h"
+
 #include "UIButton.h"
 #include "UILabel.h"
 
@@ -11,6 +14,18 @@ void Menu::onClick(const glm::vec2& clickPos) {
             e->onClick();
             break;
         }
+    }
+}
+
+void Menu::onKeyPress(int key) {
+    switch (key)
+    {
+        case GLFW_KEY_C:
+            Event event;
+            event.type = EventType::ACTIVATE_CHEATS;
+            EventDispatcher::getInstance().dispatch(event);
+
+            break;
     }
 }
 
@@ -31,7 +46,7 @@ void Menu::render(RenderSystem& renderSystem) {
             color = color * e->getHoverColor();
         }
 
-        renderSystem.renderSquare(e->getPos(), color, renderSystem.getShader("square"));
+        renderSystem.renderRectangle(e->getPos(), color, renderSystem.getShader("rect"));
     }
 }
 

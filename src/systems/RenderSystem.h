@@ -43,14 +43,14 @@ public:
         Shader* shader
     );
 
-    void renderSquare(
+    void renderRectangle(
         PositionComponent* position, 
         SizeComponent* size,
         const glm::vec3& color,
         Shader* shader
     );
 
-    void renderSquare(
+    void renderRectangle(
         glm::vec4 rect,
         const glm::vec3& color,
         Shader* shader

@@ -1,0 +1,12 @@
+leak:libfontconfig.so
+leak:libpango-1.0.so
+leak:libpangoft2-1.0.so
+leak:libpangocairo-1.0.so
+leak:libdecor-cairo.so
+leak:libglfw.so
+leak:libcairo.so
+leak:libEGL.so
+leak:libGL.so
+leak:libGLESv2.so
+leak:libgbm.so
+leak:libLLVM.so
