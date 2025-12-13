@@ -239,6 +239,7 @@ void RenderSystem::render() {
     auto* textComp = componentManager.getArray<TextComponent>();
     auto* colors = componentManager.getArray<ColorComponent>();
     auto* clickable = componentManager.getArray<ClickableComponent>();
+    auto* collisions = componentManager.getArray<CollisionComponent>();
 
     auto entities = positions->getEntities();
 
@@ -266,6 +267,7 @@ void RenderSystem::render() {
         auto* textComponent = textComp->get(entity);
         auto* colorComponent = colors->get(entity);
         auto* clickableComponent = clickable->get(entity);
+        auto* collision = collisions->get(entity);
 
         std::string shaderName = "default";
         if (shaderComponent) {
@@ -302,8 +304,13 @@ void RenderSystem::render() {
             renderEntity(position, texture, size, rotation, colorComponent ? &colorComponent->color : nullptr, shader);
         }
 
-        if(1) {
-            renderCollisionBoxes();
+        if(debugRender) {
+            if (!position || !collision) continue;
+
+            glm::vec4 rect{position->x + collision->x, position->y + collision->y, collision->w, collision->h};
+            glm::vec3 color{1.0f, 0.0f, 0.0f};
+
+            renderRectangle(rect, color, shaderPrograms["rect"]);
         }
     }
 
@@ -313,22 +320,5 @@ void RenderSystem::render() {
     GLenum err;
     while ((err = glGetError()) != GL_NO_ERROR) {
         std::cerr << "OpenGL error in RenderSystem::render: " << err << std::endl;
-    }
-}
-
-void RenderSystem::renderCollisionBoxes() {
-    auto* positions = componentManager.getArray<PositionComponent>();
-    auto* collisions = componentManager.getArray<CollisionComponent>();
-
-    for (Entity entity : collisions->getEntities()) {
-        auto* pos = positions->get(entity);
-        auto* col = collisions->get(entity);
-
-        if (!pos || !col) continue;
-
-        glm::vec4 rect{pos->x + col->x, pos->y + col->y, col->w, col->h};
-        glm::vec3 color{1.0f, 0.0f, 0.0f};
-
-        renderRectangle(rect, color, shaderPrograms["rect"]);
     }
 }

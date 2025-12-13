@@ -332,7 +332,7 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float /*targetX*/,
     componentManager.addComponent(entity, rotationComponent);
 
     CollisionComponent collisionComponent;
-    collisionComponent.x = 0;
+    collisionComponent.x = -PROJECTILE_WIDTH;
     collisionComponent.y = 0;
     collisionComponent.w = PROJECTILE_WIDTH * 3;
     collisionComponent.h = PROJECTILE_HEIGHT;

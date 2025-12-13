@@ -69,12 +69,11 @@ public:
     Shader* getShader(const std::string& name) {
         return shaderPrograms[name];
     }
-
-    void renderCollisionBoxes();
-
 private:
     ComponentManager& componentManager;
     FontLoader& fontLoader;
+
+    bool debugRender = false;
 
     // hash map to store the shader programs
     std::unordered_map<std::string, Shader*> shaderPrograms;
