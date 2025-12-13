@@ -70,6 +70,8 @@ public:
         return shaderPrograms[name];
     }
 
+    void renderCollisionBoxes();
+
 private:
     ComponentManager& componentManager;
     FontLoader& fontLoader;

@@ -4,9 +4,6 @@
 #include "../event/EventDispatcher.h"
 #include "../systems/CollisionSystem.h"
 #include "../utils/Globals.h"
-#include "../event/Event.h"
-#include "../event/EventDispatcher.h"
-
 #include "UIButton.h"
 #include "UILabel.h"
 

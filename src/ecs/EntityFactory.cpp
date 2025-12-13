@@ -176,14 +176,12 @@ Entity EntityFactory::createFireBug(glm::vec2 position, int health, int speed, i
     pathfindingComponent.y = 0;
     componentManager.addComponent(entity, pathfindingComponent);
 
-    const float hitboxScale = 0.5f;
-
-    // hitbox is smaller than the texture
+    const float hitboxSize = 48;
     CollisionComponent collisionComponent;
-    collisionComponent.x = ENEMY_WIDTH * (1.0f - hitboxScale) / 2.0f;
-    collisionComponent.y = ENEMY_HEIGHT * (1.0f - hitboxScale) / 2.0f;
-    collisionComponent.w = ENEMY_WIDTH * hitboxScale;
-    collisionComponent.h = ENEMY_HEIGHT * hitboxScale;
+    collisionComponent.w = hitboxSize;
+    collisionComponent.h = hitboxSize;
+    collisionComponent.x = (ENEMY_WIDTH - hitboxSize) / 2.0f;
+    collisionComponent.y = (ENEMY_HEIGHT - hitboxSize) / 2.0f;
     componentManager.addComponent(entity, collisionComponent);
 
     return entity;
@@ -333,11 +331,10 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float /*targetX*/,
     rotationComponent.angle = angle;
     componentManager.addComponent(entity, rotationComponent);
 
-    // hitbox is the same as the texture
     CollisionComponent collisionComponent;
     collisionComponent.x = 0;
     collisionComponent.y = 0;
-    collisionComponent.w = PROJECTILE_WIDTH;
+    collisionComponent.w = PROJECTILE_WIDTH * 3;
     collisionComponent.h = PROJECTILE_HEIGHT;
     componentManager.addComponent(entity, collisionComponent);
 

@@ -11,6 +11,7 @@
 #include "../components/ColorComponent.h"
 #include "../components/ShaderComponent.h"
 #include "../components/TextComponent.h"
+#include "../components/CollisionComponent.h"
 #include "../font/FontLoader.h"
 #include "../utils/Globals.h"
 #include "../utils/String.h"
@@ -300,6 +301,10 @@ void RenderSystem::render() {
             // Texture rendering
             renderEntity(position, texture, size, rotation, colorComponent ? &colorComponent->color : nullptr, shader);
         }
+
+        if(1) {
+            renderCollisionBoxes();
+        }
     }
 
     glBindVertexArray(0);
@@ -308,5 +313,22 @@ void RenderSystem::render() {
     GLenum err;
     while ((err = glGetError()) != GL_NO_ERROR) {
         std::cerr << "OpenGL error in RenderSystem::render: " << err << std::endl;
+    }
+}
+
+void RenderSystem::renderCollisionBoxes() {
+    auto* positions = componentManager.getArray<PositionComponent>();
+    auto* collisions = componentManager.getArray<CollisionComponent>();
+
+    for (Entity entity : collisions->getEntities()) {
+        auto* pos = positions->get(entity);
+        auto* col = collisions->get(entity);
+
+        if (!pos || !col) continue;
+
+        glm::vec4 rect{pos->x + col->x, pos->y + col->y, col->w, col->h};
+        glm::vec3 color{1.0f, 0.0f, 0.0f};
+
+        renderRectangle(rect, color, shaderPrograms["rect"]);
     }
 }

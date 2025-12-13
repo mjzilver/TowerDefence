@@ -1,7 +1,7 @@
 #include "QuadTree.h"
 
-#include <iostream>
-
+#include "../components/CollisionComponent.h"
+#include "../components/PositionComponent.h"
 #include "../ecs/Component.h"
 #include "../systems/CollisionSystem.h"
 
@@ -32,14 +32,13 @@ bool fullyContains(const glm::vec4& outer, const glm::vec4& inner) {
 
 bool QuadTree::insert(Entity entity) {
     auto* pos = componentManager.getComponent<PositionComponent>(entity);
-    auto* size = componentManager.getComponent<SizeComponent>(entity);
+    auto* col = componentManager.getComponent<CollisionComponent>(entity);
 
-    if (!pos || !size) {
-        std::cout << entity << " has no pos or size\n";
+    if (!pos || !col) {
         return false;
     };
 
-    glm::vec4 entityBounds{pos->x, pos->y, size->w, size->h};
+    glm::vec4 entityBounds{pos->x + col->x, pos->y + col->y, col->w, col->h};
 
     if (!CollisionSystem::checkCollision(bounds, entityBounds)) {
         return false;
@@ -78,9 +77,10 @@ void QuadTree::query(const glm::vec4& range, std::vector<Entity>& found) {
 
     for (auto entity : entities) {
         auto* pos = componentManager.getComponent<PositionComponent>(entity);
-        auto* size = componentManager.getComponent<SizeComponent>(entity);
-        if (pos && size) {
-            if (CollisionSystem::checkCollision(range, {pos->x, pos->y, size->w, size->h})) {
+        auto* col = componentManager.getComponent<CollisionComponent>(entity);
+        if (pos && col) {
+            glm::vec4 entityBounds{pos->x + col->x, pos->y + col->y, col->w, col->h};
+            if (CollisionSystem::checkCollision(range, entityBounds)) {
                 found.push_back(entity);
             }
         }
@@ -90,8 +90,6 @@ void QuadTree::query(const glm::vec4& range, std::vector<Entity>& found) {
         child.query(range, found);
     }
 }
-
-std::vector<Entity> QuadTree::query(const PositionComponent* pos, const SizeComponent* size) { return query({pos->x, pos->y, size->w, size->h}); }
 
 std::vector<Entity> QuadTree::query(const glm::vec4& range) {
     std::vector<Entity> found;

@@ -50,6 +50,8 @@ void CombatSystem::onEvent(const Event& event) {
             componentManager.removeComponent<VelocityComponent>(target);
             componentManager.removeComponent<PathfindingComponent>(target);
             componentManager.removeComponent<HealthComponent>(target);
+            componentManager.removeComponent<CollisionComponent>(target);
+
             targetPosition->zIndex = ZLayer::DEAD;
         }
 

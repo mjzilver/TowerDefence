@@ -4,10 +4,12 @@
 #include <glm/vec4.hpp>
 #include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
+#include "../engine/QuadTree.h"
+#include "../utils/Globals.h"
 
 class CollisionSystem : public System {
 public:
-    CollisionSystem(ComponentManager& componentManager) : componentManager(componentManager) {}
+    CollisionSystem(ComponentManager& componentManager) : componentManager(componentManager), quadTree(componentManager, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}) {}
 
     void update(float deltaTime) override;
 
@@ -37,4 +39,5 @@ public:
 
 private:
     ComponentManager& componentManager;
+    QuadTree quadTree;
 };
