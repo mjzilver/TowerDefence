@@ -242,19 +242,12 @@ void RenderSystem::render() {
     auto entities = positions->getEntities();
 
     std::sort(entities.begin(), entities.end(), [&](Entity a, Entity b) {
-        auto* texA = textures->get(a);
-        auto* texB = textures->get(b);
-
-        if (!texA && !texB) return a < b;
-        if (!texA) return false;
-        if (!texB) return true;
-
-        if (texA->zIndex != texB->zIndex) return texA->zIndex > texB->zIndex;
-
         auto* posA = positions->get(a);
         auto* posB = positions->get(b);
 
         if (!posA || !posB) return a < b;
+
+        if (posA->zIndex != posB->zIndex) return posA->zIndex > posB->zIndex;
 
         return posA->y > posB->y;
     });
@@ -285,14 +278,11 @@ void RenderSystem::render() {
         glUseProgram(shaderProgram);
         glBindVertexArray(vao);
 
-        // Texture rendering
-        if (position && texture && size) {
-            renderEntity(position, texture, size, rotation, colorComponent ? &colorComponent->color : nullptr, shader);
-        }
-
         // Button rendering
-        if (position && textComponent && shader && size && colorComponent) {
-            renderText(position, size, textComponent, shader);
+        if (position && shader && size && colorComponent && !texture) {
+            if(textComponent) {
+                renderText(position, size, textComponent, shader);
+            }
 
             glm::vec3 color = colorComponent->color;
             if (clickableComponent && clickableComponent->selected) {
@@ -302,6 +292,9 @@ void RenderSystem::render() {
             }
 
             renderSquare(position, size, color, shaderPrograms["square"]);
+        } else if (position && texture && size && shader) {
+            // Texture rendering
+            renderEntity(position, texture, size, rotation, colorComponent ? &colorComponent->color : nullptr, shader);
         }
     }
 

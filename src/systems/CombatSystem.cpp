@@ -50,7 +50,7 @@ void CombatSystem::onEvent(const Event& event) {
             componentManager.removeComponent<VelocityComponent>(target);
             componentManager.removeComponent<PathfindingComponent>(target);
             componentManager.removeComponent<HealthComponent>(target);
-            targetTexture->zIndex = ZLayer::DEAD;
+            targetPosition->zIndex = ZLayer::DEAD;
         }
 
         entityFactory.createTowerProjectileImpact({targetPosition->x + targetSize->w / 2, targetPosition->y + targetSize->h / 2});

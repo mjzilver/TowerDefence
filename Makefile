@@ -43,7 +43,8 @@ tidy:
 # Debugging
 # ---------
 .PHONY: build-debug
-build-debug: $(BUILD_DIR)/Makefile
+build-debug:
+	mkdir -p $(BUILD_DIR)
 	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(DEBUG_FLAGS) .. && $(MAKE)
 
 .PHONY: run-debug

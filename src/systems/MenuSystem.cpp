@@ -37,6 +37,11 @@ void MenuSystem::createMenu() {
     const int buttonY = SCREEN_HEIGHT - 85;
     const int buttonSpacing = (SCREEN_WIDTH - buttonXOffset) / 5;
 
+    glm::vec2 rectPos{0.0f, SCREEN_HEIGHT - 100};
+    glm::vec2 rectSize{SCREEN_WIDTH, 100.0f};
+
+    entityFactory.createRectangle(rectPos, rectSize);
+
     killCounterEntity = entityFactory.createKillCounter({buttonXOffset, buttonY});
 
     buttonXOffset += buttonSpacing;

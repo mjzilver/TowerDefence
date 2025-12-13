@@ -113,6 +113,7 @@ Entity EntityFactory::createFireBug(glm::vec2 position, int health, int speed, i
     PositionComponent positionComponent;
     positionComponent.x = position.x;
     positionComponent.y = position.y;
+    positionComponent.zIndex = ZLayer::ENEMY;
     componentManager.addComponent(entity, positionComponent);
 
     VelocityComponent velocityComponent;
@@ -144,7 +145,6 @@ Entity EntityFactory::createFireBug(glm::vec2 position, int health, int speed, i
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("enemy/Firebug.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
-    textureComponent.zIndex = ZLayer::ENEMY;
     componentManager.addComponent(entity, textureComponent);
 
     DirectionComponent directionComponent;
@@ -200,6 +200,7 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     PositionComponent positionComponent;
     positionComponent.x = position.x + 8;
     positionComponent.y = position.y + 8;
+    positionComponent.zIndex = ZLayer::TOWER;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
@@ -214,7 +215,6 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
-    textureComponent.zIndex = ZLayer::TOWER;
     componentManager.addComponent(entity, textureComponent);
 
     Entity weapon = entityManager.createEntity();
@@ -224,6 +224,7 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     PositionComponent weaponPositionComponent;
     weaponPositionComponent.x = position.x + 8 + (TOWER_WIDTH - weaponSize) / 2;
     weaponPositionComponent.y = position.y + 8;
+    weaponPositionComponent.zIndex = ZLayer::WEAPON;
     componentManager.addComponent(weapon, weaponPositionComponent);
 
     SizeComponent weaponSizeComponent;
@@ -235,7 +236,6 @@ Entity EntityFactory::createTower(glm::vec2 position) {
     weaponTextureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Level 01 - Weapon.png");
     weaponTextureComponent.coords =
         getTextureCoords(0, 0, weaponSize, weaponSize, weaponTextureComponent.texture.size.x, weaponTextureComponent.texture.size.y);
-    weaponTextureComponent.zIndex = ZLayer::WEAPON;
     componentManager.addComponent(weapon, weaponTextureComponent);
 
     AnimationComponent weaponAnimationComponent;
@@ -295,6 +295,7 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float /*targetX*/,
     PositionComponent positionComponent;
     positionComponent.x = x - PROJECTILE_WIDTH / 2;
     positionComponent.y = y - PROJECTILE_HEIGHT / 2;
+    positionComponent.zIndex = ZLayer::PROJECTILE;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
@@ -305,7 +306,6 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float /*targetX*/,
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Level 01 - Projectile.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
-    textureComponent.zIndex = ZLayer::PROJECTILE;
     componentManager.addComponent(entity, textureComponent);
 
     VelocityComponent velocityComponent;
@@ -353,6 +353,7 @@ Entity EntityFactory::createTowerProjectileImpact(glm::vec2 position) {
     PositionComponent positionComponent;
     positionComponent.x = position.x - TEXTURE_WIDTH / 2;
     positionComponent.y = position.y - TEXTURE_HEIGHT / 2;
+    positionComponent.zIndex = ZLayer::PARTICLE;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
@@ -363,7 +364,6 @@ Entity EntityFactory::createTowerProjectileImpact(glm::vec2 position) {
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Weapon - Impact.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
-    textureComponent.zIndex = ZLayer::PARTICLE;
     componentManager.addComponent(entity, textureComponent);
 
     AnimationComponent animationComponent;
@@ -383,12 +383,38 @@ Entity EntityFactory::createTowerProjectileImpact(glm::vec2 position) {
     return entity;
 }
 
+Entity EntityFactory::createRectangle(const glm::vec2& position, const glm::vec2& size) {
+    Entity entity = entityManager.createEntity();
+
+    PositionComponent positionComponent;
+    positionComponent.x = position.x;
+    positionComponent.y = position.y;
+    positionComponent.zIndex = ZLayer::UI_BACKGROUND;
+    componentManager.addComponent(entity, positionComponent);
+
+    SizeComponent sizeComponent;
+    sizeComponent.w = size.x;
+    sizeComponent.h = size.y; 
+    componentManager.addComponent(entity, sizeComponent);
+
+    ColorComponent colorComponent;
+    colorComponent.color = {0.33f, 0.33f, 0.33f};
+    componentManager.addComponent(entity, colorComponent);
+
+    ShaderComponent shaderComponent;
+    shaderComponent.name = "square";
+    componentManager.addComponent(entity, shaderComponent);
+
+    return entity;
+}
+
 Entity EntityFactory::createKillCounter(glm::vec2 pos) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
     positionComponent.x = pos.x;
     positionComponent.y = pos.y;
+    positionComponent.zIndex = ZLayer::UI_ELEMENT;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
@@ -402,7 +428,7 @@ Entity EntityFactory::createKillCounter(glm::vec2 pos) {
     componentManager.addComponent(entity, textComponent);
 
     ColorComponent colorComponent;
-    colorComponent.color = {0.33f, 0.33f, 0.33f};
+    colorComponent.color = {0.66f, 0.33f, 0.33f};
     componentManager.addComponent(entity, colorComponent);
 
     ShaderComponent shaderComponent;
@@ -418,6 +444,7 @@ Entity EntityFactory::createUpgradeMenuItem(glm::vec2 pos, std::function<void()>
     PositionComponent positionComponent;
     positionComponent.x = pos.x;
     positionComponent.y = pos.y;
+    positionComponent.zIndex = ZLayer::UI_ELEMENT;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
@@ -452,6 +479,7 @@ Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 pos, std::function<void
     PositionComponent positionComponent;
     positionComponent.x = pos.x;
     positionComponent.y = pos.y;
+    positionComponent.zIndex = ZLayer::UI_ELEMENT;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
@@ -470,7 +498,7 @@ Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 pos, std::function<void
     componentManager.addComponent(entity, clickableComponent);
 
     ColorComponent colorComponent;
-    colorComponent.color = {0.66f, 0.33f, 0.33f};
+    colorComponent.color = {0.66f, 0.33f, 0.66f};
     componentManager.addComponent(entity, colorComponent);
 
     ShaderComponent shaderComponent;
@@ -486,6 +514,7 @@ Entity EntityFactory::createCurrencyDisplay(glm::vec2 pos) {
     PositionComponent positionComponent;
     positionComponent.x = pos.x;
     positionComponent.y = pos.y;
+    positionComponent.zIndex = ZLayer::UI_ELEMENT;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
@@ -515,6 +544,7 @@ Entity EntityFactory::createMenuButton(glm::vec2 pos, std::function<void()> onCl
     PositionComponent positionComponent;
     positionComponent.x = pos.x;
     positionComponent.y = pos.y;
+    positionComponent.zIndex = ZLayer::UI_ELEMENT;
     componentManager.addComponent(entity, positionComponent);
 
     SizeComponent sizeComponent;
@@ -557,7 +587,6 @@ Entity EntityFactory::upgradeTower(Entity& entity) {
     textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01.png");
     textureComponent.coords = getTextureCoords(upgradeComponent->upgradeLevel - 1, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x,
                                                textureComponent.texture.size.y);
-    textureComponent.zIndex = ZLayer::TOWER;
     componentManager.addComponent(entity, textureComponent);
 
     auto* childComponent = componentManager.getComponent<ChildComponent>(entity);
