@@ -102,6 +102,7 @@ void MenuSystem::buildClick(Entity entity) {
         }
     }
 }
+
 void MenuSystem::upgradeClick(Entity entity) {
     if (currency >= towerUpgradeCost) {
         auto* upgrade = componentManager.getComponent<UpgradeComponent>(entity);
@@ -140,8 +141,17 @@ void MenuSystem::onEvent(const Event& event) {
         for (Entity entity : clickables->getEntities()) {
             auto* clickable = clickables->get(entity);
 
-            if(clickable->clickedEvent == EventType::GRASS_TILE_CLICKED) {
+            if (clickable->clickedEvent == EventType::GRASS_TILE_CLICKED) {
                 buildClick(entity);
+            }
+        }
+
+        for (Entity entity : clickables->getEntities()) {
+            auto* clickable = clickables->get(entity);
+
+            if (clickable->clickedEvent == EventType::TOWER_CLICKED) {
+                upgradeClick(entity);
+                upgradeClick(entity);
             }
         }
     }

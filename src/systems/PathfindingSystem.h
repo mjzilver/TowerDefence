@@ -8,27 +8,26 @@
 #include "../ecs/System.h"
 #include "../map/MapLoader.h"
 #include "../components/PathfindingComponent.h"
-#include "../components/SizeComponent.h"
 
 class PathfindingSystem : public System {
 public:
-    PathfindingSystem(ComponentManager& componentManager, MapLoader& mapLoader) : componentManager(componentManager), mapLoader(mapLoader), path(mapLoader.getPath()) {
-    }
+    PathfindingSystem(ComponentManager& componentManager, MapLoader& mapLoader);
 
     void update(float deltaTime) override;
     void generatePath();
+    void reset() override { return; };
 
     Entity& getStart() {return start;}
 
-    void reset() override { return; };
-
 private:
-    void generateRandomOffset(PathfindingComponent* pathfinding, SizeComponent* targetSize);
+    void generateRandomOffset(PathfindingComponent* pathfinding, float maxOffset);
 
     std::vector<PathSegment>& path;
 
     Entity start;
     Entity end;
+
+    const float maxOffset = 20.0f;
 
     ComponentManager& componentManager;
     MapLoader& mapLoader;

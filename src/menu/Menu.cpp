@@ -1,5 +1,7 @@
 #include "Menu.h"
 
+#include "../event/Event.h"
+#include "../event/EventDispatcher.h"
 #include "../systems/CollisionSystem.h"
 #include "../utils/Globals.h"
 #include "../event/Event.h"
@@ -36,6 +38,15 @@ void Menu::onHover(const glm::vec2& pos) {
     }
 }
 
+void Menu::onKeyPress(int key) {
+    switch (key) {
+        case GLFW_KEY_C:
+            Event event;
+            event.type = EventType::ACTIVATE_CHEATS;
+            EventDispatcher::getInstance().dispatch(event);
+            break;
+    }
+}
 void Menu::render(RenderSystem& renderSystem) {
     for (auto* e : elements) {
         renderSystem.renderText(e->getPos(), e->getText(), e->getTextColor(), renderSystem.getShader("text"));

@@ -1,4 +1,4 @@
-# Tower Defebnce
+# Tower Defence
 ## A 2D tower defence game
 
 ![Screenshot](resources/gameplay.gif)

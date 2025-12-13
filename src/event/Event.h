@@ -8,8 +8,8 @@ enum class EventType {
     ENTITY_DESTROYED, 
     GRASS_TILE_CLICKED,
     TOWER_CLICKED,
-    UNSELECT,
-    ACTIVATE_CHEATS
+    ACTIVATE_CHEATS,
+    UNSELECT
 };
 
 struct Event {

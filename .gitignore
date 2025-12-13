@@ -5,4 +5,4 @@ out/
 /.vscode
 Preview/
 .cache/
-._*
+gmon.out
