@@ -30,6 +30,7 @@
 - [x] ECS 
 - [x] Event system
 - [x] Collision detection
+- [x] Quadtree collision
 
 ### Attributions
 
