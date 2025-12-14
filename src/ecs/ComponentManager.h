@@ -1,18 +1,18 @@
 #pragma once
 
+#include <algorithm>
 #include <queue>
 #include <typeindex>
 #include <unordered_map>
 
+#include "../components/PositionComponent.h"
 #include "Component.h"
 #include "ComponentArray.h"
 #include "EntityManager.h"
-#include "../components/PositionComponent.h"
 
 class ComponentManager {
 public:
-    ComponentManager(EntityManager& em)
-        : em(em) {}
+    ComponentManager(EntityManager& em) : em(em) {}
 
     template <typename T>
     void addComponent(Entity entity, T component) {
@@ -21,7 +21,7 @@ public:
 
     void addComponent(Entity entity, PositionComponent pos) {
         getArray<PositionComponent>()->insert(entity, std::move(pos));
-        em.reorder(pos.zIndex, entity);
+        reorder(entity, pos.zIndex);
     }
 
     template <typename T>
@@ -62,6 +62,28 @@ public:
         for (auto& [type, array] : componentArrays) {
             array->clear();
         }
+    }
+
+    void reorder(Entity entity, ZLayer newLayer) {
+        for (auto& [layer, entities] : em.layeredEntities) {
+            auto it = std::find(entities.begin(), entities.end(), entity);
+            if (it != entities.end()) {
+                entities.erase(it);
+            }
+        }
+
+        auto& vec = em.layeredEntities[newLayer];
+        auto* positions = getArray<PositionComponent>();
+
+        auto insertPos = std::upper_bound(vec.begin(), vec.end(), entity, [&](Entity a, Entity b) {
+            auto* pa = positions->get(a);
+            auto* pb = positions->get(b);
+
+            if (!pa || !pb) return a < b;
+            return pa->y > pb->y;
+        });
+
+        vec.insert(insertPos, entity);
     }
 
     ~ComponentManager() {

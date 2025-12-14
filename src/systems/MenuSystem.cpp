@@ -1,7 +1,6 @@
 #include "MenuSystem.h"
 
 #include <functional>
-#include <iostream>
 
 #include "../components/ChildComponent.h"
 #include "../components/ClickableComponent.h"
@@ -34,11 +33,6 @@ void MenuSystem::reset() {
 }
 
 void MenuSystem::createMenu() {
-    if (entityManager->isEntityValid(killCounterEntity) || entityManager->isEntityValid(towerUpgradeButtonEntity)) {
-        std::cout << "tried to create menu that exists already\n";
-        return;
-    }
-
     int buttonXOffset = 50;
     const int buttonY = SCREEN_HEIGHT - 85;
     const int buttonSpacing = (SCREEN_WIDTH - buttonXOffset) / 5;
@@ -52,7 +46,6 @@ void MenuSystem::createMenu() {
 
     buttonXOffset += buttonSpacing;
     towerUpgradeButtonEntity = entityFactory.createUpgradeMenuItem({buttonXOffset, buttonY}, [&]() {
-        std::cout << "upgrade button clicked\n";
         unselect();
         menuMode = MenuMode::UPGRADE_TOWER;
         componentManager.getComponent<ClickableComponent>(towerUpgradeButtonEntity)->selected = true;

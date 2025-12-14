@@ -53,7 +53,7 @@ void CombatSystem::onEvent(const Event& event) {
             componentManager.removeComponent<CollisionComponent>(target);
 
             targetPosition->zIndex = ZLayer::DEAD;
-            entityManager->reorder(ZLayer::DEAD, target);
+            componentManager.reorder(target, ZLayer::DEAD);
         }
 
         entityFactory.createTowerProjectileImpact({targetPosition->x + targetSize->w / 2, targetPosition->y + targetSize->h / 2});

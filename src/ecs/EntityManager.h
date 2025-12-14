@@ -1,5 +1,4 @@
 #pragma once
-#include <algorithm>
 #include <map>
 #include <queue>
 #include <unordered_set>
@@ -30,15 +29,14 @@ public:
 
     std::unordered_set<Entity> getEntities() const { return activeEntities; }
 
-    void reorder(ZLayer newLayer, Entity entity) {
-        for (auto& [layer, entities] : layeredEntities) {
-            auto it = std::find(entities.begin(), entities.end(), entity);
-            if (it != entities.end()) {
-                entities.erase(it);
-            }
-        }
+    const std::map<ZLayer, std::vector<Entity>>& getLayered() const {
+        return layeredEntities;
+    }
 
-        layeredEntities[newLayer].push_back(entity);
+    std::vector<Entity> getEntitiesByLayer(ZLayer layer) const {
+        auto it = layeredEntities.find(layer);
+        if (it == layeredEntities.end()) return {};
+        return it->second;
     }
 
     std::vector<Entity> getSortedEntities() {

@@ -86,8 +86,6 @@ void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* t
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    GLuint shaderProgram = shader->getProgram();
-
     // Convert from pixel to normalized coordinates
     glm::vec2 normalizedPosition =
         glm::vec2((position->x + size->w * 0.5f) / SCREEN_WIDTH * 2.0f - 1.0f, -(position->y + size->h * 0.5f) / SCREEN_HEIGHT * 2.0f + 1.0f);
@@ -238,64 +236,68 @@ void RenderSystem::render() {
     auto* clickable = componentManager.getArray<ClickableComponent>();
     auto* collisions = componentManager.getArray<CollisionComponent>();
 
-    auto entities = entityManager->getSortedEntities();
+    const auto& layers = entityManager->getLayered();
 
-    for (Entity entity : entities) {
-        auto* position = positions->get(entity);
-        auto* texture = textures->get(entity);
-        auto* size = sizes->get(entity);
-        auto* rotation = rotations->get(entity);
-        auto* shaderComponent = shaders->get(entity);
-        auto* textComponent = textComp->get(entity);
-        auto* colorComponent = colors->get(entity);
-        auto* clickableComponent = clickable->get(entity);
-        auto* collision = collisions->get(entity);
+    for (auto layerIt = layers.rbegin(); layerIt != layers.rend(); ++layerIt) {
+        auto entities = layerIt->second;
 
-        std::string shaderName = "default";
-        if (shaderComponent) {
-            shaderName = shaderComponent->name;
-        }
-        Shader* shader = shaderPrograms[shaderName];
-        GLuint shaderProgram = shader->getProgram();
-        GLuint vao;
+        for (Entity entity : entities) {
+            auto* position = positions->get(entity);
+            auto* texture = textures->get(entity);
+            auto* size = sizes->get(entity);
+            auto* rotation = rotations->get(entity);
+            auto* shaderComponent = shaders->get(entity);
+            auto* textComponent = textComp->get(entity);
+            auto* colorComponent = colors->get(entity);
+            auto* clickableComponent = clickable->get(entity);
+            auto* collision = collisions->get(entity);
 
-        if (shaderVAOs.find(shader) == shaderVAOs.end()) {
-            shaderVAOs[shader] = createUnitSquareVao();
-        }
+            std::string shaderName = "default";
+            if (shaderComponent) {
+                shaderName = shaderComponent->name;
+            }
+            Shader* shader = shaderPrograms[shaderName];
+            GLuint shaderProgram = shader->getProgram();
+            GLuint vao;
 
-        vao = shaderVAOs[shader];
-        glUseProgram(shaderProgram);
-        glBindVertexArray(vao);
-
-        // Button rendering
-        if (position && shader && size && colorComponent && !texture) {
-            if (textComponent) {
-                renderText(position, size, textComponent, shader);
+            if (shaderVAOs.find(shader) == shaderVAOs.end()) {
+                shaderVAOs[shader] = createUnitSquareVao();
             }
 
-            glm::vec3 color = colorComponent->color;
-            if (clickableComponent && clickableComponent->selected) {
-                color.r = colorComponent->color.r * 1.5f;
-                color.g = colorComponent->color.g * 1.5f;
-                color.b = colorComponent->color.b * 1.5f;
+            vao = shaderVAOs[shader];
+            glUseProgram(shaderProgram);
+            glBindVertexArray(vao);
+
+            // Button rendering
+            if (position && shader && size && colorComponent && !texture) {
+                if (textComponent) {
+                    renderText(position, size, textComponent, shader);
+                }
+
+                glm::vec3 color = colorComponent->color;
+                if (clickableComponent && clickableComponent->selected) {
+                    color.r = colorComponent->color.r * 1.5f;
+                    color.g = colorComponent->color.g * 1.5f;
+                    color.b = colorComponent->color.b * 1.5f;
+                }
+
+                renderRectangle(position, size, color, shaderPrograms["rect"]);
+            } else if (position && texture && size && shader) {
+                // Texture rendering
+                renderEntity(position, texture, size, rotation, colorComponent ? &colorComponent->color : nullptr, shader);
             }
 
-            renderRectangle(position, size, color, shaderPrograms["rect"]);
-        } else if (position && texture && size && shader) {
-            // Texture rendering
-            renderEntity(position, texture, size, rotation, colorComponent ? &colorComponent->color : nullptr, shader);
-        }
+            if constexpr (DEBUG_ENABLED) {
+                if (!position || !collision) continue;
 
-        if constexpr (DEBUG_ENABLED) {
-            if (!position || !collision) continue;
+                glm::vec4 rect{position->x + collision->x, position->y + collision->y, collision->w, collision->h};
+                glm::vec3 color{1.0f, 0.0f, 0.0f};
 
-            glm::vec4 rect{position->x + collision->x, position->y + collision->y, collision->w, collision->h};
-            glm::vec3 color{1.0f, 0.0f, 0.0f};
-
-            renderRectangle(rect, color, shaderPrograms["rect"]);
+                renderRectangle(rect, color, shaderPrograms["rect"]);
+            }
         }
     }
-
+    
     glBindVertexArray(0);
     glUseProgram(0);
 
