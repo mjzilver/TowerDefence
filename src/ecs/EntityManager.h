@@ -28,6 +28,12 @@ public:
         return activeEntities;
     }
 
+    void reset(){
+        lastEntity = INVALID_ENTITY;
+        activeEntities.clear();
+        freedEntities = std::queue<Entity>();
+    }
+
 private:
     void destroyEntity(Entity entity) {
         activeEntities.erase(entity);

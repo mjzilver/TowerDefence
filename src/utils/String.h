@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-static std::vector<std::string> splitLines(const std::string& text) {
+inline static std::vector<std::string> splitLines(const std::string& text) {
     std::vector<std::string> lines;
     std::string current;
 

@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "ecs/EntityFactory.h"
 #include "ecs/SystemManager.h"
 #include "engine/GLContext.h"
@@ -54,7 +55,7 @@ int main() {
     auto& menuSystem = systemManager.registerSystem<MenuSystem>(&entityManager, componentManager, entityFactory, stateSystem);
     auto& spawningSystem = systemManager.registerSystem<SpawningSystem>(&entityManager, componentManager, entityFactory, mapLoader);
 
-    menu.createMainMenu(mapLoader, componentManager, systemManager, stateSystem, window);
+    menu.createMainMenu(mapLoader, systemManager, stateSystem, window);
 
     InputContext inputCtx{&clickSystem, &menu, &stateSystem};
     installInputCallbacks(window, &inputCtx);
@@ -65,19 +66,18 @@ int main() {
     renderSystem.registerShader("rect", &rectShader);
 
     double lastTime = glfwGetTime();
+    const float frameTime = 1.0f / 60.0f;
 
     while (!glfwWindowShouldClose(window)) {
         double currentTime = glfwGetTime();
-        double deltaTime = currentTime - lastTime;
-        lastTime = currentTime;
 
         glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (stateSystem.getState() == EngineState::MAIN_MENU)
+        if (stateSystem.getState() == EngineState::MAIN_MENU) {
             menu.render(renderSystem);
-        else {
-            systemManager.updateSystems(deltaTime);
+        } else if (stateSystem.getState() == EngineState::GAMEPLAY) {
+            systemManager.updateSystems(frameTime);
             renderSystem.render();
         }
 
@@ -86,11 +86,16 @@ int main() {
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        static double lastPrint = 0;
-        if (currentTime - lastPrint >= 1.0) {
-            std::cout << "FPS: " << 1.0 / deltaTime << "\n";
-            lastPrint = currentTime;
+        if constexpr (DEBUG_ENABLED) {
+            double deltaTime = currentTime - lastTime;
+            static double lastPrint = 0;
+            if (currentTime - lastPrint >= 1.0) {
+                std::cout << "FPS: " << 1.0 / deltaTime << "\n";
+                lastPrint = currentTime;
+            }
         }
+
+        lastTime = currentTime;
     }
 
     glfwTerminate();

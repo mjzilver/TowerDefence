@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "../components/ClickableComponent.h"
+#include "../components/CollisionComponent.h"
 #include "../components/ColorComponent.h"
 #include "../components/ShaderComponent.h"
 #include "../components/TextComponent.h"
-#include "../components/CollisionComponent.h"
 #include "../font/FontLoader.h"
 #include "../utils/Globals.h"
 #include "../utils/String.h"
@@ -304,7 +304,7 @@ void RenderSystem::render() {
             renderEntity(position, texture, size, rotation, colorComponent ? &colorComponent->color : nullptr, shader);
         }
 
-        if(debugRender) {
+        if constexpr (DEBUG_ENABLED) {
             if (!position || !collision) continue;
 
             glm::vec4 rect{position->x + collision->x, position->y + collision->y, collision->w, collision->h};

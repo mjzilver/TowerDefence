@@ -12,6 +12,7 @@ GLFWwindow* GLContext::initWindow(int width, int height, const char* title) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     GLFWwindow* win = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (!win) {
@@ -35,4 +36,6 @@ void GLContext::setupOpenGL() {
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+
+    glfwSwapInterval(1);
 }

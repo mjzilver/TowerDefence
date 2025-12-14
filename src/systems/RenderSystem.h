@@ -73,8 +73,6 @@ private:
     ComponentManager& componentManager;
     FontLoader& fontLoader;
 
-    bool debugRender = false;
-
     // hash map to store the shader programs
     std::unordered_map<std::string, Shader*> shaderPrograms;
     std::map<Shader*, GLuint> shaderVAOs; 

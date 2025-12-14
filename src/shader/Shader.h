@@ -10,7 +10,6 @@ public:
 
 private:
     GLuint programID;
-
     const std::string shaderPath = "resources/shaders/";
 
     std::string readFile(const std::string& filepath);

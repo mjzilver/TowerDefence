@@ -26,7 +26,7 @@ public:
 
     void render(RenderSystem& renderSystem);
 
-    void createMainMenu(MapLoader& mapLoader, ComponentManager& componentManager, SystemManager& systemManager, StateSystem& stateSystem, GLFWwindow* window);
+    void createMainMenu(MapLoader& mapLoader, SystemManager& systemManager, StateSystem& stateSystem, GLFWwindow* window);
 
     ~Menu() {
         for (auto* e : elements) {

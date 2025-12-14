@@ -4,7 +4,6 @@
 #include "../components/DamageComponent.h"
 #include "../components/HealthComponent.h"
 #include "../components/PositionComponent.h"
-#include "../components/RotationComponent.h"
 #include "../components/SizeComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../event/Event.h"
@@ -20,7 +19,6 @@ void CollisionSystem::update(float) {
     auto* velocities = componentManager.getArray<VelocityComponent>();
     auto* damages = componentManager.getArray<DamageComponent>();
     auto* healths = componentManager.getArray<HealthComponent>();
-    auto* rotations = componentManager.getArray<RotationComponent>();
 
     for (Entity entity : collisions->getEntities()) {
         quadTree.insert(entity);

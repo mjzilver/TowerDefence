@@ -23,6 +23,7 @@
 #include "../components/VelocityComponent.h"
 #include "../components/WeaponComponent.h"
 #include "../event/Event.h"
+#include "../utils/Color.h"
 #include "../utils/Globals.h"
 #include "../utils/State.h"
 #include "../utils/TextureCoords.h"
@@ -425,7 +426,7 @@ Entity EntityFactory::createKillCounter(glm::vec2 pos) {
     componentManager.addComponent(entity, textComponent);
 
     ColorComponent colorComponent;
-    colorComponent.color = {0.66f, 0.33f, 0.33f};
+    colorComponent.color = SOFT_RED;
     componentManager.addComponent(entity, colorComponent);
 
     ShaderComponent shaderComponent;
@@ -460,7 +461,7 @@ Entity EntityFactory::createUpgradeMenuItem(glm::vec2 pos, std::function<void()>
     componentManager.addComponent(entity, clickableComponent);
 
     ColorComponent colorComponent;
-    colorComponent.color = {0.33f, 0.33f, 0.66f};
+    colorComponent.color = SOFT_ORANGE;
     componentManager.addComponent(entity, colorComponent);
 
     ShaderComponent shaderComponent;
@@ -495,7 +496,7 @@ Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 pos, std::function<void
     componentManager.addComponent(entity, clickableComponent);
 
     ColorComponent colorComponent;
-    colorComponent.color = {0.66f, 0.33f, 0.66f};
+    colorComponent.color = LILAC;
     componentManager.addComponent(entity, colorComponent);
 
     ShaderComponent shaderComponent;
@@ -525,7 +526,7 @@ Entity EntityFactory::createCurrencyDisplay(glm::vec2 pos) {
     componentManager.addComponent(entity, textComponent);
 
     ColorComponent colorComponent;
-    colorComponent.color = {0.33f, 0.66f, 0.33f};
+    colorComponent.color = SOFT_YELLOW;
     componentManager.addComponent(entity, colorComponent);
 
     ShaderComponent shaderComponent;
@@ -560,7 +561,7 @@ Entity EntityFactory::createMenuButton(glm::vec2 pos, std::function<void()> onCl
     componentManager.addComponent(entity, clickableComponent);
 
     ColorComponent colorComponent;
-    colorComponent.color = {0.66f, 0.53f, 0.23f};
+    colorComponent.color = MUTED_PURPLE;
     componentManager.addComponent(entity, colorComponent);
 
     ShaderComponent shaderComponent;

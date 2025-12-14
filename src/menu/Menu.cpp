@@ -3,6 +3,7 @@
 #include "../event/Event.h"
 #include "../event/EventDispatcher.h"
 #include "../systems/CollisionSystem.h"
+#include "../utils/Color.h"
 #include "../utils/Globals.h"
 #include "UIButton.h"
 #include "UILabel.h"
@@ -47,19 +48,26 @@ void Menu::render(RenderSystem& renderSystem) {
     }
 }
 
-void Menu::createMainMenu(MapLoader& mapLoader, ComponentManager& componentManager, SystemManager& systemManager, StateSystem& stateSystem,
-                          GLFWwindow* window) {
+void Menu::createMainMenu(MapLoader& mapLoader, SystemManager& systemManager, StateSystem& stateSystem, GLFWwindow* window) {
     const float centerX = (SCREEN_WIDTH - 250) * 0.5f;
     const float buttonHeight = 60;
     const float buttonmargin = 20;
 
-    auto make = [&](float y, const std::string& text, const glm::vec3& bg, std::function<void()> clb) {
+    auto make = [&](float y, const std::string& text, std::function<void()> clb) {
         UIButton* e = new UIButton();
         e->setPos({centerX, y, 250, buttonHeight});
         e->setText(text);
-        e->setBgColor(bg);
+        e->setBgColor(getColor());
         e->setCallback(clb);
         registerElement(e);
+    };
+
+    auto callbackMake = [&](const std::string& filename) -> std::function<void()> {
+        return [&, filename]() {
+            systemManager.resetSystems();
+            mapLoader.loadMap(filename);
+            stateSystem.startGame();
+        };
     };
 
     UILabel* title = new UILabel();
@@ -69,37 +77,17 @@ void Menu::createMainMenu(MapLoader& mapLoader, ComponentManager& componentManag
     registerElement(title);
 
     float buttonY = 170;
-    make(buttonY, "Map 1", {0.5f, 0.5f, 0.8f}, [&] {
-        componentManager.destroyAll();
-        systemManager.resetSystems();
-        mapLoader.loadMap("map1.txt");
-        stateSystem.startGame();
-    });
+    make(buttonY, "Map 1", callbackMake("map1.txt"));
 
     buttonY += buttonHeight + buttonmargin;
-    make(buttonY, "Map 2", {0.5f, 0.8f, 0.5f}, [&] {
-        componentManager.destroyAll();
-        systemManager.resetSystems();
-        mapLoader.loadMap("map2.txt");
-        stateSystem.startGame();
-    });
+    make(buttonY, "Map 2", callbackMake("map2.txt"));
 
     buttonY += buttonHeight + buttonmargin;
-    make(buttonY, "Map 3", {0.8f, 0.5f, 0.5f}, [&] {
-        componentManager.destroyAll();
-        systemManager.resetSystems();
-        mapLoader.loadMap("map3.txt");
-        stateSystem.startGame();
-    });
+    make(buttonY, "Map 3", callbackMake("map3.txt"));
 
     buttonY += buttonHeight + buttonmargin;
-    make(buttonY, "Map 4", {0.8f, 0.8f, 0.5f}, [&] {
-        componentManager.destroyAll();
-        systemManager.resetSystems();
-        mapLoader.loadMap("map4.txt");
-        stateSystem.startGame();
-    });
+    make(buttonY, "Map 4", callbackMake("map4.txt"));
 
     buttonY += buttonHeight * 2 + buttonmargin;
-    make(buttonY, "Quit", {0.9f, 0.3f, 0.3f}, [window] { glfwSetWindowShouldClose(window, GLFW_TRUE); });
+    make(buttonY, "Quit", [window] { glfwSetWindowShouldClose(window, GLFW_TRUE); });
 }
