@@ -33,7 +33,7 @@ int main() {
     Shader rectShader("rect_vertex.glsl", "rect_fragment.glsl");
 
     EntityManager entityManager;
-    ComponentManager componentManager;
+    ComponentManager componentManager(entityManager);
     SystemManager systemManager;
 
     TextureManager textureManager;

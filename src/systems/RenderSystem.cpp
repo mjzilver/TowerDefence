@@ -1,10 +1,9 @@
 #include "RenderSystem.h"
 
-#include <algorithm>
-#include <deque>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "../components/ClickableComponent.h"
@@ -51,20 +50,19 @@ void RenderSystem::renderRectangle(glm::vec4 rect, const glm::vec3& color, Shade
     GLuint shaderProgram = shader->getProgram();
     glUseProgram(shaderProgram);
 
-    GLuint colorLoc = glGetUniformLocation(shaderProgram, "color");
+    GLuint colorLoc = shader->getUniform("color");
     glUniform3f(colorLoc, color.x, color.y, color.z);
 
-    GLuint sizeLoc = glGetUniformLocation(shaderProgram, "bounds");
+    GLuint sizeLoc = shader->getUniform("bounds");
     glUniform4f(sizeLoc, rect.x, rect.y, rect.x + rect.z, rect.y + rect.w);
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(rect.x + rect.z * 0.5f, rect.y + rect.w * 0.5f, 0.0f));
     model = glm::scale(model, glm::vec3(rect.z, rect.w, 1.0f));
 
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
+    glUniformMatrix4fv(shader->getUniform("model"), 1, GL_FALSE, &model[0][0]);
 
-    GLuint projectionLoc = glGetUniformLocation(shaderProgram, "projection");
-    glm::mat4 projection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f, -1.0f, 1.0f);
+    GLuint projectionLoc = shader->getUniform("projection");
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
 
     if (shaderVAOs.find(shader) == shaderVAOs.end()) {
@@ -123,20 +121,20 @@ void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* t
         model = glm::scale(model, glm::vec3(-1.0f, 1.0f, 1.0f));  // Flip horizontally
     }
 
-    GLuint modelLoc = glGetUniformLocation(shaderProgram, "model");
+    GLuint modelLoc = shader->getUniform("model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
 
-    GLuint texCoordOffsetLoc = glGetUniformLocation(shaderProgram, "texCoordOffset");
+    GLuint texCoordOffsetLoc = shader->getUniform("texCoordOffset");
     glUniform2fv(texCoordOffsetLoc, 1, &texCoordOffset[0]);
 
-    GLuint texCoordScaleLoc = glGetUniformLocation(shaderProgram, "texCoordScale");
+    GLuint texCoordScaleLoc = shader->getUniform("texCoordScale");
     glUniform2fv(texCoordScaleLoc, 1, &texCoordScale[0]);
 
     if (color) {
-        glUniform1i(glGetUniformLocation(shaderProgram, "useRecolor"), GL_TRUE);
-        glUniform3f(glGetUniformLocation(shaderProgram, "recolor"), color->r, color->g, color->b);
+        glUniform1i(shader->getUniform("useRecolor"), GL_TRUE);
+        glUniform3f(shader->getUniform("recolor"), color->r, color->g, color->b);
     } else {
-        glUniform1i(glGetUniformLocation(shaderProgram, "useRecolor"), GL_FALSE);
+        glUniform1i(shader->getUniform("useRecolor"), GL_FALSE);
     }
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -147,11 +145,10 @@ void RenderSystem::renderText(glm::vec4 rect, std::string text, const glm::vec3&
     glUseProgram(shaderProgram);
 
     // Set the text color uniform
-    glUniform3f(glGetUniformLocation(shaderProgram, "textColor"), color.x, color.y, color.z);
+    glUniform3f(shader->getUniform("textColor"), color.x, color.y, color.z);
 
     // Set projection matrix (orthographic)
-    glm::mat4 projection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f, -1.0f, 1.0f);
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+    glUniformMatrix4fv(shader->getUniform("projection"), 1, GL_FALSE, &projection[0][0]);
 
     // Setup VAO/VBO
     static GLuint vao = 0, vbo = 0;
@@ -210,7 +207,7 @@ void RenderSystem::renderText(glm::vec4 rect, std::string text, const glm::vec3&
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, ch.textureID);
-            glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
+            glUniform1i(shader->getUniform("text"), 0);
 
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
             glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -241,22 +238,7 @@ void RenderSystem::render() {
     auto* clickable = componentManager.getArray<ClickableComponent>();
     auto* collisions = componentManager.getArray<CollisionComponent>();
 
-    auto entities = positions->getEntities();
-
-    std::sort(entities.begin(), entities.end(), [&](Entity a, Entity b) {
-        auto* posA = positions->get(a);
-        auto* posB = positions->get(b);
-
-        if (!posA && !posB) return a < b;
-        if (!posA) return false;
-        if (!posB) return true;
-
-        if (posA->zIndex != posB->zIndex) return posA->zIndex > posB->zIndex;
-
-        if (posA->y != posB->y) return posA->y > posB->y;
-
-        return a < b;
-    });
+    auto entities = entityManager->getSortedEntities();
 
     for (Entity entity : entities) {
         auto* position = positions->get(entity);
@@ -321,4 +303,8 @@ void RenderSystem::render() {
     while ((err = glGetError()) != GL_NO_ERROR) {
         std::cerr << "OpenGL error in RenderSystem::render: " << err << std::endl;
     }
+}
+
+RenderSystem::RenderSystem(ComponentManager& componentManager, FontLoader& fontLoader) : componentManager(componentManager), fontLoader(fontLoader) {
+    projection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f, -1.0f, 1.0f);
 }

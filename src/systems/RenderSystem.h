@@ -17,8 +17,7 @@
 
 class RenderSystem : public System {
 public:
-    RenderSystem(ComponentManager& componentManager, FontLoader& fontLoader) 
-        : componentManager(componentManager), fontLoader(fontLoader) {}
+    RenderSystem(ComponentManager& componentManager, FontLoader& fontLoader);
 
     void renderEntity(
         PositionComponent* position, 
@@ -72,6 +71,10 @@ public:
 private:
     ComponentManager& componentManager;
     FontLoader& fontLoader;
+
+    glm::mat4 projection;
+
+    void initShaderCache(Shader* shader);
 
     // hash map to store the shader programs
     std::unordered_map<std::string, Shader*> shaderPrograms;

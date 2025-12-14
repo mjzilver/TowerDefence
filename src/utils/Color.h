@@ -24,4 +24,6 @@ constexpr glm::vec3 SLATE_BLUE{0.45f, 0.55f, 0.65f};
 constexpr glm::vec3 LILAC{0.70f, 0.50f, 0.75f};
 constexpr glm::vec3 MUTED_FOREST{0.35f, 0.55f, 0.50f};
 
+constexpr glm::vec3 BLACK{0.0f,0.0f,0.0f};
+
 glm::vec3 getColor();

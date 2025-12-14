@@ -2,14 +2,18 @@
 
 #include <glad/glad.h>
 #include <string>
+#include <unordered_map>
 
 class Shader {
 public:
     Shader(const std::string& vertexPath, const std::string& fragmentPath);
     GLuint getProgram() const;
+    GLuint getUniform(const std::string& name);
 
 private:
     GLuint programID;
+    std::unordered_map<std::string, GLuint> uniformCache;
+
     const std::string shaderPath = "resources/shaders/";
 
     std::string readFile(const std::string& filepath);

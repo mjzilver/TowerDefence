@@ -7,12 +7,21 @@
 #include "Component.h"
 #include "ComponentArray.h"
 #include "EntityManager.h"
+#include "../components/PositionComponent.h"
 
 class ComponentManager {
 public:
+    ComponentManager(EntityManager& em)
+        : em(em) {}
+
     template <typename T>
     void addComponent(Entity entity, T component) {
         getArray<T>()->insert(entity, std::move(component));
+    }
+
+    void addComponent(Entity entity, PositionComponent pos) {
+        getArray<PositionComponent>()->insert(entity, std::move(pos));
+        em.reorder(pos.zIndex, entity);
     }
 
     template <typename T>
@@ -62,6 +71,8 @@ public:
     }
 
 private:
+    EntityManager& em;
+
     std::unordered_map<std::type_index, IComponentArray*> componentArrays;
     std::queue<Entity> scheduledForDestruction;
 };
