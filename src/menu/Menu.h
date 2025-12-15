@@ -6,10 +6,10 @@
 // clang-format on
 #include <vector>
 
-#include "../systems/StateSystem.h"
-#include "../systems/RenderSystem.h"
 #include "../ecs/SystemManager.h"
 #include "../map/MapLoader.h"
+#include "../systems/RenderSystem.h"
+#include "../systems/StateSystem.h"
 #include "UIElement.h"
 
 class Menu {
@@ -19,7 +19,7 @@ public:
     void registerElement(UIElement* e) { elements.push_back(e); }
 
     void onClick(const glm::vec2& clickPos);
-    
+
     void onKeyPress(int key);
 
     void onHover(const glm::vec2& pos);

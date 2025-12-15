@@ -1,8 +1,10 @@
 #pragma once
 
-#include "../ecs/Component.h"
 #include <glad/glad.h>
+
 #include <glm/glm.hpp>
+
+#include "../ecs/Component.h"
 
 struct PathfindingComponent : public Component {
     float x;

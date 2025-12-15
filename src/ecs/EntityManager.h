@@ -11,27 +11,13 @@ class ComponentManager;
 
 class EntityManager {
 public:
-    Entity createEntity() {
-        Entity entity;
-        if (!freedEntities.empty()) {
-            entity = freedEntities.front();
-            freedEntities.pop();
-        } else {
-            entity = ++lastEntity;
-        }
-
-        activeEntities.insert(entity);
-        layeredEntities[ZLayer::UNKNOWN].push_back(entity);
-        return entity;
-    }
+    Entity createEntity();
 
     bool isEntityValid(Entity entity) const { return activeEntities.find(entity) != activeEntities.end(); }
 
     std::unordered_set<Entity> getEntities() const { return activeEntities; }
 
-    const std::map<ZLayer, std::vector<Entity>>& getLayered() const {
-        return layeredEntities;
-    }
+    const std::map<ZLayer, std::vector<Entity>>& getLayered() const { return layeredEntities; }
 
     std::vector<Entity> getEntitiesByLayer(ZLayer layer) const {
         auto it = layeredEntities.find(layer);
@@ -39,17 +25,7 @@ public:
         return it->second;
     }
 
-    std::vector<Entity> getSortedEntities() {
-        std::vector<Entity> sorted;
-        size_t total = 0;
-        for (auto& [layer, entities] : layeredEntities) total += entities.size();
-        sorted.reserve(total);
-
-        for (auto it = layeredEntities.rbegin(); it != layeredEntities.rend(); ++it) {
-            sorted.insert(sorted.end(), it->second.rbegin(), it->second.rend());
-        }
-        return sorted;
-    }
+    std::vector<Entity> getSortedEntities();
 
     void reset() {
         lastEntity = INVALID_ENTITY;

@@ -11,9 +11,7 @@ public:
     QuadTree(ComponentManager& componentManager, const glm::vec4& bounds, int capacity = 8)
         : bounds(bounds), capacity(capacity), componentManager(componentManager) {}
 
-    ~QuadTree() {
-        children.clear();
-    }
+    ~QuadTree() { children.clear(); }
 
     void subdivide();
 

@@ -3,14 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-enum class EventType {
-    PROJECTILE_HIT,
-    ENTITY_DESTROYED, 
-    GRASS_TILE_CLICKED,
-    TOWER_CLICKED,
-    ACTIVATE_CHEATS,
-    UNSELECT
-};
+enum class EventType { PROJECTILE_HIT, ENTITY_DESTROYED, GRASS_TILE_CLICKED, TOWER_CLICKED, ACTIVATE_CHEATS, UNSELECT };
 
 struct Event {
     EventType type;

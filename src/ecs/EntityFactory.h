@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ComponentManager.h"
-#include "EntityManager.h"
-#include "Component.h"
-#include "../texture/TextureManager.h"
-
 #include <functional>
 #include <glm/glm.hpp>
+
+#include "../texture/TextureManager.h"
+#include "Component.h"
+#include "ComponentManager.h"
+#include "EntityManager.h"
 
 class EntityFactory {
 public:

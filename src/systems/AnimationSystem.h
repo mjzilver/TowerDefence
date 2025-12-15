@@ -2,7 +2,6 @@
 
 #include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
-
 #include "../event/Event.h"
 
 class AnimationSystem : public System {
@@ -14,7 +13,7 @@ public:
     void onEvent(const Event& event);
 
     void reset() override { return; };
-    
+
 private:
     ComponentManager& componentManager;
 };

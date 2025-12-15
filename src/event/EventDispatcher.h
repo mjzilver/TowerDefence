@@ -15,9 +15,7 @@ public:
         return instance;
     }
 
-    void addListener(EventType type, EventListener listener) {
-        listeners[type].push_back(std::move(listener));
-    }
+    void addListener(EventType type, EventListener listener) { listeners[type].push_back(std::move(listener)); }
 
     void dispatch(const Event& event) {
         if (listeners.find(event.type) != listeners.end()) {

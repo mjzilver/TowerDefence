@@ -1,7 +1,8 @@
 #pragma once
 
-#include <unordered_map>
 #include <typeindex>
+#include <unordered_map>
+
 #include "System.h"
 
 class SystemManager {

@@ -3,6 +3,6 @@
 #include "../ecs/Component.h"
 
 struct DeathComponent : public Component {
-    float remainingTime; 
+    float remainingTime;
     bool hasDied = false;
 };

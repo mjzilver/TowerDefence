@@ -3,11 +3,11 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+#include "../components/PathfindingComponent.h"
 #include "../ecs/Component.h"
 #include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
 #include "../map/MapLoader.h"
-#include "../components/PathfindingComponent.h"
 
 class PathfindingSystem : public System {
 public:
@@ -17,7 +17,7 @@ public:
     void generatePath();
     void reset() override { return; };
 
-    Entity& getStart() {return start;}
+    Entity& getStart() { return start; }
 
 private:
     void generateRandomOffset(PathfindingComponent* pathfinding, float maxOffset);

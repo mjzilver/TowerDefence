@@ -8,7 +8,7 @@ public:
     MovementSystem(ComponentManager& componentManager) : componentManager(componentManager) {}
 
     void update(float deltaTime) override;
-    
+
     void reset() override { return; };
 
 private:

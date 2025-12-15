@@ -9,7 +9,7 @@
 class CombatSystem : public System {
 public:
     CombatSystem(ComponentManager& componentManager, EntityFactory& entityFactory)
-        : componentManager(componentManager), entityFactory(entityFactory)  {
+        : componentManager(componentManager), entityFactory(entityFactory) {
         EventDispatcher::getInstance().addListener(EventType::PROJECTILE_HIT, std::bind(&CombatSystem::onEvent, this, std::placeholders::_1));
     }
 
@@ -18,7 +18,7 @@ public:
     void onEvent(const Event& event);
 
     void reset() override { return; };
-    
+
 private:
     ComponentManager& componentManager;
     EntityFactory& entityFactory;

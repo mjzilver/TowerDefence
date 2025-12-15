@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../ecs/System.h"
 #include "../ecs/ComponentManager.h"
+#include "../ecs/System.h"
 
 class ClickSystem : public System {
 public:
@@ -12,7 +12,7 @@ public:
     void onClick(int button, int action, double x, double y);
 
     void onHover(double x, double y);
-    
+
     void reset() override { return; };
 
 private:

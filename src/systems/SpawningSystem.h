@@ -1,12 +1,12 @@
 #pragma once
 #include <glm/fwd.hpp>
 #include <optional>
-#include "../ecs/System.h"
+
 #include "../ecs/ComponentManager.h"
 #include "../ecs/EntityFactory.h"
-#include "../map/MapLoader.h"
-
+#include "../ecs/System.h"
 #include "../event/Event.h"
+#include "../map/MapLoader.h"
 
 class SpawningSystem : public System {
 public:
@@ -45,7 +45,7 @@ private:
     const float healthStep = 0.15f;
     const int speedStep = 15;
     const int goldStep = 10;
-    
+
     const int maxHealth = 1000;
     const int maxSpeed = 240;
     const int maxGold = 300;

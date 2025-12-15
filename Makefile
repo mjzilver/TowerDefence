@@ -37,7 +37,7 @@ clean:
 # ---------
 .PHONY: format
 format:
-	clang-format -i $(CPP_FILES)
+	clang-format -i $(CPP_FILES) $(H_FILES)
 
 tidy:
 	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) ..

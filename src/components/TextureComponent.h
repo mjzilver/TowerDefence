@@ -1,9 +1,9 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "../ecs/Component.h"
 #include "../texture/Texture.h"
-
-#include <glm/glm.hpp>
 
 struct TextureComponent : public Component {
     Texture texture;

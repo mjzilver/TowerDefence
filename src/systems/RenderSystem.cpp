@@ -297,7 +297,7 @@ void RenderSystem::render() {
             }
         }
     }
-    
+
     glBindVertexArray(0);
     glUseProgram(0);
 

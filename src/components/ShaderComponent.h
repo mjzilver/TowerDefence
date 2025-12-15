@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../ecs/Component.h"
 #include <string>
+
+#include "../ecs/Component.h"
 
 struct ShaderComponent : public Component {
     std::string name = "default";

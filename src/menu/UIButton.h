@@ -1,12 +1,15 @@
 #pragma once
 
-#include "UIElement.h"
 #include <functional>
+
+#include "UIElement.h"
 
 class UIButton : public UIElement {
 public:
     void setCallback(std::function<void()> cb) { callback = cb; }
-    void onClick() override { if (callback) callback(); }
+    void onClick() override {
+        if (callback) callback();
+    }
 
     void setHoverColor(const glm::vec3& c) { hoverColor = c; }
     glm::vec3 getHoverColor() const override { return hoverColor; }
@@ -18,7 +21,7 @@ public:
 
 private:
     std::function<void()> callback{};
-    glm::vec3 bgColor {0.4f, 0.4f, 0.4f};
-    glm::vec3 hoverColor {0.6f, 0.6f, 0.6f};
+    glm::vec3 bgColor{0.4f, 0.4f, 0.4f};
+    glm::vec3 hoverColor{0.6f, 0.6f, 0.6f};
     bool isHovered = false;
 };

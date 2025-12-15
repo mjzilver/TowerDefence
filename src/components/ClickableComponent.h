@@ -1,13 +1,11 @@
 #pragma once
 
-#include "../ecs/Component.h"
-#include "../event/Event.h"
 #include <functional>
 
-enum class ClickableType {
-    EVENT,
-    FUNCTION
-};
+#include "../ecs/Component.h"
+#include "../event/Event.h"
+
+enum class ClickableType { EVENT, FUNCTION };
 
 struct ClickableComponent : public Component {
     bool hovered = false;

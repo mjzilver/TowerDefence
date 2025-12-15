@@ -1,7 +1,7 @@
 #pragma once
 
-#include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <string>
 
 class UIElement {
@@ -23,7 +23,7 @@ public:
 
     void setBgColor(const glm::vec3& c) { bgColor = c; }
     glm::vec3 getBgColor() const { return bgColor; }
-    
+
     virtual glm::vec3 getHoverColor() const { return {}; }
 
     virtual bool isClickable() const { return false; }
@@ -31,6 +31,6 @@ public:
 protected:
     glm::vec4 pos{};
     std::string text;
-    glm::vec3 bgColor {0.4f, 0.4f, 0.4f};
-    glm::vec3 textColor {0.1f, 0.1f, 0.1f};
+    glm::vec3 bgColor{0.4f, 0.4f, 0.4f};
+    glm::vec3 textColor{0.1f, 0.1f, 0.1f};
 };

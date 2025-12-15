@@ -3,11 +3,7 @@
 #include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
 
-enum class EngineState {
-    MAIN_MENU,
-    GAMEPLAY
-};
-
+enum class EngineState { MAIN_MENU, GAMEPLAY };
 
 class StateSystem : public System {
 public:

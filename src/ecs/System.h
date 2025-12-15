@@ -8,9 +8,7 @@ public:
     virtual void update(float deltaTime) = 0;
     virtual void reset() = 0;
 
-    void setEntityManager(EntityManager* entityManager) {
-        this->entityManager = entityManager;
-    }
+    void setEntityManager(EntityManager* entityManager) { this->entityManager = entityManager; }
 
 protected:
     EntityManager* entityManager;
