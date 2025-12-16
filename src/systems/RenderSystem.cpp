@@ -46,7 +46,7 @@ GLuint createUnitSquareVao() {
     return vao;
 }
 
-void RenderSystem::renderRectangle(glm::vec4 rect, const glm::vec3& color, Shader* shader) {
+void RenderSystem::renderRectangle(const glm::vec4& rect, const glm::vec3& color, Shader* shader) {
     GLuint shaderProgram = shader->getProgram();
     glUseProgram(shaderProgram);
 
@@ -74,12 +74,12 @@ void RenderSystem::renderRectangle(glm::vec4 rect, const glm::vec3& color, Shade
     glBindVertexArray(0);
 }
 
-void RenderSystem::renderRectangle(PositionComponent* position, SizeComponent* size, const glm::vec3& color, Shader* shader) {
+void RenderSystem::renderRectangle(const PositionComponent* position, const SizeComponent* size, const glm::vec3& color, Shader* shader) {
     renderRectangle(glm::vec4(position->x, position->y, size->w, size->h), color, shader);
 }
 
-void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* texture, SizeComponent* size, RotationComponent* rotation,
-                                const glm::vec3* color, Shader* shader) {
+void RenderSystem::renderEntity(const PositionComponent* position, const TextureComponent* texture, const SizeComponent* size,
+                                const RotationComponent* rotation, const glm::vec3* color, Shader* shader) {
     // Bind the texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture->texture.id);
@@ -138,7 +138,7 @@ void RenderSystem::renderEntity(PositionComponent* position, TextureComponent* t
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-void RenderSystem::renderText(glm::vec4 rect, std::string text, const glm::vec3& color, Shader* shader) {
+void RenderSystem::renderText(const glm::vec4& rect, std::string text, const glm::vec3& color, Shader* shader) {
     GLuint shaderProgram = shader->getProgram();
     glUseProgram(shaderProgram);
 
@@ -221,21 +221,21 @@ void RenderSystem::renderText(glm::vec4 rect, std::string text, const glm::vec3&
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void RenderSystem::renderText(PositionComponent* position, SizeComponent* size, TextComponent* text, Shader* shader) {
+void RenderSystem::renderText(const PositionComponent* position, const SizeComponent* size, const TextComponent* text, Shader* shader) {
     renderText(glm::vec4(position->x, position->y, size->w, size->h), text->text, text->color, shader);
 }
 
 void RenderSystem::render() {
     auto& componentManager = context.componentManager;
-    auto* positions = componentManager.getArray<PositionComponent>();
-    auto* textures = componentManager.getArray<TextureComponent>();
-    auto* sizes = componentManager.getArray<SizeComponent>();
-    auto* rotations = componentManager.getArray<RotationComponent>();
-    auto* shaders = componentManager.getArray<ShaderComponent>();
-    auto* textComp = componentManager.getArray<TextComponent>();
-    auto* colors = componentManager.getArray<ColorComponent>();
-    auto* clickable = componentManager.getArray<ClickableComponent>();
-    auto* collisions = componentManager.getArray<CollisionComponent>();
+    const auto* positions = componentManager.getArray<PositionComponent>();
+    const auto* textures = componentManager.getArray<TextureComponent>();
+    const auto* sizes = componentManager.getArray<SizeComponent>();
+    const auto* rotations = componentManager.getArray<RotationComponent>();
+    const auto* shaders = componentManager.getArray<ShaderComponent>();
+    const auto* textComp = componentManager.getArray<TextComponent>();
+    const auto* colors = componentManager.getArray<ColorComponent>();
+    const auto* clickable = componentManager.getArray<ClickableComponent>();
+    const auto* collisions = componentManager.getArray<CollisionComponent>();
 
     const auto& layers = context.entityManager.getLayered();
 
@@ -243,15 +243,15 @@ void RenderSystem::render() {
         auto entities = layerIt->second;
 
         for (Entity entity : entities) {
-            auto* position = positions->get(entity);
-            auto* texture = textures->get(entity);
-            auto* size = sizes->get(entity);
-            auto* rotation = rotations->get(entity);
-            auto* shaderComponent = shaders->get(entity);
-            auto* textComponent = textComp->get(entity);
-            auto* colorComponent = colors->get(entity);
-            auto* clickableComponent = clickable->get(entity);
-            auto* collision = collisions->get(entity);
+            const auto* position = positions->get(entity);
+            const auto* texture = textures->get(entity);
+            const auto* size = sizes->get(entity);
+            const auto* rotation = rotations->get(entity);
+            const auto* shaderComponent = shaders->get(entity);
+            const auto* textComponent = textComp->get(entity);
+            const auto* colorComponent = colors->get(entity);
+            const auto* clickableComponent = clickable->get(entity);
+            const auto* collision = collisions->get(entity);
 
             std::string shaderName = "default";
             if (shaderComponent) {
@@ -269,7 +269,6 @@ void RenderSystem::render() {
             glUseProgram(shaderProgram);
             glBindVertexArray(vao);
 
-            // Button rendering
             if (position && shader && size && colorComponent && !texture) {
                 if (textComponent) {
                     renderText(position, size, textComponent, shader);
@@ -284,15 +283,14 @@ void RenderSystem::render() {
 
                 renderRectangle(position, size, color, shaderPrograms["rect"]);
             } else if (position && texture && size && shader) {
-                // Texture rendering
                 renderEntity(position, texture, size, rotation, colorComponent ? &colorComponent->color : nullptr, shader);
             }
 
             if constexpr (DEBUG_ENABLED) {
                 if (!position || !collision) continue;
 
-                glm::vec4 rect{position->x + collision->x, position->y + collision->y, collision->w, collision->h};
-                glm::vec3 color{1.0f, 0.0f, 0.0f};
+                const glm::vec4 rect{position->x + collision->x, position->y + collision->y, collision->w, collision->h};
+                const glm::vec3 color{1.0f, 0.0f, 0.0f};
 
                 renderRectangle(rect, color, shaderPrograms["rect"]);
             }

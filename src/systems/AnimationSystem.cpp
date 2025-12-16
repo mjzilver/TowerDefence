@@ -13,7 +13,7 @@ AnimationSystem::AnimationSystem(EngineContext& ctx) : System(ctx) {
     context.eventDispatcher.addListener(EventType::ENTITY_DESTROYED, std::bind(&AnimationSystem::onEvent, this, std::placeholders::_1));
 }
 
-void AnimationSystem::update(float deltaTime) {
+void AnimationSystem::update(const float deltaTime) {
     auto& componentManager = context.componentManager;
     auto* animations = componentManager.getArray<AnimationComponent>();
     const auto* directions = componentManager.getArray<DirectionComponent>();

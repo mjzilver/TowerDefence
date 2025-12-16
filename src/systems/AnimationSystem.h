@@ -11,5 +11,5 @@ public:
 
     void onEvent(const Event& event);
 
-    void reset() override { return; };
+    void reset() override {};
 };

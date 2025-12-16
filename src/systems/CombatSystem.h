@@ -10,9 +10,9 @@ public:
         context.eventDispatcher.addListener(EventType::PROJECTILE_HIT, std::bind(&CombatSystem::onEvent, this, std::placeholders::_1));
     }
 
-    void update(float) override { return; }
+    void update(float) override {}
 
     void onEvent(const Event& event);
 
-    void reset() override { return; };
+    void reset() override {};
 };

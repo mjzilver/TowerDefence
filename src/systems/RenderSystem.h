@@ -22,22 +22,22 @@ public:
 
     ~RenderSystem();
 
-    void renderEntity(PositionComponent* position, TextureComponent* texture, SizeComponent* size, RotationComponent* rotation,
-                      const glm::vec3* color, Shader* shader);
+    void renderEntity(const PositionComponent* position, const TextureComponent* texture, const SizeComponent* size,
+                      const RotationComponent* rotation, const glm::vec3* color, Shader* shader);
 
-    void renderText(PositionComponent* position, SizeComponent* size, TextComponent* text, Shader* shader);
+    void renderText(const PositionComponent* position, const SizeComponent* size, const TextComponent* text, Shader* shader);
 
-    void renderText(glm::vec4 rect, std::string text, const glm::vec3& color, Shader* shader);
+    void renderText(const glm::vec4& rect, const std::string text, const glm::vec3& color, Shader* shader);
 
-    void renderRectangle(PositionComponent* position, SizeComponent* size, const glm::vec3& color, Shader* shader);
+    void renderRectangle(const PositionComponent* position, const SizeComponent* size, const glm::vec3& color, Shader* shader);
 
-    void renderRectangle(glm::vec4 rect, const glm::vec3& color, Shader* shader);
+    void renderRectangle(const glm::vec4& rect, const glm::vec3& color, Shader* shader);
 
     void render();
 
-    void reset() override { return; };
+    void reset() override {};
 
-    void update(float) override { return; };
+    void update(float) override {};
 
     void registerShader(const std::string& name, Shader* shader) { shaderPrograms[name] = shader; }
 

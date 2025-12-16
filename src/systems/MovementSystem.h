@@ -8,5 +8,5 @@ public:
 
     void update(float deltaTime) override;
 
-    void reset() override { return; };
+    void reset() override {};
 };

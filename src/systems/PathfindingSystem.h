@@ -14,7 +14,7 @@ public:
 
     void update(float deltaTime) override;
     void generatePath();
-    void reset() override { return; };
+    void reset() override {};
 
     Entity& getStart() { return start; }
 

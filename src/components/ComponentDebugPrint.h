@@ -1,16 +1,16 @@
 #pragma once
 #include <ostream>
+
 #include "CollisionComponent.h"
+#include "DeathComponent.h"
+#include "HealthComponent.h"
+#include "PathfindingComponent.h"
 #include "PositionComponent.h"
 #include "SizeComponent.h"
 #include "SpeedComponent.h"
-#include "TextureComponent.h"
 #include "TextComponent.h"
-#include "PathfindingComponent.h"
-#include "HealthComponent.h"
-#include "DeathComponent.h"
+#include "TextureComponent.h"
 #include "VelocityComponent.h"
-
 
 inline std::ostream& operator<<(std::ostream& os, const PositionComponent& pos) {
     os << "(" << pos.x << "," << pos.y << ") z: " << (int)pos.zIndex;
@@ -28,9 +28,8 @@ inline std::ostream& operator<<(std::ostream& os, const VelocityComponent& vel) 
 }
 
 inline std::ostream& operator<<(std::ostream& os, const CollisionComponent& col) {
-    os << "Collision(x:" << col.x << ", y:" << col.y 
-       << ", w:" << col.w << ", h:" << col.h 
-       << ", solid:" << col.solid << ", colliding:" << col.colliding << ")";
+    os << "Collision(x:" << col.x << ", y:" << col.y << ", w:" << col.w << ", h:" << col.h << ", solid:" << col.solid
+       << ", colliding:" << col.colliding << ")";
     return os;
 }
 
@@ -40,22 +39,18 @@ inline std::ostream& operator<<(std::ostream& os, const SpeedComponent& speed) {
 }
 
 inline std::ostream& operator<<(std::ostream& os, const TextureComponent& tex) {
-    os << "Texture(coords: [" 
-       << tex.coords.x << "," << tex.coords.y << "," 
-       << tex.coords.z << "," << tex.coords.w << "], flipped:" << tex.flipped << ")";
+    os << "Texture(coords: [" << tex.coords.x << "," << tex.coords.y << "," << tex.coords.z << "," << tex.coords.w << "], flipped:" << tex.flipped
+       << ")";
     return os;
 }
 
 inline std::ostream& operator<<(std::ostream& os, const TextComponent& text) {
-    os << "Text(\"" << text.text << "\", color: [" 
-       << text.color.r << "," << text.color.g << "," << text.color.b << "])";
+    os << "Text(\"" << text.text << "\", color: [" << text.color.r << "," << text.color.g << "," << text.color.b << "])";
     return os;
 }
 
 inline std::ostream& operator<<(std::ostream& os, const PathfindingComponent& path) {
-    os << "Pathfinding(x:" << path.x << ", y:" << path.y
-       << ", currentIndex:" << path.currentIndex
-       << ", reachedGoal:" << path.reachedGoal
+    os << "Pathfinding(x:" << path.x << ", y:" << path.y << ", currentIndex:" << path.currentIndex << ", reachedGoal:" << path.reachedGoal
        << ", randomOffset:[" << path.randomOffset.x << "," << path.randomOffset.y << "])";
     return os;
 }
@@ -66,7 +61,6 @@ inline std::ostream& operator<<(std::ostream& os, const HealthComponent& health)
 }
 
 inline std::ostream& operator<<(std::ostream& os, const DeathComponent& death) {
-    os << "Death(remainingTime:" << death.remainingTime
-       << ", hasDied:" << death.hasDied << ")";
+    os << "Death(remainingTime:" << death.remainingTime << ", hasDied:" << death.hasDied << ")";
     return os;
 }

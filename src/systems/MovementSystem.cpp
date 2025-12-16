@@ -7,14 +7,14 @@
 
 void MovementSystem::update(float deltaTime) {
     auto& componentManager = context.componentManager;
-    auto* positions = componentManager.getArray<PositionComponent>();
+    const auto* positions = componentManager.getArray<PositionComponent>();
     auto* velocities = componentManager.getArray<VelocityComponent>();
-    auto* directions = componentManager.getArray<DirectionComponent>();
-    auto* textures = componentManager.getArray<TextureComponent>();
+    const auto* directions = componentManager.getArray<DirectionComponent>();
+    const auto* textures = componentManager.getArray<TextureComponent>();
 
     for (Entity entity : velocities->getEntities()) {
         auto* position = positions->get(entity);
-        auto* velocity = velocities->get(entity);
+        const auto* velocity = velocities->get(entity);
         auto* direction = directions->get(entity);
         auto* texture = textures->get(entity);
 

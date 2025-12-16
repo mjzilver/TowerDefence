@@ -11,7 +11,7 @@ public:
 
     void onEvent(const Event& event);
 
-    void update(float deltaTime) override;
+    void update(const float deltaTime) override;
 
     void reset() override;
 

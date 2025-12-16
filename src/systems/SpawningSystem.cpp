@@ -23,7 +23,7 @@ void SpawningSystem::setStart() {
         return;
     }
 
-    glm::vec2 dir = glm::vec2(path[1].x - path[0].x, path[1].y - path[0].y);
+    const glm::vec2 dir = glm::vec2(path[1].x - path[0].x, path[1].y - path[0].y);
 
     startDirection = glm::vec2((dir.x > 0) ? 1 : (dir.x < 0 ? -1 : 0), (dir.y > 0) ? 1 : (dir.y < 0 ? -1 : 0));
 }
@@ -74,8 +74,8 @@ void SpawningSystem::update(float deltaTime) {
 
         Entity start = context.mapLoader.getStart().entity;
 
-        auto* position = componentManager.getComponent<PositionComponent>(start);
-        auto* size = componentManager.getComponent<SizeComponent>(start);
+        const auto* position = componentManager.getComponent<PositionComponent>(start);
+        const auto* size = componentManager.getComponent<SizeComponent>(start);
 
         if (position && size) {
             ColorComponent colorComponent;
@@ -118,7 +118,7 @@ void SpawningSystem::update(float deltaTime) {
 
             colorComponent.color = baseColor;
 
-            glm::vec2 spawnPos = glm::vec2(position->x - startDirection->x * TILE_SIZE, position->y - startDirection->y * TILE_SIZE);
+            const glm::vec2 spawnPos = glm::vec2(position->x - startDirection->x * TILE_SIZE, position->y - startDirection->y * TILE_SIZE);
 
             auto enemy = context.entityFactory.createFireBug(spawnPos, enemyHealth, enemySpeed, enemyGold);
             componentManager.addComponent(enemy, colorComponent);

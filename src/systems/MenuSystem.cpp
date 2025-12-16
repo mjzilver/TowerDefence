@@ -35,8 +35,8 @@ void MenuSystem::createMenu() {
     const int buttonY = SCREEN_HEIGHT - 85;
     const int buttonSpacing = (SCREEN_WIDTH - buttonXOffset) / 5;
 
-    glm::vec2 rectPos{0.0f, SCREEN_HEIGHT - 100};
-    glm::vec2 rectSize{SCREEN_WIDTH, 100.0f};
+    const glm::vec2 rectPos{0.0f, SCREEN_HEIGHT - 100};
+    const glm::vec2 rectSize{SCREEN_WIDTH, 100.0f};
 
     auto& componentManager = context.componentManager;
     auto& entityFactory = context.entityFactory;
@@ -87,8 +87,8 @@ void MenuSystem::buildClick(Entity entity) {
     if (currency >= towerBuildCost) {
         auto& componentManager = context.componentManager;
 
-        auto* position = componentManager.getComponent<PositionComponent>(entity);
-        auto* size = componentManager.getComponent<SizeComponent>(entity);
+        const auto* position = componentManager.getComponent<PositionComponent>(entity);
+        const auto* size = componentManager.getComponent<SizeComponent>(entity);
         auto* child = componentManager.getComponent<ChildComponent>(entity);
 
         if (!child) {

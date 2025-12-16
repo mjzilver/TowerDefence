@@ -11,17 +11,17 @@
 void ShootingSystem::update(float deltaTime) {
     auto& componentManager = context.componentManager;
     auto* weapons = componentManager.getArray<WeaponComponent>();
-    auto* positions = componentManager.getArray<PositionComponent>();
-    auto* sizes = componentManager.getArray<SizeComponent>();
-    auto* velocities = componentManager.getArray<VelocityComponent>();
-    auto* rotations = componentManager.getArray<RotationComponent>();
-    auto* animations = componentManager.getArray<AnimationComponent>();
+    const auto* positions = componentManager.getArray<PositionComponent>();
+    const auto* sizes = componentManager.getArray<SizeComponent>();
+    const auto* velocities = componentManager.getArray<VelocityComponent>();
+    const auto* rotations = componentManager.getArray<RotationComponent>();
+    const auto* animations = componentManager.getArray<AnimationComponent>();
     auto* healths = componentManager.getArray<HealthComponent>();
 
     for (Entity entity : weapons->getEntities()) {
         auto* weapon = weapons->get(entity);
-        auto* position = positions->get(entity);
-        auto* size = sizes->get(entity);
+        const auto* position = positions->get(entity);
+        const auto* size = sizes->get(entity);
         auto* rotation = rotations->get(entity);
         auto* animation = animations->get(entity);
 

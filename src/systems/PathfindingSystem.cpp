@@ -16,10 +16,10 @@ void PathfindingSystem::update(float) {
     auto& componentManager = context.componentManager;
 
     auto* pathfinders = componentManager.getArray<PathfindingComponent>();
-    auto* positions = componentManager.getArray<PositionComponent>();
-    auto* sizes = componentManager.getArray<SizeComponent>();
-    auto* velocities = componentManager.getArray<VelocityComponent>();
-    auto* speeds = componentManager.getArray<SpeedComponent>();
+    const auto* positions = componentManager.getArray<PositionComponent>();
+    const auto* sizes = componentManager.getArray<SizeComponent>();
+    const auto* velocities = componentManager.getArray<VelocityComponent>();
+    const auto* speeds = componentManager.getArray<SpeedComponent>();
 
     const float snapRadius = 3.0f;
     const float arrivalStart = 30.0f;

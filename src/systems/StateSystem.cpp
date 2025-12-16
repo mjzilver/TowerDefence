@@ -7,11 +7,11 @@
 void StateSystem::update(float) {
     auto& componentManager = context.componentManager;
 
-    auto* velocities = componentManager.getArray<VelocityComponent>();
+    const auto* velocities = componentManager.getArray<VelocityComponent>();
     auto* animations = componentManager.getArray<AnimationComponent>();
 
     for (Entity entity : animations->getEntities()) {
-        auto* velocity = velocities->get(entity);
+        const auto* velocity = velocities->get(entity);
         auto* animation = animations->get(entity);
 
         if (velocity) {
