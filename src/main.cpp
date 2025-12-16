@@ -13,6 +13,7 @@
 #include "systems/ClickSystem.h"
 #include "systems/CollisionSystem.h"
 #include "systems/CombatSystem.h"
+#include "systems/DebugSystem.h"
 #include "systems/MenuSystem.h"
 #include "systems/MovementSystem.h"
 #include "systems/PathfindingSystem.h"
@@ -60,6 +61,9 @@ int main() {
         auto& clickSystem = systemManager.registerSystem<ClickSystem>();
         auto& menuSystem = systemManager.registerSystem<MenuSystem>();
         auto& spawningSystem = systemManager.registerSystem<SpawningSystem>();
+        if constexpr (DEBUG_ENABLED) {
+            systemManager.registerSystem<DebugSystem>();
+        }
 
         menu.createMainMenu(mapLoader, systemManager, stateSystem, window);
 

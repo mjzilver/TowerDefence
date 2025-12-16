@@ -80,7 +80,7 @@ void ClickSystem::onHover(double x, double y) {
         auto* texture = textures->get(entity);
         auto* shader = shaders->get(entity);
 
-        if (position && size && texture && clickable) {
+        if (position && size && texture && clickable && shader) {
             clickable->hovered = false;
             shader->name = "default";
 

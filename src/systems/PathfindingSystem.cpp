@@ -27,11 +27,11 @@ void PathfindingSystem::update(float) {
     const int lookAhead = 1;
 
     for (Entity entity : pathfinders->getEntities()) {
-        auto* pos = positions->get(entity);
-        auto* size = sizes->get(entity);
+        const auto* pos = positions->get(entity);
+        const auto* size = sizes->get(entity);
         auto* vel = velocities->get(entity);
         auto* pathFind = pathfinders->get(entity);
-        auto* speed = speeds->get(entity);
+        const auto* speed = speeds->get(entity);
 
         if (pathFind && pathFind->randomOffset.x == 0) {
             generateRandomOffset(pathFind, maxOffset);
@@ -45,14 +45,14 @@ void PathfindingSystem::update(float) {
             const auto* targetSize = componentManager.getComponent<SizeComponent>(path[targetIndex].entity);
 
             if (targetPos && targetSize) {
-                float ex = pos->x + size->w * 0.5f;
-                float ey = pos->y + size->h * 0.5f;
-                float tx = targetPos->x + targetSize->w * 0.5f + pathFind->randomOffset.x;
-                float ty = targetPos->y + targetSize->h * 0.5f + pathFind->randomOffset.y;
+                const float ex = pos->x + size->w * 0.5f;
+                const float ey = pos->y + size->h * 0.5f;
+                const float tx = targetPos->x + targetSize->w * 0.5f + pathFind->randomOffset.x;
+                const float ty = targetPos->y + targetSize->h * 0.5f + pathFind->randomOffset.y;
 
                 float dx = tx - ex;
                 float dy = ty - ey;
-                float dist = std::sqrt(dx * dx + dy * dy);
+                const float dist = std::sqrt(dx * dx + dy * dy);
 
                 if (dist <= snapRadius && pathFind->currentIndex < (int)path.size() - 1) {
                     pathFind->currentIndex++;
@@ -88,7 +88,7 @@ void PathfindingSystem::update(float) {
     }
 }
 
-void PathfindingSystem::generateRandomOffset(PathfindingComponent* pf, float maxOffset) {
+void PathfindingSystem::generateRandomOffset(PathfindingComponent* pf, const float maxOffset) {
     static std::mt19937 gen(std::random_device{}());
     std::uniform_real_distribution<float> dist(-maxOffset, maxOffset);
     pf->randomOffset.x = dist(gen);

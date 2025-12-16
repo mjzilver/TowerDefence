@@ -143,6 +143,10 @@ Entity EntityFactory::createFireBug(glm::vec2 position, int health, int speed, i
     sizeComponent.h = ENEMY_HEIGHT;
     componentManager.addComponent(entity, sizeComponent);
 
+    ClickableComponent clickableComponent;
+    clickableComponent.clickedEvent = EventType::ENTITY_CLICKED;
+    componentManager.addComponent(entity, clickableComponent);
+
     TextureComponent textureComponent;
     textureComponent.texture = textureManager.loadTexture("enemy/Firebug.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);

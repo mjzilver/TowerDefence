@@ -13,7 +13,7 @@
 #include "../utils/Globals.h"
 
 SpawningSystem::SpawningSystem(EngineContext& ctx) : System(ctx) {
-    context.eventDispatcher.addListener(EventType::ACTIVATE_CHEATS, std::bind(&SpawningSystem::onEvent, this, std::placeholders::_1));
+    context.eventDispatcher.addListener(EventType::ACTIVATE_STRESS_TEST, std::bind(&SpawningSystem::onEvent, this, std::placeholders::_1));
 }
 
 void SpawningSystem::setStart() {
@@ -33,9 +33,9 @@ void SpawningSystem::reset() {
     spawnTimer = 0.0f;
     spawnInterval = 3.0f;
 
-    healthStart = 80;
-    speedStart = 60;
-    goldRewardStart = 10;
+    healthStart = initialHealth;
+    speedStart = initialSpeed;
+    goldRewardStart = initialGold;
     healthMultiplier = 1.0f;
 
     startDirection = std::nullopt;
@@ -151,7 +151,7 @@ void SpawningSystem::update(float deltaTime) {
 }
 
 void SpawningSystem::onEvent(const Event& event) {
-    if (event.type == EventType::ACTIVATE_CHEATS) {
+    if (event.type == EventType::ACTIVATE_STRESS_TEST) {
         spawnCount = 100000;
         spawnTimer = 0.0f;
         spawnInterval = minSpawnInterval;

@@ -19,7 +19,7 @@ public:
     Entity& getStart() { return start; }
 
 private:
-    void generateRandomOffset(PathfindingComponent* pathfinding, float maxOffset);
+    void generateRandomOffset(PathfindingComponent* pathfinding, const float maxOffset);
 
     std::vector<PathSegment>& path;
 

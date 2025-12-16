@@ -26,9 +26,13 @@ private:
     const float minSpawnInterval = 0.25f;
     const float spawnScaleFactor = 0.985f;
 
-    int healthStart = 80;
-    int speedStart = 60;
-    int goldRewardStart = 10;
+    const int initialHealth = 80;
+    const int initialSpeed = 60;
+    const int initialGold = 10;
+
+    int healthStart = initialHealth;
+    int speedStart = initialSpeed;
+    int goldRewardStart = initialGold;
     float healthMultiplier = 1.0f;
 
     const int increaseHealthPer = 15;
