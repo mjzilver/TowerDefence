@@ -1,17 +1,20 @@
 #pragma once
 
-#include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
 
 enum class EngineState { MAIN_MENU, GAMEPLAY };
 
 class StateSystem : public System {
 public:
-    StateSystem(ComponentManager& componentManager) : componentManager(componentManager) {}
+    StateSystem(EngineContext& ctx) : System(ctx) {
+        context.eventDispatcher.addListener(EventType::OPEN_MENU_CLICKED, std::bind(&StateSystem::onEvent, this, std::placeholders::_1));
+    }
 
     void update(float deltaTime) override;
 
     void reset() override { return; };
+
+    void onEvent(const Event& event);
 
     EngineState& getState();
 
@@ -20,6 +23,5 @@ public:
     void startGame();
 
 private:
-    ComponentManager& componentManager;
     EngineState engineState = EngineState::MAIN_MENU;
 };

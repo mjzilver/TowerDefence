@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
 
 class ClickSystem : public System {
 public:
-    ClickSystem(ComponentManager& componentManager);
+    ClickSystem(EngineContext& ctx);
 
     void update(float) override { return; }
 
@@ -14,7 +13,4 @@ public:
     void onHover(double x, double y);
 
     void reset() override { return; };
-
-private:
-    ComponentManager& componentManager;
 };

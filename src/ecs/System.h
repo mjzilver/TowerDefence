@@ -1,15 +1,15 @@
 #pragma once
 
-#include "EntityManager.h"
+#include "../engine/EngineContext.h"
 
 class System {
 public:
+    explicit System(EngineContext& ctx) : context(ctx) {}
     virtual ~System() = default;
-    virtual void update(float deltaTime) = 0;
+
+    virtual void update(float dt) = 0;
     virtual void reset() = 0;
 
-    void setEntityManager(EntityManager* entityManager) { this->entityManager = entityManager; }
-
 protected:
-    EntityManager* entityManager;
+    EngineContext& context;
 };

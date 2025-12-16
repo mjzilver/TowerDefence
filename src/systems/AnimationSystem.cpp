@@ -9,11 +9,12 @@
 #include "../event/EventDispatcher.h"
 #include "../utils/TextureCoords.h"
 
-AnimationSystem::AnimationSystem(ComponentManager& componentManager) : componentManager(componentManager) {
-    EventDispatcher::getInstance().addListener(EventType::ENTITY_DESTROYED, std::bind(&AnimationSystem::onEvent, this, std::placeholders::_1));
+AnimationSystem::AnimationSystem(EngineContext& ctx) : System(ctx) {
+    context.eventDispatcher.addListener(EventType::ENTITY_DESTROYED, std::bind(&AnimationSystem::onEvent, this, std::placeholders::_1));
 }
 
 void AnimationSystem::update(float deltaTime) {
+    auto& componentManager = context.componentManager;
     auto* animations = componentManager.getArray<AnimationComponent>();
     const auto* directions = componentManager.getArray<DirectionComponent>();
     auto* textures = componentManager.getArray<TextureComponent>();
@@ -63,7 +64,7 @@ void AnimationSystem::update(float deltaTime) {
 void AnimationSystem::onEvent(const Event& event) {
     if (event.type == EventType::ENTITY_DESTROYED) {
         Entity entity = *event.getData<Entity>("entity");
-        auto* animation = componentManager.getComponent<AnimationComponent>(entity);
+        auto* animation = context.componentManager.getComponent<AnimationComponent>(entity);
 
         if (animation) {
             animation->state = State::DEAD;

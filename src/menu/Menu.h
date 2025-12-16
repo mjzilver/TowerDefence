@@ -14,7 +14,7 @@
 
 class Menu {
 public:
-    Menu() = default;
+    Menu(EventDispatcher& eventDispatcher) : eventDispatcher(eventDispatcher) {}
 
     void registerElement(UIElement* e) { elements.push_back(e); }
 
@@ -35,5 +35,6 @@ public:
     };
 
 private:
+    EventDispatcher& eventDispatcher;
     std::vector<UIElement*> elements;
 };

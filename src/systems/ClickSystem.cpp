@@ -17,7 +17,7 @@
 #include "../event/EventDispatcher.h"
 #include "CollisionSystem.h"
 
-ClickSystem::ClickSystem(ComponentManager& componentManager) : componentManager(componentManager) {}
+ClickSystem::ClickSystem(EngineContext& ctx) : System(ctx) {}
 
 void ClickSystem::onClick(int button, int action, double x, double y) {
     if (action != GLFW_PRESS) {
@@ -27,13 +27,14 @@ void ClickSystem::onClick(int button, int action, double x, double y) {
     if (button == GLFW_MOUSE_BUTTON_RIGHT) {
         Event event;
         event.type = EventType::UNSELECT;
-        EventDispatcher::getInstance().dispatch(event);
+        context.eventDispatcher.dispatch(event);
         return;
     }
 
     if (button != GLFW_MOUSE_BUTTON_LEFT) {
         return;
     }
+    auto& componentManager = context.componentManager;
 
     auto* clickables = componentManager.getArray<ClickableComponent>();
     auto* positions = componentManager.getArray<PositionComponent>();
@@ -55,7 +56,7 @@ void ClickSystem::onClick(int button, int action, double x, double y) {
                     Event event;
                     event.type = clickable->clickedEvent;
                     event.addData("entity", &entity);
-                    EventDispatcher::getInstance().dispatch(event);
+                    context.eventDispatcher.dispatch(event);
                 } else if (clickable->type == ClickableType::FUNCTION) {
                     clickable->onClick();
                 }
@@ -65,6 +66,7 @@ void ClickSystem::onClick(int button, int action, double x, double y) {
 }
 
 void ClickSystem::onHover(double x, double y) {
+    auto& componentManager = context.componentManager;
     auto* clickables = componentManager.getArray<ClickableComponent>();
     auto* positions = componentManager.getArray<PositionComponent>();
     auto* sizes = componentManager.getArray<SizeComponent>();

@@ -12,7 +12,8 @@
 #include "../utils/ZLayer.h"
 
 void CombatSystem::onEvent(const Event& event) {
-    auto& eventdispatcher = EventDispatcher::getInstance();
+    auto& eventdispatcher = context.eventDispatcher;
+    auto& componentManager = context.componentManager;
 
     if (event.type == EventType::PROJECTILE_HIT) {
         Entity projectile = *event.getData<Entity>("projectile");
@@ -56,7 +57,7 @@ void CombatSystem::onEvent(const Event& event) {
             componentManager.reorder(target, ZLayer::DEAD);
         }
 
-        entityFactory.createTowerProjectileImpact({targetPosition->x + targetSize->w / 2, targetPosition->y + targetSize->h / 2});
+        context.entityFactory.createTowerProjectileImpact({targetPosition->x + targetSize->w / 2, targetPosition->y + targetSize->h / 2});
 
         DeathComponent deathComponent;
         deathComponent.hasDied = true;

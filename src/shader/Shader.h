@@ -11,6 +11,13 @@ public:
     GLuint getProgram() const;
     GLuint getUniform(const std::string& name);
 
+    ~Shader() {
+        if (programID != 0) {
+            glDeleteProgram(programID);
+            programID = 0;
+        }
+    }
+
 private:
     GLuint programID;
     std::unordered_map<std::string, GLuint> uniformCache;

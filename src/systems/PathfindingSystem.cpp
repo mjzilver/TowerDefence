@@ -10,10 +10,11 @@
 #include "../components/VelocityComponent.h"
 #include "../ecs/Component.h"
 
-PathfindingSystem::PathfindingSystem(ComponentManager& componentManager, MapLoader& mapLoader)
-    : componentManager(componentManager), mapLoader(mapLoader), path(mapLoader.getPath()) {}
+PathfindingSystem::PathfindingSystem(EngineContext& ctx) : System(ctx), path(context.mapLoader.getPath()) {}
 
 void PathfindingSystem::update(float) {
+    auto& componentManager = context.componentManager;
+
     auto* pathfinders = componentManager.getArray<PathfindingComponent>();
     auto* positions = componentManager.getArray<PositionComponent>();
     auto* sizes = componentManager.getArray<SizeComponent>();

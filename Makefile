@@ -54,8 +54,14 @@ build-debug:
 run-debug: build-debug
 	cd $(BUILD_DIR) && \
 	LSAN_OPTIONS=suppressions=../lsan.supp \
-	ASAN_OPTIONS=detect_leaks=1:abort_on_error=0 \
-	./TowerDefence 2> >(tee asan.log >&2)
+	ASAN_OPTIONS=\
+	detect_leaks=1:\
+	abort_on_error=0:\
+	symbolize=1:\
+	fast_unwind_on_malloc=0:\
+	malloc_context_size=50 \
+	LSAN_OPTIONS=verbosity=1 \
+	./$(TARGET) 2>&1 | tee ./asan.log
 
 .PHONY: debug
 debug: build-debug run-debug

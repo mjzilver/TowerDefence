@@ -37,7 +37,7 @@ private:
     const std::string mapPath = "resources/maps/";
     EntityFactory& entityFactory;
 
-    std::vector<PathSegment> path;
+    std::vector<PathSegment> path = {};
 
     std::string readFile(const std::string& filepath);
 

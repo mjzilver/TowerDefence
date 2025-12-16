@@ -13,6 +13,8 @@
 void CollisionSystem::update(float) {
     quadTree.clear();
 
+    auto& componentManager = context.componentManager;
+
     auto* collisions = componentManager.getArray<CollisionComponent>();
     auto* positions = componentManager.getArray<PositionComponent>();
     auto* sizes = componentManager.getArray<SizeComponent>();
@@ -59,7 +61,7 @@ void CollisionSystem::update(float) {
                             event.type = EventType::PROJECTILE_HIT;
                             event.addData("projectile", &entity);
                             event.addData("target", &otherEntity);
-                            EventDispatcher::getInstance().dispatch(event);
+                            context.eventDispatcher.dispatch(event);
 
                             break;
                         }

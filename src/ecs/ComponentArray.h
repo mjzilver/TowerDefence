@@ -1,7 +1,7 @@
 #pragma once
 
-#include <unordered_map>
 #include <deque>
+#include <unordered_map>
 #include <vector>
 
 #include "Component.h"
@@ -13,10 +13,10 @@ public:
     virtual void clear() = 0;
 };
 
-template<typename T>
+template <typename T>
 class ComponentArray : public IComponentArray {
 public:
-   void insert(Entity entity, T component) {
+    void insert(Entity entity, T component) {
         size_t index;
 
         if (!freeIndices.empty()) {
@@ -38,7 +38,7 @@ public:
         components.clear();
         entities.clear();
         freeIndices.clear();
-    } 
+    }
 
     void remove(Entity entity) override {
         auto it = entityToIndex.find(entity);
@@ -49,7 +49,7 @@ public:
         delete components[index];
         components[index] = nullptr;
         entities[index] = INVALID_ENTITY;
-        freeIndices.push_back(index); 
+        freeIndices.push_back(index);
         entityToIndex.erase(entity);
     }
 
@@ -70,7 +70,7 @@ public:
 
 private:
     std::deque<Entity> entities;
-    std::deque<T*> components; 
+    std::deque<T*> components;
     std::unordered_map<Entity, size_t> entityToIndex;
-    std::vector<size_t> freeIndices; 
+    std::vector<size_t> freeIndices;
 };

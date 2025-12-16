@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 
+#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/fwd.hpp>
 #include <map>
 #include <unordered_map>
@@ -11,14 +12,15 @@
 #include "../components/SizeComponent.h"
 #include "../components/TextComponent.h"
 #include "../components/TextureComponent.h"
-#include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
-#include "../font/FontLoader.h"
 #include "../shader/Shader.h"
+#include "../utils/Globals.h"
 
 class RenderSystem : public System {
 public:
-    RenderSystem(ComponentManager& componentManager, FontLoader& fontLoader);
+    RenderSystem(EngineContext& ctx) : System(ctx) { projection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f, -1.0f, 1.0f); }
+
+    ~RenderSystem();
 
     void renderEntity(PositionComponent* position, TextureComponent* texture, SizeComponent* size, RotationComponent* rotation,
                       const glm::vec3* color, Shader* shader);
@@ -42,12 +44,7 @@ public:
     Shader* getShader(const std::string& name) { return shaderPrograms[name]; }
 
 private:
-    ComponentManager& componentManager;
-    FontLoader& fontLoader;
-
     glm::mat4 projection;
-
-    void initShaderCache(Shader* shader);
 
     // hash map to store the shader programs
     std::unordered_map<std::string, Shader*> shaderPrograms;

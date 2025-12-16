@@ -162,7 +162,7 @@ void RenderSystem::renderText(glm::vec4 rect, std::string text, const glm::vec3&
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    const auto& characters = fontLoader.getCharacters();
+    const auto& characters = context.fontLoader.getCharacters();
 
     std::vector<std::string> lines = splitLines(text);
 
@@ -226,6 +226,7 @@ void RenderSystem::renderText(PositionComponent* position, SizeComponent* size, 
 }
 
 void RenderSystem::render() {
+    auto& componentManager = context.componentManager;
     auto* positions = componentManager.getArray<PositionComponent>();
     auto* textures = componentManager.getArray<TextureComponent>();
     auto* sizes = componentManager.getArray<SizeComponent>();
@@ -236,7 +237,7 @@ void RenderSystem::render() {
     auto* clickable = componentManager.getArray<ClickableComponent>();
     auto* collisions = componentManager.getArray<CollisionComponent>();
 
-    const auto& layers = entityManager->getLayered();
+    const auto& layers = context.entityManager.getLayered();
 
     for (auto layerIt = layers.rbegin(); layerIt != layers.rend(); ++layerIt) {
         auto entities = layerIt->second;
@@ -307,6 +308,12 @@ void RenderSystem::render() {
     }
 }
 
-RenderSystem::RenderSystem(ComponentManager& componentManager, FontLoader& fontLoader) : componentManager(componentManager), fontLoader(fontLoader) {
-    projection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f, -1.0f, 1.0f);
+RenderSystem::~RenderSystem() {
+    for (auto& [shader, vao] : shaderVAOs) {
+        if (vao != 0) {
+            glDeleteVertexArrays(1, &vao);
+        }
+    }
+    shaderVAOs.clear();
+    shaderPrograms.clear();
 }

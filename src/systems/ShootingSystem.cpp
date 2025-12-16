@@ -9,6 +9,7 @@
 #include "../components/WeaponComponent.h"
 
 void ShootingSystem::update(float deltaTime) {
+    auto& componentManager = context.componentManager;
     auto* weapons = componentManager.getArray<WeaponComponent>();
     auto* positions = componentManager.getArray<PositionComponent>();
     auto* sizes = componentManager.getArray<SizeComponent>();
@@ -70,7 +71,7 @@ void ShootingSystem::update(float deltaTime) {
                     velocity.y = (dyTarget / distanceToTarget) * weapon->projectileSpeed;
                     float angle = glm::degrees(std::atan2(velocity.x, velocity.y)) + 180;
 
-                    entityFactory.createTowerProjectile(startX, startY, targetX, velocity.x, velocity.y, angle, weapon->damage);
+                    context.entityFactory.createTowerProjectile(startX, startY, targetX, velocity.x, velocity.y, angle, weapon->damage);
 
                     // rotate the weapon to face the target
                     if (rotation) {

@@ -7,10 +7,11 @@
 
 class SystemManager {
 public:
-    template <typename T, typename... Args>
-    T& registerSystem(EntityManager* em, Args&&... args) {
-        T* system = new T(std::forward<Args>(args)...);
-        system->setEntityManager(em);
+    explicit SystemManager(EngineContext& ctx) : context(ctx) {}
+
+    template <typename T>
+    T& registerSystem() {
+        T* system = new T(context);
         systems[std::type_index(typeid(T))] = std::move(system);
         return *system;
     }
@@ -40,5 +41,6 @@ public:
     }
 
 private:
+    EngineContext& context;
     std::unordered_map<std::type_index, System*> systems;
 };

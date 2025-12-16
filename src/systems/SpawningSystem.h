@@ -2,15 +2,12 @@
 #include <glm/fwd.hpp>
 #include <optional>
 
-#include "../ecs/ComponentManager.h"
-#include "../ecs/EntityFactory.h"
 #include "../ecs/System.h"
 #include "../event/Event.h"
-#include "../map/MapLoader.h"
 
 class SpawningSystem : public System {
 public:
-    SpawningSystem(ComponentManager& componentManager, EntityFactory& entityFactory, MapLoader& mapLoader);
+    SpawningSystem(EngineContext& ctx);
 
     void onEvent(const Event& event);
 
@@ -19,10 +16,6 @@ public:
     void reset() override;
 
 private:
-    ComponentManager& componentManager;
-    EntityFactory& entityFactory;
-    MapLoader& mapLoader;
-
     std::optional<glm::vec2> startDirection;
 
     void setStart();

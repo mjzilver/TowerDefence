@@ -5,6 +5,8 @@
 #include "../ecs/ComponentManager.h"
 
 void StateSystem::update(float) {
+    auto& componentManager = context.componentManager;
+
     auto* velocities = componentManager.getArray<VelocityComponent>();
     auto* animations = componentManager.getArray<AnimationComponent>();
 
@@ -27,3 +29,9 @@ EngineState& StateSystem::getState() { return engineState; };
 void StateSystem::startGame() { engineState = EngineState::GAMEPLAY; }
 
 void StateSystem::openMainMenu() { engineState = EngineState::MAIN_MENU; }
+
+void StateSystem::onEvent(const Event& event) {
+    if (event.type == EventType::OPEN_MENU_CLICKED) {
+        openMainMenu();
+    }
+}

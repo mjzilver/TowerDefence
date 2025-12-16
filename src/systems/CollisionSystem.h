@@ -3,15 +3,13 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
-#include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
 #include "../engine/QuadTree.h"
 #include "../utils/Globals.h"
 
 class CollisionSystem : public System {
 public:
-    CollisionSystem(ComponentManager& componentManager)
-        : componentManager(componentManager), quadTree(componentManager, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}) {}
+    CollisionSystem(EngineContext& ctx) : System(ctx), quadTree(context.componentManager, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}) {}
 
     void update(float deltaTime) override;
 
@@ -35,6 +33,5 @@ public:
     void reset() override { return; };
 
 private:
-    ComponentManager& componentManager;
     QuadTree quadTree;
 };

@@ -12,15 +12,13 @@
 #include "../event/Event.h"
 #include "../event/EventDispatcher.h"
 #include "../utils/Globals.h"
-#include "StateSystem.h"
 
-MenuSystem::MenuSystem(ComponentManager& componentManager, EntityFactory& entityFactory, StateSystem& stateSystem)
-    : componentManager(componentManager), entityFactory(entityFactory), stateSystem(stateSystem) {
-    EventDispatcher::getInstance().addListener(EventType::ENTITY_DESTROYED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
-    EventDispatcher::getInstance().addListener(EventType::GRASS_TILE_CLICKED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
-    EventDispatcher::getInstance().addListener(EventType::TOWER_CLICKED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
-    EventDispatcher::getInstance().addListener(EventType::UNSELECT, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
-    EventDispatcher::getInstance().addListener(EventType::ACTIVATE_CHEATS, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
+MenuSystem::MenuSystem(EngineContext& ctx) : System(ctx) {
+    context.eventDispatcher.addListener(EventType::ENTITY_DESTROYED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
+    context.eventDispatcher.addListener(EventType::GRASS_TILE_CLICKED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
+    context.eventDispatcher.addListener(EventType::TOWER_CLICKED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
+    context.eventDispatcher.addListener(EventType::UNSELECT, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
+    context.eventDispatcher.addListener(EventType::ACTIVATE_CHEATS, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
 }
 
 void MenuSystem::reset() {
@@ -39,6 +37,9 @@ void MenuSystem::createMenu() {
 
     glm::vec2 rectPos{0.0f, SCREEN_HEIGHT - 100};
     glm::vec2 rectSize{SCREEN_WIDTH, 100.0f};
+
+    auto& componentManager = context.componentManager;
+    auto& entityFactory = context.entityFactory;
 
     entityFactory.createRectangle(rectPos, rectSize);
 
@@ -64,8 +65,9 @@ void MenuSystem::createMenu() {
     buttonXOffset += buttonSpacing;
     entityFactory.createMenuButton({buttonXOffset, buttonY}, [&]() {
         componentManager.destroyAll();
-        entityManager->reset();
-        stateSystem.openMainMenu();
+        context.entityManager.reset();
+
+        context.eventDispatcher.dispatch({EventType::OPEN_MENU_CLICKED});
     });
 
     auto* upgradeText = componentManager.getComponent<TextComponent>(towerUpgradeButtonEntity);
@@ -73,6 +75,7 @@ void MenuSystem::createMenu() {
 }
 
 void MenuSystem::update(float) {
+    auto& componentManager = context.componentManager;
     auto* goldText = componentManager.getComponent<TextComponent>(currencyDisplayEntity);
     auto* killText = componentManager.getComponent<TextComponent>(killCounterEntity);
 
@@ -82,12 +85,14 @@ void MenuSystem::update(float) {
 
 void MenuSystem::buildClick(Entity entity) {
     if (currency >= towerBuildCost) {
+        auto& componentManager = context.componentManager;
+
         auto* position = componentManager.getComponent<PositionComponent>(entity);
         auto* size = componentManager.getComponent<SizeComponent>(entity);
         auto* child = componentManager.getComponent<ChildComponent>(entity);
 
         if (!child) {
-            auto tower = entityFactory.createTower({position->x, position->y - size->h + 16});
+            auto tower = context.entityFactory.createTower({position->x, position->y - size->h + 16});
             ChildComponent childComponent;
             childComponent.child = tower;
             componentManager.addComponent(entity, childComponent);
@@ -106,10 +111,12 @@ void MenuSystem::buildClick(Entity entity) {
 
 void MenuSystem::upgradeClick(Entity entity) {
     if (currency >= towerUpgradeCost) {
+        auto& componentManager = context.componentManager;
+
         auto* upgrade = componentManager.getComponent<UpgradeComponent>(entity);
 
         if (upgrade && upgrade->maxUpgradeLevel > upgrade->upgradeLevel) {
-            entityFactory.upgradeTower(entity);
+            context.entityFactory.upgradeTower(entity);
 
             currency -= towerUpgradeCost;
 
@@ -120,6 +127,8 @@ void MenuSystem::upgradeClick(Entity entity) {
 }
 
 void MenuSystem::onEvent(const Event& event) {
+    auto& componentManager = context.componentManager;
+
     if (event.type == EventType::GRASS_TILE_CLICKED && menuMode == MenuMode::BUILD_TOWER) {
         Entity entity = *event.getData<Entity>("entity");
         buildClick(entity);
@@ -159,6 +168,7 @@ void MenuSystem::onEvent(const Event& event) {
 }
 
 void MenuSystem::unselect() {
+    auto& componentManager = context.componentManager;
     componentManager.getComponent<ClickableComponent>(towerBuildButtonEntity)->selected = false;
     componentManager.getComponent<ClickableComponent>(towerUpgradeButtonEntity)->selected = false;
 

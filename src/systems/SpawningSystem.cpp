@@ -12,13 +12,12 @@
 #include "../event/EventDispatcher.h"
 #include "../utils/Globals.h"
 
-SpawningSystem::SpawningSystem(ComponentManager& componentManager, EntityFactory& entityFactory, MapLoader& mapLoader)
-    : componentManager(componentManager), entityFactory(entityFactory), mapLoader(mapLoader) {
-    EventDispatcher::getInstance().addListener(EventType::ACTIVATE_CHEATS, std::bind(&SpawningSystem::onEvent, this, std::placeholders::_1));
+SpawningSystem::SpawningSystem(EngineContext& ctx) : System(ctx) {
+    context.eventDispatcher.addListener(EventType::ACTIVATE_CHEATS, std::bind(&SpawningSystem::onEvent, this, std::placeholders::_1));
 }
 
 void SpawningSystem::setStart() {
-    auto& path = mapLoader.getPath();
+    auto& path = context.mapLoader.getPath();
 
     if (path.size() == 0) {
         return;
@@ -56,6 +55,8 @@ void SpawningSystem::update(float deltaTime) {
     static std::uniform_real_distribution<float> goldRand(0.88f, 1.12f);
     static std::uniform_real_distribution<float> rareChance(0.0f, 1.0f);
 
+    auto& componentManager = context.componentManager;
+
     spawnTimer += deltaTime;
 
     if (spawnTimer >= spawnInterval) {
@@ -71,7 +72,8 @@ void SpawningSystem::update(float deltaTime) {
             }
         }
 
-        Entity start = mapLoader.getStart().entity;
+        Entity start = context.mapLoader.getStart().entity;
+
         auto* position = componentManager.getComponent<PositionComponent>(start);
         auto* size = componentManager.getComponent<SizeComponent>(start);
 
@@ -118,7 +120,7 @@ void SpawningSystem::update(float deltaTime) {
 
             glm::vec2 spawnPos = glm::vec2(position->x - startDirection->x * TILE_SIZE, position->y - startDirection->y * TILE_SIZE);
 
-            auto enemy = entityFactory.createFireBug(spawnPos, enemyHealth, enemySpeed, enemyGold);
+            auto enemy = context.entityFactory.createFireBug(spawnPos, enemyHealth, enemySpeed, enemyGold);
             componentManager.addComponent(enemy, colorComponent);
 
             spawnCount++;

@@ -29,7 +29,7 @@ void Menu::onKeyPress(int key) {
         case GLFW_KEY_C:
             Event event;
             event.type = EventType::ACTIVATE_CHEATS;
-            EventDispatcher::getInstance().dispatch(event);
+            eventDispatcher.dispatch(event);
             break;
     }
 }

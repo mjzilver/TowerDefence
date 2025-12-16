@@ -6,6 +6,7 @@
 #include "../components/VelocityComponent.h"
 
 void MovementSystem::update(float deltaTime) {
+    auto& componentManager = context.componentManager;
     auto* positions = componentManager.getArray<PositionComponent>();
     auto* velocities = componentManager.getArray<VelocityComponent>();
     auto* directions = componentManager.getArray<DirectionComponent>();

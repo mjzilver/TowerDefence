@@ -5,13 +5,12 @@
 
 #include "../components/PathfindingComponent.h"
 #include "../ecs/Component.h"
-#include "../ecs/ComponentManager.h"
 #include "../ecs/System.h"
 #include "../map/MapLoader.h"
 
 class PathfindingSystem : public System {
 public:
-    PathfindingSystem(ComponentManager& componentManager, MapLoader& mapLoader);
+    PathfindingSystem(EngineContext& ctx);
 
     void update(float deltaTime) override;
     void generatePath();
@@ -28,7 +27,4 @@ private:
     Entity end;
 
     const float maxOffset = 20.0f;
-
-    ComponentManager& componentManager;
-    MapLoader& mapLoader;
 };

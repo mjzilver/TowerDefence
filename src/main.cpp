@@ -2,8 +2,10 @@
 
 #include "ecs/EntityFactory.h"
 #include "ecs/SystemManager.h"
+#include "engine/EngineContext.h"
 #include "engine/GLContext.h"
 #include "engine/InputRouter.h"
+#include "event/EventDispatcher.h"
 #include "map/MapLoader.h"
 #include "menu/Menu.h"
 #include "shader/Shader.h"
@@ -27,76 +29,82 @@ int main() {
     GLFWwindow* window = glContext.initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Tower Defence!");
     glContext.setupOpenGL();
 
-    Shader defaultShader("default_vertex.glsl", "default_fragment.glsl");
-    Shader hoverShader("default_vertex.glsl", "hover_fragment.glsl");
-    Shader textShader("text_vertex.glsl", "text_fragment.glsl");
-    Shader rectShader("rect_vertex.glsl", "rect_fragment.glsl");
+    {
+        Shader defaultShader("default_vertex.glsl", "default_fragment.glsl");
+        Shader hoverShader("default_vertex.glsl", "hover_fragment.glsl");
+        Shader textShader("text_vertex.glsl", "text_fragment.glsl");
+        Shader rectShader("rect_vertex.glsl", "rect_fragment.glsl");
 
-    EntityManager entityManager;
-    ComponentManager componentManager(entityManager);
-    SystemManager systemManager;
+        EntityManager entityManager;
+        ComponentManager componentManager(entityManager);
 
-    TextureManager textureManager;
-    EntityFactory entityFactory(componentManager, entityManager, textureManager);
-    FontLoader fontLoader(14);
-    MapLoader mapLoader(entityFactory);
+        TextureManager textureManager;
+        EntityFactory entityFactory(componentManager, entityManager, textureManager);
+        FontLoader fontLoader(14);
+        MapLoader mapLoader(entityFactory);
+        EventDispatcher eventDispatcher;
 
-    Menu menu;
+        Menu menu(eventDispatcher);
+        EngineContext context{entityManager, componentManager, fontLoader, mapLoader, eventDispatcher, entityFactory};
 
-    auto& renderSystem = systemManager.registerSystem<RenderSystem>(&entityManager, componentManager, fontLoader);
-    auto& animationSystem = systemManager.registerSystem<AnimationSystem>(&entityManager, componentManager);
-    auto& movementSystem = systemManager.registerSystem<MovementSystem>(&entityManager, componentManager);
-    auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>(&entityManager, componentManager, mapLoader);
-    auto& shootingSystem = systemManager.registerSystem<ShootingSystem>(&entityManager, componentManager, entityFactory);
-    auto& collisionSystem = systemManager.registerSystem<CollisionSystem>(&entityManager, componentManager);
-    auto& combatSystem = systemManager.registerSystem<CombatSystem>(&entityManager, componentManager, entityFactory);
-    auto& stateSystem = systemManager.registerSystem<StateSystem>(&entityManager, componentManager);
-    auto& clickSystem = systemManager.registerSystem<ClickSystem>(&entityManager, componentManager);
-    auto& menuSystem = systemManager.registerSystem<MenuSystem>(&entityManager, componentManager, entityFactory, stateSystem);
-    auto& spawningSystem = systemManager.registerSystem<SpawningSystem>(&entityManager, componentManager, entityFactory, mapLoader);
+        SystemManager systemManager(context);
 
-    menu.createMainMenu(mapLoader, systemManager, stateSystem, window);
+        auto& renderSystem = systemManager.registerSystem<RenderSystem>();
+        auto& animationSystem = systemManager.registerSystem<AnimationSystem>();
+        auto& movementSystem = systemManager.registerSystem<MovementSystem>();
+        auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>();
+        auto& shootingSystem = systemManager.registerSystem<ShootingSystem>();
+        auto& collisionSystem = systemManager.registerSystem<CollisionSystem>();
+        auto& combatSystem = systemManager.registerSystem<CombatSystem>();
+        auto& stateSystem = systemManager.registerSystem<StateSystem>();
+        auto& clickSystem = systemManager.registerSystem<ClickSystem>();
+        auto& menuSystem = systemManager.registerSystem<MenuSystem>();
+        auto& spawningSystem = systemManager.registerSystem<SpawningSystem>();
 
-    InputContext inputCtx{&clickSystem, &menu, &stateSystem};
-    installInputCallbacks(window, &inputCtx);
+        menu.createMainMenu(mapLoader, systemManager, stateSystem, window);
 
-    renderSystem.registerShader("default", &defaultShader);
-    renderSystem.registerShader("hover", &hoverShader);
-    renderSystem.registerShader("text", &textShader);
-    renderSystem.registerShader("rect", &rectShader);
+        InputContext inputCtx{&clickSystem, &menu, &stateSystem};
+        installInputCallbacks(window, &inputCtx);
 
-    double lastTime = glfwGetTime();
-    const float frameTime = 1.0f / 60.0f;
+        renderSystem.registerShader("default", &defaultShader);
+        renderSystem.registerShader("hover", &hoverShader);
+        renderSystem.registerShader("text", &textShader);
+        renderSystem.registerShader("rect", &rectShader);
 
-    while (!glfwWindowShouldClose(window)) {
-        double currentTime = glfwGetTime();
+        double lastTime = glfwGetTime();
+        const float frameTime = 1.0f / 60.0f;
 
-        glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        while (!glfwWindowShouldClose(window)) {
+            double currentTime = glfwGetTime();
 
-        if (stateSystem.getState() == EngineState::MAIN_MENU) {
-            menu.render(renderSystem);
-        } else if (stateSystem.getState() == EngineState::GAMEPLAY) {
-            systemManager.updateSystems(frameTime);
-            renderSystem.render();
-        }
+            glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        componentManager.flushDestructions(entityManager);
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-
-        if constexpr (DEBUG_ENABLED) {
-            double deltaTime = currentTime - lastTime;
-            static double lastPrint = 0;
-            if (currentTime - lastPrint >= 1.0) {
-                std::cout << "FPS: " << 1.0 / deltaTime << "\n";
-                lastPrint = currentTime;
+            if (stateSystem.getState() == EngineState::MAIN_MENU) {
+                menu.render(renderSystem);
+            } else if (stateSystem.getState() == EngineState::GAMEPLAY) {
+                systemManager.updateSystems(frameTime);
+                renderSystem.render();
             }
-        }
 
-        lastTime = currentTime;
+            componentManager.flushDestructions(entityManager);
+
+            glfwSwapBuffers(window);
+            glfwPollEvents();
+
+            if constexpr (DEBUG_ENABLED) {
+                double deltaTime = currentTime - lastTime;
+                static double lastPrint = 0;
+                if (currentTime - lastPrint >= 1.0) {
+                    std::cout << "FPS: " << 1.0 / deltaTime << "\n";
+                    lastPrint = currentTime;
+                }
+            }
+
+            lastTime = currentTime;
+        }
     }
 
+    glfwDestroyWindow(window);
     glfwTerminate();
 }
