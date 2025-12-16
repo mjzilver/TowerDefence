@@ -83,7 +83,7 @@ void MapLoader::generatePath() {
     while (current.first != TileType::END) {
         bool foundNext = false;
 
-        for (auto& neighbor : NEIGHBORS) {
+        for (const auto& neighbor : NEIGHBORS) {
             int nextY = currentY + neighbor[0];
             int nextX = currentX + neighbor[1];
 
@@ -117,9 +117,9 @@ std::optional<std::pair<TileType, Entity>> MapLoader::getTile(int y, int x) cons
 
 void MapLoader::debugPrintPath() const {
     std::vector<std::vector<char>> grid;
-    for (auto& row : tiles) {
+    for (const auto& row : tiles) {
         std::vector<char> line;
-        for (auto& tile : row) {
+        for (const auto& tile : row) {
             switch (tile.first) {
                 case TileType::GRASS:
                     line.push_back('.');

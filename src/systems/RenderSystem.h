@@ -27,7 +27,7 @@ public:
 
     void renderText(const PositionComponent* position, const SizeComponent* size, const TextComponent* text, Shader* shader);
 
-    void renderText(const glm::vec4& rect, const std::string text, const glm::vec3& color, Shader* shader);
+    void renderText(const glm::vec4& rect, const std::string& text, const glm::vec3& color, Shader* shader);
 
     void renderRectangle(const PositionComponent* position, const SizeComponent* size, const glm::vec3& color, Shader* shader);
 

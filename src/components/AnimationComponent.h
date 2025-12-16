@@ -25,7 +25,7 @@ struct AnimationComponent : public Component {
 
     int getFrameCount() { return frameCount[state]; }
 
-    int getRow(Direction dir) {
+    int getRow(const Direction dir) {
         auto it = stateDirectionRowMap.find({state, dir});
         if (it != stateDirectionRowMap.end()) {
             return it->second;

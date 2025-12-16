@@ -138,7 +138,7 @@ void RenderSystem::renderEntity(const PositionComponent* position, const Texture
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-void RenderSystem::renderText(const glm::vec4& rect, std::string text, const glm::vec3& color, Shader* shader) {
+void RenderSystem::renderText(const glm::vec4& rect, const std::string& text, const glm::vec3& color, Shader* shader) {
     GLuint shaderProgram = shader->getProgram();
     glUseProgram(shaderProgram);
 

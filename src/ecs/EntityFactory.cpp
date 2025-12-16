@@ -1,5 +1,7 @@
 #include "EntityFactory.h"
 
+#include <utility>
+
 #include "../components/AnimationComponent.h"
 #include "../components/ChildComponent.h"
 #include "../components/ClickableComponent.h"
@@ -29,7 +31,7 @@
 #include "../utils/TextureCoords.h"
 #include "../utils/ZLayer.h"
 
-Entity EntityFactory::createGrassTile(glm::vec2 position) {
+Entity EntityFactory::createGrassTile(const glm::vec2& position) {
     Entity entity = entityManager.createEntity();
 
     static const int TEXTURE_SIZE = 64;
@@ -60,7 +62,7 @@ Entity EntityFactory::createGrassTile(glm::vec2 position) {
     return entity;
 }
 
-Entity EntityFactory::createPathTile(glm::vec2 position) {
+Entity EntityFactory::createPathTile(const glm::vec2& position) {
     Entity entity = entityManager.createEntity();
 
     static const int TEXTURE_SIZE = 64;
@@ -87,7 +89,7 @@ Entity EntityFactory::createPathTile(glm::vec2 position) {
     return entity;
 }
 
-Entity EntityFactory::createStartTile(glm::vec2 position) {
+Entity EntityFactory::createStartTile(const glm::vec2& position) {
     Entity entity = createPathTile(position);
     FlagComponent flagComponent;
     flagComponent.type = START;
@@ -95,7 +97,7 @@ Entity EntityFactory::createStartTile(glm::vec2 position) {
     return entity;
 }
 
-Entity EntityFactory::createEndTile(glm::vec2 position) {
+Entity EntityFactory::createEndTile(const glm::vec2& position) {
     Entity entity = createPathTile(position);
     FlagComponent flagComponent;
     flagComponent.type = END;
@@ -103,7 +105,7 @@ Entity EntityFactory::createEndTile(glm::vec2 position) {
     return entity;
 }
 
-Entity EntityFactory::createFireBug(glm::vec2 position, int health, int speed, int goldReward) {
+Entity EntityFactory::createFireBug(const glm::vec2& position, int health, int speed, int goldReward) {
     Entity entity = entityManager.createEntity();
 
     static const int TEXTURE_WIDTH = 128;
@@ -192,7 +194,7 @@ Entity EntityFactory::createFireBug(glm::vec2 position, int health, int speed, i
     return entity;
 }
 
-Entity EntityFactory::createTower(glm::vec2 position) {
+Entity EntityFactory::createTower(const glm::vec2& position) {
     Entity entity = entityManager.createEntity();
 
     static const int TEXTURE_WIDTH = 64;
@@ -410,7 +412,7 @@ Entity EntityFactory::createRectangle(const glm::vec2& position, const glm::vec2
     return entity;
 }
 
-Entity EntityFactory::createKillCounter(glm::vec2 pos) {
+Entity EntityFactory::createKillCounter(const glm::vec2& pos) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
@@ -440,7 +442,7 @@ Entity EntityFactory::createKillCounter(glm::vec2 pos) {
     return entity;
 }
 
-Entity EntityFactory::createUpgradeMenuItem(glm::vec2 pos, std::function<void()> onClick) {
+Entity EntityFactory::createUpgradeMenuItem(const glm::vec2& pos, std::function<void()> onClick) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
@@ -461,7 +463,7 @@ Entity EntityFactory::createUpgradeMenuItem(glm::vec2 pos, std::function<void()>
 
     ClickableComponent clickableComponent;
     clickableComponent.type = ClickableType::FUNCTION;
-    clickableComponent.onClick = onClick;
+    clickableComponent.onClick = std::move(onClick);
     componentManager.addComponent(entity, clickableComponent);
 
     ColorComponent colorComponent;
@@ -475,7 +477,7 @@ Entity EntityFactory::createUpgradeMenuItem(glm::vec2 pos, std::function<void()>
     return entity;
 }
 
-Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 pos, std::function<void()> onClick) {
+Entity EntityFactory::createBuildTowerMenuItem(const glm::vec2& pos, std::function<void()> onClick) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
@@ -496,7 +498,7 @@ Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 pos, std::function<void
 
     ClickableComponent clickableComponent;
     clickableComponent.type = ClickableType::FUNCTION;
-    clickableComponent.onClick = onClick;
+    clickableComponent.onClick = std::move(onClick);
     componentManager.addComponent(entity, clickableComponent);
 
     ColorComponent colorComponent;
@@ -510,7 +512,7 @@ Entity EntityFactory::createBuildTowerMenuItem(glm::vec2 pos, std::function<void
     return entity;
 }
 
-Entity EntityFactory::createCurrencyDisplay(glm::vec2 pos) {
+Entity EntityFactory::createCurrencyDisplay(const glm::vec2& pos) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
@@ -540,7 +542,7 @@ Entity EntityFactory::createCurrencyDisplay(glm::vec2 pos) {
     return entity;
 }
 
-Entity EntityFactory::createMenuButton(glm::vec2 pos, std::function<void()> onClick) {
+Entity EntityFactory::createMenuButton(const glm::vec2& pos, std::function<void()> onClick) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
@@ -561,7 +563,7 @@ Entity EntityFactory::createMenuButton(glm::vec2 pos, std::function<void()> onCl
 
     ClickableComponent clickableComponent;
     clickableComponent.type = ClickableType::FUNCTION;
-    clickableComponent.onClick = onClick;
+    clickableComponent.onClick = std::move(onClick);
     componentManager.addComponent(entity, clickableComponent);
 
     ColorComponent colorComponent;
@@ -575,7 +577,7 @@ Entity EntityFactory::createMenuButton(glm::vec2 pos, std::function<void()> onCl
     return entity;
 }
 
-Entity EntityFactory::upgradeTower(Entity& entity) {
+Entity EntityFactory::upgradeTower(Entity entity) {
     componentManager.removeComponent<TextureComponent>(entity);
     auto* upgradeComponent = componentManager.getComponent<UpgradeComponent>(entity);
     upgradeComponent->upgradeLevel++;

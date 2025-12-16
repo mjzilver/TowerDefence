@@ -1,12 +1,13 @@
 #pragma once
 
 #include <functional>
+#include <utility>
 
 #include "UIElement.h"
 
 class UIButton : public UIElement {
 public:
-    void setCallback(std::function<void()> cb) { callback = cb; }
+    void setCallback(std::function<void()> cb) { callback = std::move(cb); }
     void onClick() override {
         if (callback) callback();
     }

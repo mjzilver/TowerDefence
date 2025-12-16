@@ -1,5 +1,7 @@
 #include "Menu.h"
 
+#include <utility>
+
 #include "../event/Event.h"
 #include "../event/EventDispatcher.h"
 #include "../systems/CollisionSystem.h"
@@ -59,7 +61,7 @@ void Menu::createMainMenu(MapLoader& mapLoader, SystemManager& systemManager, St
         e->setPos({centerX, y, 250, buttonHeight});
         e->setText(text);
         e->setBgColor(getColor());
-        e->setCallback(clb);
+        e->setCallback(std::move(clb));
         registerElement(e);
     };
 
