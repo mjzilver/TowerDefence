@@ -13,6 +13,7 @@ Entity EntityManager::createEntity() {
     layeredEntities[ZLayer::UNKNOWN].push_back(entity);
     return entity;
 }
+
 std::vector<Entity> EntityManager::getSortedEntities() {
     std::vector<Entity> sorted;
     size_t total = 0;

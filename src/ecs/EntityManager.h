@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <map>
 #include <queue>
 #include <unordered_set>
@@ -36,6 +37,11 @@ public:
 private:
     void destroyEntity(Entity entity) {
         activeEntities.erase(entity);
+
+        for (auto& [layer, vec] : layeredEntities) {
+            vec.erase(std::remove(vec.begin(), vec.end(), entity), vec.end());
+        }
+
         freedEntities.push(entity);
     }
 

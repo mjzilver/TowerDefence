@@ -17,8 +17,13 @@ template <typename T>
 class ComponentArray : public IComponentArray {
 public:
     void insert(Entity entity, T component) {
-        size_t index;
+        auto it = entityToIndex.find(entity);
+        if (it != entityToIndex.end()) {
+            *components[it->second] = std::move(component);
+            return;
+        }
 
+        size_t index;
         if (!freeIndices.empty()) {
             index = freeIndices.back();
             freeIndices.pop_back();
