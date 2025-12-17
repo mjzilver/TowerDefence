@@ -66,17 +66,14 @@ void PathfindingSystem::update(float) {
 
                 float speedVal = speed->speed;
                 bool isLastTile = (pathFind->currentIndex == (int)path.size() - 1);
-                if (isLastTile && dist < arrivalStart) {
-                    float t = (dist / arrivalStart);
-                    speedVal = minSpeed + (speedVal - minSpeed) * (t * t);
-                }
 
-                vel->x = dx * speedVal;
-                vel->y = dy * speedVal;
-
-                if (isLastTile && dist <= snapRadius) {
+                if (!isLastTile) {
+                    vel->x = dx * speedVal;
+                    vel->y = dy * speedVal;
+                } else if (isLastTile && dist <= snapRadius) {
                     pathFind->reachedGoal = true;
-                    vel->x = vel->y = 0.0f;
+
+                    componentManager.removeComponent<PathfindingComponent>(entity);
 
                     DeathComponent deathComp;
                     deathComp.hasDied = true;
