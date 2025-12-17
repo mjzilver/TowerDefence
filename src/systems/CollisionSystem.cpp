@@ -23,7 +23,15 @@ void CollisionSystem::update(float) {
     auto* healths = componentManager.getArray<HealthComponent>();
 
     for (Entity entity : collisions->getEntities()) {
-        quadTree.insert(entity);
+        auto* pos = positions->get(entity);
+        auto* col = collisions->get(entity);
+
+        if (!pos || !col) {
+            continue;   
+        };
+        glm::vec4 entityBounds{pos->x + col->x, pos->y + col->y, col->w, col->h};
+
+        quadTree.insert(entity, entityBounds);
     }
 
     for (Entity entity : collisions->getEntities()) {

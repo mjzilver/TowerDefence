@@ -1,4 +1,5 @@
 #include "QuadTree.h"
+#include <vector>
 
 #include "../components/CollisionComponent.h"
 #include "../components/PositionComponent.h"
@@ -15,12 +16,12 @@ void QuadTree::subdivide() {
         children.push_back(QuadTree(componentManager, glm::vec4(bounds.x, bounds.y + halfHeight, halfWidth, halfHeight), capacity));
         children.push_back(QuadTree(componentManager, glm::vec4(bounds.x + halfWidth, bounds.y + halfHeight, halfWidth, halfHeight), capacity));
 
-        std::vector<Entity> oldEntities = entities;
+        std::vector<QuadItem> oldEntities = entities;
         entities.clear();
 
-        for (Entity e : oldEntities) {
+        for (QuadItem q : oldEntities) {
             for (auto& child : children) {
-                if (child.insert(e)) break;
+                if (child.insert(q.entity, q.bounds)) break;
             }
         }
     }
@@ -30,16 +31,7 @@ bool fullyContains(const glm::vec4& outer, const glm::vec4& inner) {
     return inner.x >= outer.x && inner.y >= outer.y && inner.x + inner.z <= outer.x + outer.z && inner.y + inner.w <= outer.y + outer.w;
 }
 
-bool QuadTree::insert(Entity entity) {
-    auto* pos = componentManager.getComponent<PositionComponent>(entity);
-    auto* col = componentManager.getComponent<CollisionComponent>(entity);
-
-    if (!pos || !col) {
-        return false;
-    };
-
-    glm::vec4 entityBounds{pos->x + col->x, pos->y + col->y, col->w, col->h};
-
+bool QuadTree::insert(Entity entity, const glm::vec4& entityBounds) {
     if (!CollisionSystem::checkCollision(bounds, entityBounds)) {
         return false;
     }
@@ -47,16 +39,16 @@ bool QuadTree::insert(Entity entity) {
     if (!children.empty()) {
         for (auto& child : children) {
             if (fullyContains(child.bounds, entityBounds)) {
-                return child.insert(entity);
+                return child.insert(entity, entityBounds);
             }
         }
 
         // Overlaps multiple children
-        entities.push_back(entity);
+        entities.push_back({entity, entityBounds});
         return true;
     }
 
-    entities.push_back(entity);
+    entities.push_back({entity, entityBounds});
 
     if (entities.size() > capacity) {
         subdivide();
@@ -64,24 +56,27 @@ bool QuadTree::insert(Entity entity) {
         auto old = entities;
         entities.clear();
 
-        for (Entity e : old) {
-            insert(e);
+        for (QuadItem q : old) {
+            insert(q.entity, entityBounds);
         }
     }
 
     return true;
 }
 
-void QuadTree::query(const glm::vec4& range, std::vector<Entity>& found) {
+void QuadTree::query(const glm::vec4& range, std::vector<QuadItem>& found) {
     if (!CollisionSystem::checkCollision(bounds, range)) return;
 
-    for (auto entity : entities) {
-        auto* pos = componentManager.getComponent<PositionComponent>(entity);
-        auto* col = componentManager.getComponent<CollisionComponent>(entity);
+    auto* positions = componentManager.getArray<PositionComponent>();
+    auto* collisions = componentManager.getArray<CollisionComponent>();
+
+    for (auto q : entities) {
+        auto* pos = positions->get(q.entity);
+        auto* col = collisions->get(q.entity);
         if (pos && col) {
             glm::vec4 entityBounds{pos->x + col->x, pos->y + col->y, col->w, col->h};
             if (CollisionSystem::checkCollision(range, entityBounds)) {
-                found.push_back(entity);
+                found.push_back({q.entity, entityBounds});
             }
         }
     }
@@ -92,12 +87,20 @@ void QuadTree::query(const glm::vec4& range, std::vector<Entity>& found) {
 }
 
 std::vector<Entity> QuadTree::query(const glm::vec4& range) {
-    std::vector<Entity> found;
+    std::vector<QuadItem> found;
     query(range, found);
-    return found;
+    std::vector<Entity> ret;
+
+    for(auto& q : found) {
+        ret.push_back(q.entity);
+    }
+
+    return ret;
 }
 
 void QuadTree::clear() {
     entities.clear();
-    children.clear();
+    for (auto& child : children) {
+        child.clear();
+    }
 }
