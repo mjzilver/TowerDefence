@@ -1,5 +1,6 @@
 #include "Shader.h"
 
+#include <cstddef>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -54,12 +55,12 @@ void Shader::linkProgram(GLuint vertexShader, GLuint fragmentShader) {
     glAttachShader(programID, fragmentShader);
     glLinkProgram(programID);
     checkCompileErrors(programID, "PROGRAM");
+
+   for (size_t i = 0; i < static_cast<size_t>(Uniform::COUNT); ++i) {
+        uniforms[i] = glGetUniformLocation(programID, UNIFORM_NAMES[i]);
+    }
 }
 
-GLuint Shader::getUniform(const std::string& name) {
-    auto it = uniformCache.find(name);
-    if (it != uniformCache.end()) return it->second;
-    GLuint loc = glGetUniformLocation(programID, name.c_str());
-    uniformCache[name] = loc;
-    return loc;
+GLuint Shader::getUniform(Uniform u) {
+    return uniforms[static_cast<size_t>(u)];
 }

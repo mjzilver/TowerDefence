@@ -50,19 +50,19 @@ void RenderSystem::renderRectangle(const glm::vec4& rect, const glm::vec3& color
     GLuint shaderProgram = shader->getProgram();
     glUseProgram(shaderProgram);
 
-    GLuint colorLoc = shader->getUniform("color");
+    GLuint colorLoc = shader->getUniform(Uniform::Color);
     glUniform3f(colorLoc, color.x, color.y, color.z);
 
-    GLuint sizeLoc = shader->getUniform("bounds");
+    GLuint sizeLoc = shader->getUniform(Uniform::Bounds);
     glUniform4f(sizeLoc, rect.x, rect.y, rect.x + rect.z, rect.y + rect.w);
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(rect.x + rect.z * 0.5f, rect.y + rect.w * 0.5f, 0.0f));
     model = glm::scale(model, glm::vec3(rect.z, rect.w, 1.0f));
 
-    glUniformMatrix4fv(shader->getUniform("model"), 1, GL_FALSE, &model[0][0]);
+    glUniformMatrix4fv(shader->getUniform(Uniform::Model), 1, GL_FALSE, &model[0][0]);
 
-    GLuint projectionLoc = shader->getUniform("projection");
+    GLuint projectionLoc = shader->getUniform(Uniform::Projection);
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
 
     if (shaderVAOs.find(shader) == shaderVAOs.end()) {
@@ -119,20 +119,20 @@ void RenderSystem::renderEntity(const PositionComponent* position, const Texture
         model = glm::scale(model, glm::vec3(-1.0f, 1.0f, 1.0f));  // Flip horizontally
     }
 
-    GLuint modelLoc = shader->getUniform("model");
+    GLuint modelLoc = shader->getUniform(Uniform::Model);
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
 
-    GLuint texCoordOffsetLoc = shader->getUniform("texCoordOffset");
+    GLuint texCoordOffsetLoc = shader->getUniform(Uniform::TexCoordOffset);
     glUniform2fv(texCoordOffsetLoc, 1, &texCoordOffset[0]);
 
-    GLuint texCoordScaleLoc = shader->getUniform("texCoordScale");
+    GLuint texCoordScaleLoc = shader->getUniform(Uniform::TexCoordScale);
     glUniform2fv(texCoordScaleLoc, 1, &texCoordScale[0]);
 
     if (color) {
-        glUniform1i(shader->getUniform("useRecolor"), GL_TRUE);
-        glUniform3f(shader->getUniform("recolor"), color->r, color->g, color->b);
+        glUniform1i(shader->getUniform(Uniform::UseRecolor), GL_TRUE);
+        glUniform3f(shader->getUniform(Uniform::Recolor), color->r, color->g, color->b);
     } else {
-        glUniform1i(shader->getUniform("useRecolor"), GL_FALSE);
+        glUniform1i(shader->getUniform(Uniform::UseRecolor), GL_FALSE);
     }
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -143,10 +143,10 @@ void RenderSystem::renderText(const glm::vec4& rect, const std::string& text, co
     glUseProgram(shaderProgram);
 
     // Set the text color uniform
-    glUniform3f(shader->getUniform("textColor"), color.x, color.y, color.z);
+    glUniform3f(shader->getUniform(Uniform::TextColor), color.x, color.y, color.z);
 
     // Set projection matrix (orthographic)
-    glUniformMatrix4fv(shader->getUniform("projection"), 1, GL_FALSE, &projection[0][0]);
+    glUniformMatrix4fv(shader->getUniform(Uniform::Projection), 1, GL_FALSE, &projection[0][0]);
 
     // Setup VAO/VBO
     static GLuint vao = 0, vbo = 0;
@@ -205,7 +205,7 @@ void RenderSystem::renderText(const glm::vec4& rect, const std::string& text, co
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, ch.textureID);
-            glUniform1i(shader->getUniform("text"), 0);
+            glUniform1i(shader->getUniform(Uniform::Text), 0);
 
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
             glDrawArrays(GL_TRIANGLES, 0, 6);

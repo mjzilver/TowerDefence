@@ -3,13 +3,14 @@
 #include <glad/glad.h>
 
 #include <string>
-#include <unordered_map>
+#include <array>
+#include "Uniform.h"
 
 class Shader {
 public:
     Shader(const std::string& vertexPath, const std::string& fragmentPath);
     GLuint getProgram() const;
-    GLuint getUniform(const std::string& name);
+    GLuint getUniform(Uniform u);
 
     ~Shader() {
         if (programID != 0) {
@@ -20,7 +21,7 @@ public:
 
 private:
     GLuint programID;
-    std::unordered_map<std::string, GLuint> uniformCache;
+    std::array<GLuint, static_cast<size_t>(Uniform::COUNT)> uniforms;
 
     const std::string shaderPath = "resources/shaders/";
 
