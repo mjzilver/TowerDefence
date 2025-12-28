@@ -26,13 +26,18 @@ void Menu::onHover(const glm::vec2& pos) {
     }
 }
 
-void Menu::onKeyPress(int key) {
+void Menu::onKeyPress(int key, int mods) {
     switch (key) {
         case GLFW_KEY_C:
-            eventDispatcher.dispatch({EventType::ACTIVATE_CHEATS});
+            if (mods & GLFW_MOD_CONTROL) {
+                eventDispatcher.dispatch({EventType::ACTIVATE_CHEATS});
+            }
             break;
+
         case GLFW_KEY_M:
-            eventDispatcher.dispatch({EventType::ACTIVATE_STRESS_TEST});
+            if (mods & GLFW_MOD_CONTROL) {
+                eventDispatcher.dispatch({EventType::ACTIVATE_STRESS_TEST});
+            }
             break;
     }
 }

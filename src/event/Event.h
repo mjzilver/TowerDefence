@@ -3,6 +3,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "../ecs/Component.h"
+
 enum class EventType {
     PROJECTILE_HIT,
     ENTITY_DESTROYED,
@@ -17,16 +19,12 @@ enum class EventType {
 
 struct Event {
     EventType type;
-    std::unordered_map<std::string, void*> data;
+    std::unordered_map<std::string, Entity> data;
 
-    template <typename T>
-    void addData(const std::string& key, T* value) {
-        data[key] = static_cast<void*>(value);
-    }
+    void addEntity(const std::string& key, Entity value) { data[key] = value; }
 
-    template <typename T>
-    T* getData(const std::string& key) const {
+    Entity getEntity(const std::string& key) const {
         auto it = data.find(key);
-        return it != data.end() ? static_cast<T*>(it->second) : nullptr;
+        return it != data.end() ? it->second : INVALID_ENTITY;
     }
 };

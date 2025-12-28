@@ -13,17 +13,17 @@ struct QuadItem {
 
 class QuadTree {
 public:
-    QuadTree(ComponentManager& componentManager, const glm::vec4& bounds, int capacity = 8)
-        : bounds(bounds), capacity(capacity), componentManager(componentManager) {}
+    QuadTree(ComponentManager& componentManager, const glm::vec4& bounds, int capacity = 8);
 
-    ~QuadTree() { children.clear(); }
+    ~QuadTree();
+
+    QuadTree(const QuadTree&) = delete;
+    QuadTree& operator=(const QuadTree&) = delete;
 
     void subdivide();
-
     bool insert(Entity entity, const glm::vec4& entityBounds);
 
     std::vector<Entity> query(const glm::vec4& range);
-
     void clear();
 
 private:
@@ -33,6 +33,7 @@ private:
 
     glm::vec4 bounds;
     int capacity;
+
     std::vector<QuadItem> entities;
-    std::vector<QuadTree> children;
+    std::vector<QuadTree*> children;
 };

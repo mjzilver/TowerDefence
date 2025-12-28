@@ -56,11 +56,9 @@ void Shader::linkProgram(GLuint vertexShader, GLuint fragmentShader) {
     glLinkProgram(programID);
     checkCompileErrors(programID, "PROGRAM");
 
-   for (size_t i = 0; i < static_cast<size_t>(Uniform::COUNT); ++i) {
+    for (size_t i = 0; i < static_cast<size_t>(Uniform::COUNT); ++i) {
         uniforms[i] = glGetUniformLocation(programID, UNIFORM_NAMES[i]);
     }
 }
 
-GLuint Shader::getUniform(Uniform u) {
-    return uniforms[static_cast<size_t>(u)];
-}
+GLuint Shader::getUniform(Uniform u) { return uniforms[static_cast<size_t>(u)]; }

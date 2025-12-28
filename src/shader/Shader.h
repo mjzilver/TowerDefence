@@ -2,8 +2,9 @@
 
 #include <glad/glad.h>
 
-#include <string>
 #include <array>
+#include <string>
+
 #include "Uniform.h"
 
 class Shader {

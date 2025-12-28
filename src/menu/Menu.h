@@ -20,7 +20,7 @@ public:
 
     void onClick(const glm::vec2& clickPos);
 
-    void onKeyPress(int key);
+    void onKeyPress(int key, int mods);
 
     void onHover(const glm::vec2& pos);
 
