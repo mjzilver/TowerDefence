@@ -11,20 +11,38 @@
 #include "../components/VelocityComponent.h"
 #include "../utils/ZLayer.h"
 
+CombatSystem::CombatSystem(EngineContext& ctx) : System(ctx) {
+    context.eventDispatcher.addListener(EventType::PROJECTILE_HIT, std::bind(&CombatSystem::onEvent, this, std::placeholders::_1));
+
+    writes.push_back(typeid(PositionComponent));
+    writes.push_back(typeid(HealthComponent));
+    writes.push_back(typeid(DeathComponent));
+    writes.push_back(typeid(VelocityComponent));
+    writes.push_back(typeid(PathfindingComponent));
+    writes.push_back(typeid(HealthComponent));
+    writes.push_back(typeid(CollisionComponent));
+
+    writes.push_back(typeid(Entity));
+
+    reads.push_back(typeid(DamageComponent));
+    reads.push_back(typeid(SizeComponent));
+    reads.push_back(typeid(TextureComponent));
+}
+
 void CombatSystem::onEvent(const Event& event) {
     auto& eventdispatcher = context.eventDispatcher;
     auto& componentManager = context.componentManager;
 
     if (event.type == EventType::PROJECTILE_HIT) {
-        Entity projectile = *event.getData<Entity>("projectile");
-        Entity target = *event.getData<Entity>("target");
+        Entity projectile = event.getEntity("projectile");
+        Entity target = event.getEntity("target");
 
-        auto* projectileDamageComp = componentManager.getComponent<DamageComponent>(projectile);
+        const auto* projectileDamageComp = componentManager.getComponent<DamageComponent>(projectile);
         auto* targetPosition = componentManager.getComponent<PositionComponent>(target);
-        auto* targetSize = componentManager.getComponent<SizeComponent>(target);
+        const auto* targetSize = componentManager.getComponent<SizeComponent>(target);
         auto* targetHealth = componentManager.getComponent<HealthComponent>(target);
         auto* targetDeath = componentManager.getComponent<DeathComponent>(target);
-        auto* targetTexture = componentManager.getComponent<TextureComponent>(target);
+        const auto* targetTexture = componentManager.getComponent<TextureComponent>(target);
 
         if (!projectileDamageComp || !targetPosition || !targetSize || !targetHealth || !targetTexture) {
             return;
@@ -36,7 +54,7 @@ void CombatSystem::onEvent(const Event& event) {
         if (targetHealth->health <= 0) {
             Event deathEvent;
             deathEvent.type = EventType::ENTITY_DESTROYED;
-            deathEvent.addData<Entity>("entity", &target);
+            deathEvent.addEntity("entity", target);
             eventdispatcher.dispatch(deathEvent);
 
             if (!targetDeath) {
@@ -48,10 +66,10 @@ void CombatSystem::onEvent(const Event& event) {
                 targetDeath->hasDied = true;
             }
 
-            componentManager.removeComponent<VelocityComponent>(target);
-            componentManager.removeComponent<PathfindingComponent>(target);
-            componentManager.removeComponent<HealthComponent>(target);
-            componentManager.removeComponent<CollisionComponent>(target);
+            // componentManager.removeComponent<VelocityComponent>(target);
+            // componentManager.removeComponent<PathfindingComponent>(target);
+            // componentManager.removeComponent<HealthComponent>(target);
+            // componentManager.removeComponent<CollisionComponent>(target);
 
             targetPosition->zIndex = ZLayer::DEAD;
             componentManager.reorder(target, ZLayer::DEAD);
@@ -63,7 +81,7 @@ void CombatSystem::onEvent(const Event& event) {
         deathComponent.hasDied = true;
         deathComponent.remainingTime = 0.001f;
 
-        componentManager.removeComponent<CollisionComponent>(projectile);
+        //componentManager.removeComponent<CollisionComponent>(projectile);
         componentManager.addComponent(projectile, deathComponent);
     }
 }

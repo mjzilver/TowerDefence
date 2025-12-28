@@ -3,6 +3,15 @@
 #include "../components/AnimationComponent.h"
 #include "../components/VelocityComponent.h"
 #include "../ecs/ComponentManager.h"
+#include "AnimationSystem.h"
+
+StateSystem::StateSystem(EngineContext& ctx) : System(ctx) {
+    context.eventDispatcher.addListener(EventType::OPEN_MENU_CLICKED, std::bind(&StateSystem::onEvent, this, std::placeholders::_1));
+
+    writes.push_back(typeid(AnimationSystem));
+
+    reads.push_back(typeid(VelocityComponent));
+}
 
 void StateSystem::update(float) {
     auto& componentManager = context.componentManager;

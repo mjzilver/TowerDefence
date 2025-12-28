@@ -15,6 +15,11 @@
 #include "../utils/Globals.h"
 #include "../utils/String.h"
 
+RenderSystem::RenderSystem(EngineContext& ctx) : System(ctx) {
+    projection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f, -1.0f, 1.0f);
+    excludeFromBatching = true;
+}
+
 GLuint createUnitSquareVao() {
     float vertices[] = {
         // Position          // Texture coordinates
@@ -251,7 +256,6 @@ void RenderSystem::render() {
             const auto* textComponent = textComp->get(entity);
             const auto* colorComponent = colors->get(entity);
             const auto* clickableComponent = clickable->get(entity);
-            const auto* collision = collisions->get(entity);
 
             std::string shaderName = "default";
             if (shaderComponent) {
@@ -287,6 +291,8 @@ void RenderSystem::render() {
             }
 
             if constexpr (DEBUG_ENABLED) {
+                const auto* collision = collisions->get(entity);
+
                 if (!position || !collision) continue;
 
                 const glm::vec4 rect{position->x + collision->x, position->y + collision->y, collision->w, collision->h};

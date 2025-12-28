@@ -3,6 +3,7 @@
 #include <typeindex>
 #include <unordered_map>
 
+#include "../thread/ThreadPool.h"
 #include "System.h"
 
 class SystemManager {
@@ -23,9 +24,18 @@ public:
     }
 
     void updateSystems(float deltaTime) {
-        for (auto& [type, system] : systems) {
-            system->update(deltaTime);
+        for (auto& batch : batches) {
+            for (auto* sys : batch) {
+                threadpool.submit([&, sys]() {
+                    sys->update(deltaTime);
+                });
+            }
         }
+
+        threadpool.join();
+
+        context.eventDispatcher.swapQueues();
+        context.eventDispatcher.deliver();
     }
 
     void resetSystems() {
@@ -40,7 +50,15 @@ public:
         }
     }
 
+    void generateBatches();
+
 private:
+    void debugPrintBatches();
+
     EngineContext& context;
     std::unordered_map<std::type_index, System*> systems;
+
+    std::vector<std::vector<System*>> batches;
+
+    ThreadPool threadpool;
 };

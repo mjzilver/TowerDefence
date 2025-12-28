@@ -4,7 +4,7 @@
 
 class ShootingSystem : public System {
 public:
-    ShootingSystem(EngineContext& ctx) : System(ctx) {}
+    ShootingSystem(EngineContext& ctx);
 
     void update(float deltaTime) override;
 

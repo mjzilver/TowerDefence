@@ -27,10 +27,9 @@ void installInputCallbacks(GLFWwindow* window, InputContext* ctx) {
 
     glfwSetKeyCallback(window, [](GLFWwindow* win, int key, int scancode, int action, int mods) {
         (void)scancode;
-        (void)mods;
         if (action == GLFW_PRESS) {
             auto* ctx = static_cast<InputContext*>(glfwGetWindowUserPointer(win));
-            ctx->menu->onKeyPress(key);
+            ctx->menu->onKeyPress(key, mods);
         }
     });
 }

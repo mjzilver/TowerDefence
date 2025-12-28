@@ -10,7 +10,14 @@
 #include "../components/VelocityComponent.h"
 #include "../ecs/Component.h"
 
-PathfindingSystem::PathfindingSystem(EngineContext& ctx) : System(ctx), path(context.mapLoader.getPath()) {}
+PathfindingSystem::PathfindingSystem(EngineContext& ctx) : System(ctx), path(context.mapLoader.getPath()) {
+    writes.push_back(typeid(VelocityComponent));
+    writes.push_back(typeid(PathfindingComponent));
+
+    reads.push_back(typeid(PositionComponent));
+    reads.push_back(typeid(SizeComponent));
+    reads.push_back(typeid(SpeedComponent));
+}
 
 void PathfindingSystem::update(float) {
     auto& componentManager = context.componentManager;
@@ -73,7 +80,7 @@ void PathfindingSystem::update(float) {
                 } else if (isLastTile && dist <= snapRadius) {
                     pathFind->reachedGoal = true;
 
-                    componentManager.removeComponent<PathfindingComponent>(entity);
+                    //componentManager.removeComponent<PathfindingComponent>(entity);
 
                     DeathComponent deathComp;
                     deathComp.hasDied = true;

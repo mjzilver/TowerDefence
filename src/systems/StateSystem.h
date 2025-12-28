@@ -6,9 +6,7 @@ enum class EngineState { MAIN_MENU, GAMEPLAY };
 
 class StateSystem : public System {
 public:
-    StateSystem(EngineContext& ctx) : System(ctx) {
-        context.eventDispatcher.addListener(EventType::OPEN_MENU_CLICKED, std::bind(&StateSystem::onEvent, this, std::placeholders::_1));
-    }
+    StateSystem(EngineContext& ctx);
 
     void update(float deltaTime) override;
 

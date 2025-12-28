@@ -4,7 +4,7 @@
 
 class MovementSystem : public System {
 public:
-    MovementSystem(EngineContext& ctx) : System(ctx) {}
+    MovementSystem(EngineContext& ctx);
 
     void update(float deltaTime) override;
 

@@ -14,11 +14,10 @@
 #include "../components/TextureComponent.h"
 #include "../ecs/System.h"
 #include "../shader/Shader.h"
-#include "../utils/Globals.h"
 
 class RenderSystem : public System {
 public:
-    RenderSystem(EngineContext& ctx) : System(ctx) { projection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f, -1.0f, 1.0f); }
+    RenderSystem(EngineContext& ctx);
 
     ~RenderSystem();
 

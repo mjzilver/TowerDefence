@@ -10,24 +10,34 @@
 #include "../event/EventDispatcher.h"
 #include "../utils/Globals.h"
 
+CollisionSystem::CollisionSystem(EngineContext& ctx) : System(ctx), quadTree(context.componentManager, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}) {
+    writes.push_back(typeid(CollisionComponent));
+
+    reads.push_back(typeid(PositionComponent));
+    reads.push_back(typeid(SizeComponent));
+    reads.push_back(typeid(VelocityComponent));
+    reads.push_back(typeid(DamageComponent));
+    reads.push_back(typeid(HealthComponent));
+}
+
 void CollisionSystem::update(float) {
     quadTree.clear();
 
     auto& componentManager = context.componentManager;
 
     auto* collisions = componentManager.getArray<CollisionComponent>();
-    auto* positions = componentManager.getArray<PositionComponent>();
-    auto* sizes = componentManager.getArray<SizeComponent>();
-    auto* velocities = componentManager.getArray<VelocityComponent>();
-    auto* damages = componentManager.getArray<DamageComponent>();
-    auto* healths = componentManager.getArray<HealthComponent>();
+    const auto* positions = componentManager.getArray<PositionComponent>();
+    const auto* sizes = componentManager.getArray<SizeComponent>();
+    const auto* velocities = componentManager.getArray<VelocityComponent>();
+    const auto* damages = componentManager.getArray<DamageComponent>();
+    const auto* healths = componentManager.getArray<HealthComponent>();
 
     for (Entity entity : collisions->getEntities()) {
         auto* pos = positions->get(entity);
         auto* col = collisions->get(entity);
 
         if (!pos || !col) {
-            continue;   
+            continue;
         };
         glm::vec4 entityBounds{pos->x + col->x, pos->y + col->y, col->w, col->h};
 
@@ -35,11 +45,11 @@ void CollisionSystem::update(float) {
     }
 
     for (Entity entity : collisions->getEntities()) {
-        auto* pos = positions->get(entity);
-        auto* vel = velocities->get(entity);
-        auto* dmg = damages->get(entity);
-        auto* size = sizes->get(entity);
-        auto* col = collisions->get(entity);
+        const auto* pos = positions->get(entity);
+        const auto* vel = velocities->get(entity);
+        const auto* dmg = damages->get(entity);
+        const auto* size = sizes->get(entity);
+        const auto* col = collisions->get(entity);
 
         if (pos && vel && size && dmg && col) {
             float x = pos->x + col->x;
@@ -53,9 +63,9 @@ void CollisionSystem::update(float) {
                     continue;
                 }
 
-                auto* otherPos = positions->get(otherEntity);
-                auto* otherCol = collisions->get(otherEntity);
-                auto* otherHealth = healths->get(otherEntity);
+                const auto* otherPos = positions->get(otherEntity);
+                const auto* otherCol = collisions->get(otherEntity);
+                const auto* otherHealth = healths->get(otherEntity);
 
                 if (otherPos && otherCol && otherHealth) {
                     float ox = otherPos->x + otherCol->x;
@@ -67,8 +77,8 @@ void CollisionSystem::update(float) {
                         if (col->solid && otherCol->solid) {
                             Event event;
                             event.type = EventType::PROJECTILE_HIT;
-                            event.addData("projectile", &entity);
-                            event.addData("target", &otherEntity);
+                            event.addEntity("projectile", entity);
+                            event.addEntity("target", otherEntity);
                             context.eventDispatcher.dispatch(event);
 
                             break;

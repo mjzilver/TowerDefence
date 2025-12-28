@@ -9,6 +9,7 @@
 #include "../components/SizeComponent.h"
 #include "../components/TextComponent.h"
 #include "../components/UpgradeComponent.h"
+#include "../components/TextureComponent.h"
 #include "../event/Event.h"
 #include "../event/EventDispatcher.h"
 #include "../utils/Globals.h"
@@ -19,6 +20,17 @@ MenuSystem::MenuSystem(EngineContext& ctx) : System(ctx) {
     context.eventDispatcher.addListener(EventType::TOWER_CLICKED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
     context.eventDispatcher.addListener(EventType::UNSELECT, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
     context.eventDispatcher.addListener(EventType::ACTIVATE_CHEATS, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
+
+    writes.push_back(typeid(TextComponent));
+    writes.push_back(typeid(ChildComponent));
+    writes.push_back(typeid(TextureComponent));
+    writes.push_back(typeid(Entity));
+
+    reads.push_back(typeid(ClickableComponent));
+    reads.push_back(typeid(PositionComponent));
+    reads.push_back(typeid(RewardComponent));
+    reads.push_back(typeid(SizeComponent));
+    reads.push_back(typeid(UpgradeComponent));
 }
 
 void MenuSystem::reset() {
@@ -79,8 +91,12 @@ void MenuSystem::update(float) {
     auto* goldText = componentManager.getComponent<TextComponent>(currencyDisplayEntity);
     auto* killText = componentManager.getComponent<TextComponent>(killCounterEntity);
 
-    goldText->text = std::to_string(currency) + " Gold";
-    killText->text = "Kills\n" + std::to_string(killCount);
+    if (goldText) {
+        goldText->text = std::to_string(currency) + " Gold";
+    }
+    if (killText) {
+        killText->text = "Kills\n" + std::to_string(killCount);
+    }
 }
 
 void MenuSystem::buildClick(Entity entity) {
@@ -130,13 +146,13 @@ void MenuSystem::onEvent(const Event& event) {
     auto& componentManager = context.componentManager;
 
     if (event.type == EventType::GRASS_TILE_CLICKED && menuMode == MenuMode::BUILD_TOWER) {
-        Entity entity = *event.getData<Entity>("entity");
+        Entity entity = event.getEntity("entity");
         buildClick(entity);
     } else if (event.type == EventType::TOWER_CLICKED && menuMode == MenuMode::UPGRADE_TOWER) {
-        Entity entity = *event.getData<Entity>("entity");
+        Entity entity = event.getEntity("entity");
         upgradeClick(entity);
     } else if (event.type == EventType::ENTITY_DESTROYED) {
-        Entity entity = *event.getData<Entity>("entity");
+        Entity entity = event.getEntity("entity");
         auto* reward = componentManager.getComponent<RewardComponent>(entity);
         if (reward) {
             currency += reward->gold;

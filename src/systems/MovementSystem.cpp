@@ -5,6 +5,14 @@
 #include "../components/TextureComponent.h"
 #include "../components/VelocityComponent.h"
 
+MovementSystem::MovementSystem(EngineContext& ctx) : System(ctx) {
+    writes.push_back(typeid(PositionComponent));
+    writes.push_back(typeid(DirectionComponent));
+    writes.push_back(typeid(TextureComponent));
+
+    reads.push_back(typeid(VelocityComponent));
+}
+
 void MovementSystem::update(float deltaTime) {
     auto& componentManager = context.componentManager;
     const auto* positions = componentManager.getArray<PositionComponent>();

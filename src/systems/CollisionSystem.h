@@ -5,11 +5,10 @@
 
 #include "../ecs/System.h"
 #include "../engine/QuadTree.h"
-#include "../utils/Globals.h"
 
 class CollisionSystem : public System {
 public:
-    CollisionSystem(EngineContext& ctx) : System(ctx), quadTree(context.componentManager, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}) {}
+    CollisionSystem(EngineContext& ctx);
 
     void update(float deltaTime) override;
 

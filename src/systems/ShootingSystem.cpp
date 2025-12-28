@@ -8,6 +8,18 @@
 #include "../components/VelocityComponent.h"
 #include "../components/WeaponComponent.h"
 
+ShootingSystem::ShootingSystem(EngineContext& ctx) : System(ctx) {
+    writes.push_back(typeid(WeaponComponent));
+    writes.push_back(typeid(RotationComponent));
+    writes.push_back(typeid(AnimationComponent));
+    writes.push_back(typeid(Entity));
+
+    reads.push_back(typeid(PositionComponent));
+    reads.push_back(typeid(SizeComponent));
+    reads.push_back(typeid(VelocityComponent));
+    reads.push_back(typeid(HealthComponent));
+}
+
 void ShootingSystem::update(float deltaTime) {
     auto& componentManager = context.componentManager;
     auto* weapons = componentManager.getArray<WeaponComponent>();
@@ -40,10 +52,10 @@ void ShootingSystem::update(float deltaTime) {
                 continue;
             }
 
-            auto* otherPosition = positions->get(otherEntity);
-            auto* otherSize = sizes->get(otherEntity);
-            auto* otherVelocity = velocities->get(otherEntity);
-            auto* otherHealth = healths->get(otherEntity);
+            const auto* otherPosition = positions->get(otherEntity);
+            const auto* otherSize = sizes->get(otherEntity);
+            const auto* otherVelocity = velocities->get(otherEntity);
+            const auto* otherHealth = healths->get(otherEntity);
 
             if (otherPosition && otherSize && otherVelocity && otherHealth) {
                 float startX = position->x + (size->w / 2);
