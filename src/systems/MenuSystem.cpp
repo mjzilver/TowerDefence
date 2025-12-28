@@ -130,13 +130,13 @@ void MenuSystem::onEvent(const Event& event) {
     auto& componentManager = context.componentManager;
 
     if (event.type == EventType::GRASS_TILE_CLICKED && menuMode == MenuMode::BUILD_TOWER) {
-        Entity entity = *event.getData<Entity>("entity");
+        Entity entity = event.getEntity("entity");
         buildClick(entity);
     } else if (event.type == EventType::TOWER_CLICKED && menuMode == MenuMode::UPGRADE_TOWER) {
-        Entity entity = *event.getData<Entity>("entity");
+        Entity entity = event.getEntity("entity");
         upgradeClick(entity);
     } else if (event.type == EventType::ENTITY_DESTROYED) {
-        Entity entity = *event.getData<Entity>("entity");
+        Entity entity = event.getEntity("entity");
         auto* reward = componentManager.getComponent<RewardComponent>(entity);
         if (reward) {
             currency += reward->gold;

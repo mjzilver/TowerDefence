@@ -16,11 +16,11 @@ void CollisionSystem::update(float) {
     auto& componentManager = context.componentManager;
 
     auto* collisions = componentManager.getArray<CollisionComponent>();
-    auto* positions = componentManager.getArray<PositionComponent>();
-    auto* sizes = componentManager.getArray<SizeComponent>();
-    auto* velocities = componentManager.getArray<VelocityComponent>();
-    auto* damages = componentManager.getArray<DamageComponent>();
-    auto* healths = componentManager.getArray<HealthComponent>();
+    const auto* positions = componentManager.getArray<PositionComponent>();
+    const auto* sizes = componentManager.getArray<SizeComponent>();
+    const auto* velocities = componentManager.getArray<VelocityComponent>();
+    const auto* damages = componentManager.getArray<DamageComponent>();
+    const auto* healths = componentManager.getArray<HealthComponent>();
 
     for (Entity entity : collisions->getEntities()) {
         auto* pos = positions->get(entity);
@@ -35,17 +35,17 @@ void CollisionSystem::update(float) {
     }
 
     for (Entity entity : collisions->getEntities()) {
-        auto* pos = positions->get(entity);
-        auto* vel = velocities->get(entity);
-        auto* dmg = damages->get(entity);
-        auto* size = sizes->get(entity);
-        auto* col = collisions->get(entity);
+        const auto* pos = positions->get(entity);
+        const auto* vel = velocities->get(entity);
+        const auto* dmg = damages->get(entity);
+        const auto* size = sizes->get(entity);
+        const auto* col = collisions->get(entity);
 
         if (pos && vel && size && dmg && col) {
-            float x = pos->x + col->x;
-            float y = pos->y + col->y;
-            float w = col->w;
-            float h = col->h;
+            const float x = pos->x + col->x;
+            const float y = pos->y + col->y;
+            const float w = col->w;
+            const float h = col->h;
 
             std::vector<Entity> nearby = quadTree.query({x, y, w, h});
             for (Entity otherEntity : nearby) {
@@ -53,22 +53,22 @@ void CollisionSystem::update(float) {
                     continue;
                 }
 
-                auto* otherPos = positions->get(otherEntity);
-                auto* otherCol = collisions->get(otherEntity);
-                auto* otherHealth = healths->get(otherEntity);
+                const auto* otherPos = positions->get(otherEntity);
+                const auto* otherCol = collisions->get(otherEntity);
+                const auto* otherHealth = healths->get(otherEntity);
 
                 if (otherPos && otherCol && otherHealth) {
-                    float ox = otherPos->x + otherCol->x;
-                    float oy = otherPos->y + otherCol->y;
-                    float ow = otherCol->w;
-                    float oh = otherCol->h;
+                    const float ox = otherPos->x + otherCol->x;
+                    const float oy = otherPos->y + otherCol->y;
+                    const float ow = otherCol->w;
+                    const float oh = otherCol->h;
 
                     if (checkCollision(x, y, w, h, ox, oy, ow, oh)) {
                         if (col->solid && otherCol->solid) {
                             Event event;
                             event.type = EventType::PROJECTILE_HIT;
-                            event.addData("projectile", &entity);
-                            event.addData("target", &otherEntity);
+                            event.addEntity("projectile", entity);
+                            event.addEntity("target", otherEntity);
                             context.eventDispatcher.dispatch(event);
 
                             break;

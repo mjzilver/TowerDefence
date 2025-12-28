@@ -55,7 +55,7 @@ void ClickSystem::onClick(int button, int action, double x, double y) {
                 if (clickable->type == ClickableType::EVENT) {
                     Event event;
                     event.type = clickable->clickedEvent;
-                    event.addData("entity", &entity);
+                    event.addEntity("entity", entity);
                     context.eventDispatcher.dispatch(event);
                 } else if (clickable->type == ClickableType::FUNCTION) {
                     clickable->onClick();

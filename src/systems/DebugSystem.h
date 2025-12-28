@@ -32,7 +32,7 @@ public:
     void onEvent(const Event& event) {
         if (event.type != EventType::ENTITY_CLICKED) return;
 
-        Entity entity = *event.getData<Entity>("entity");
+        Entity entity = event.getEntity("entity");
         std::cout << "Clicked entity: " << entity << "\n";
 
         auto& cm = context.componentManager;

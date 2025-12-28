@@ -63,7 +63,7 @@ void AnimationSystem::update(const float deltaTime) {
 
 void AnimationSystem::onEvent(const Event& event) {
     if (event.type == EventType::ENTITY_DESTROYED) {
-        Entity entity = *event.getData<Entity>("entity");
+        Entity entity = event.getEntity("entity");
         auto* animation = context.componentManager.getComponent<AnimationComponent>(entity);
 
         if (animation) {

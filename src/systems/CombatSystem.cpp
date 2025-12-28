@@ -16,8 +16,8 @@ void CombatSystem::onEvent(const Event& event) {
     auto& componentManager = context.componentManager;
 
     if (event.type == EventType::PROJECTILE_HIT) {
-        Entity projectile = *event.getData<Entity>("projectile");
-        Entity target = *event.getData<Entity>("target");
+        Entity projectile = event.getEntity("projectile");
+        Entity target = event.getEntity("target");
 
         auto* projectileDamageComp = componentManager.getComponent<DamageComponent>(projectile);
         auto* targetPosition = componentManager.getComponent<PositionComponent>(target);
@@ -36,7 +36,7 @@ void CombatSystem::onEvent(const Event& event) {
         if (targetHealth->health <= 0) {
             Event deathEvent;
             deathEvent.type = EventType::ENTITY_DESTROYED;
-            deathEvent.addData<Entity>("entity", &target);
+            deathEvent.addEntity("entity", target);
             eventdispatcher.dispatch(deathEvent);
 
             if (!targetDeath) {
