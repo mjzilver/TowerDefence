@@ -37,5 +37,6 @@ void GLContext::setupOpenGL() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
+    // Vsync
     glfwSwapInterval(1);
 }

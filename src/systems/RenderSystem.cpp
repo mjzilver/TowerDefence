@@ -291,7 +291,7 @@ void RenderSystem::render() {
                 renderEntity(position, texture, size, rotation, colorComponent ? &colorComponent->color : nullptr, shader);
             }
 
-            if constexpr (DEBUG_ENABLED) {
+            if constexpr (DISPLAY_HITBOXES) {
                 const auto* collision = collisions->get(entity);
 
                 if (!position || !collision) continue;

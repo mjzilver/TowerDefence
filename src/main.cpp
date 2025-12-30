@@ -77,31 +77,35 @@ int main() {
         renderSystem.registerShader("rect", &rectShader);
 
         double lastTime = glfwGetTime();
-        const float frameTime = 1.0f / 60.0f;
+        const double fixedDt = 1.0f / 60.0f;
+        double accumulator = 0;
 
         while (!glfwWindowShouldClose(window)) {
+            double currentTime = glfwGetTime();
+            accumulator += currentTime - lastTime;
+            static double lastPrint = 0;
+
             glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             if (stateSystem.getState() == EngineState::MAIN_MENU) {
                 menu.render(renderSystem);
             } else if (stateSystem.getState() == EngineState::GAMEPLAY) {
-                systemManager.updateSystems(frameTime);
+                while (accumulator >= fixedDt) {
+                    systemManager.updateSystems(fixedDt);
+                    componentManager.flush(entityManager);
+                    accumulator -= fixedDt;
+                }
                 renderSystem.render();
             }
-
-            componentManager.flush(entityManager);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
 
             if constexpr (DEBUG_ENABLED) {
-                double currentTime = glfwGetTime();
-                double deltaTime = currentTime - lastTime;
-                static double lastPrint = 0;
-
                 if (currentTime - lastPrint >= 1.0) {
-                    std::cout << "FPS: " << 1.0 / deltaTime << "\n";
+                    double frameTime = currentTime - lastTime;
+                    std::cout << "FPS: " << 1.0 / frameTime << "\n";
                     lastPrint = currentTime;
                 }
 

@@ -167,7 +167,7 @@ void MenuSystem::onEvent(const Event& event) {
         for (Entity entity : clickables->getEntities()) {
             auto* clickable = clickables->get(entity);
 
-            if (clickable->clickedEvent == EventType::GRASS_TILE_CLICKED) {
+            if (clickable && clickable->clickedEvent == EventType::GRASS_TILE_CLICKED) {
                 buildClick(entity);
             }
         }
@@ -175,7 +175,7 @@ void MenuSystem::onEvent(const Event& event) {
         for (Entity entity : clickables->getEntities()) {
             auto* clickable = clickables->get(entity);
 
-            if (clickable->clickedEvent == EventType::TOWER_CLICKED) {
+            if (clickable && clickable->clickedEvent == EventType::TOWER_CLICKED) {
                 upgradeClick(entity);
                 upgradeClick(entity);
             }

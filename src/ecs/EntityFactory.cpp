@@ -591,7 +591,6 @@ Entity EntityFactory::createMenuButton(const glm::vec2& pos, std::function<void(
 }
 
 Entity EntityFactory::upgradeTower(Entity entity) {
-    componentManager.removeComponent<TextureComponent>(entity);
     auto* upgradeComponent = componentManager.getComponent<UpgradeComponent>(entity);
     upgradeComponent->upgradeLevel++;
 
@@ -600,11 +599,9 @@ Entity EntityFactory::upgradeTower(Entity entity) {
     static const int TOWER_WIDTH = 64;
     static const int TOWER_HEIGHT = 128;
 
-    TextureComponent textureComponent;
-    textureComponent.texture = textureManager.get("towers/tower1/Tower 01.png");
-    textureComponent.coords = getTextureCoords(upgradeComponent->upgradeLevel - 1, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x,
-                                               textureComponent.texture.size.y);
-    componentManager.addComponent(entity, textureComponent);
+    auto* textureComponent = componentManager.getComponent<TextureComponent>(entity);
+    textureComponent->coords = getTextureCoords(upgradeComponent->upgradeLevel - 1, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT,
+                                                textureComponent->texture.size.x, textureComponent->texture.size.y);
 
     auto* childComponent = componentManager.getComponent<ChildComponent>(entity);
     auto weaponEntity = childComponent->child;

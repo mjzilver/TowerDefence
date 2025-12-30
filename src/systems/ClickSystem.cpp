@@ -53,7 +53,7 @@ void ClickSystem::onClick(int button, int action, double x, double y) {
         const auto* size = sizes->get(entity);
         const auto* clickable = clickables->get(entity);
 
-        if (position && size) {
+        if (clickable && position && size) {
             float left = position->x;
             float right = position->x + size->w;
             float top = position->y;
