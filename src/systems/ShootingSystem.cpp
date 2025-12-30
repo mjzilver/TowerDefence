@@ -12,7 +12,6 @@ ShootingSystem::ShootingSystem(EngineContext& ctx) : System(ctx) {
     writes.push_back(typeid(WeaponComponent));
     writes.push_back(typeid(RotationComponent));
     writes.push_back(typeid(AnimationComponent));
-    writes.push_back(typeid(Entity));
 
     reads.push_back(typeid(PositionComponent));
     reads.push_back(typeid(SizeComponent));

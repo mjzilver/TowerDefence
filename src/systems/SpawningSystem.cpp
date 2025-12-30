@@ -15,7 +15,6 @@
 SpawningSystem::SpawningSystem(EngineContext& ctx) : System(ctx) {
     context.eventDispatcher.addListener(EventType::ACTIVATE_STRESS_TEST, std::bind(&SpawningSystem::onEvent, this, std::placeholders::_1));
 
-    writes.push_back(typeid(Entity));
     writes.push_back(typeid(DeathComponent));
 }
 

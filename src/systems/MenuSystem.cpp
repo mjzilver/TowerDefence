@@ -24,7 +24,6 @@ MenuSystem::MenuSystem(EngineContext& ctx) : System(ctx) {
     writes.push_back(typeid(TextComponent));
     writes.push_back(typeid(ChildComponent));
     writes.push_back(typeid(TextureComponent));
-    writes.push_back(typeid(Entity));
 
     reads.push_back(typeid(ClickableComponent));
     reads.push_back(typeid(PositionComponent));

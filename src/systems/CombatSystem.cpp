@@ -22,8 +22,6 @@ CombatSystem::CombatSystem(EngineContext& ctx) : System(ctx) {
     writes.push_back(typeid(HealthComponent));
     writes.push_back(typeid(CollisionComponent));
 
-    writes.push_back(typeid(Entity));
-
     reads.push_back(typeid(DamageComponent));
     reads.push_back(typeid(SizeComponent));
     reads.push_back(typeid(TextureComponent));

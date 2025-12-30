@@ -7,9 +7,7 @@
 
 class System {
 public:
-    explicit System(EngineContext& ctx) : context(ctx) {
-        reads.push_back(typeid(Entity));
-    }
+    explicit System(EngineContext& ctx) : context(ctx) {}
     virtual ~System() = default;
 
     virtual void update(const float dt) = 0;

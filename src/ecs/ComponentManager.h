@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <mutex>
 #include <typeindex>
 #include <unordered_map>
 
@@ -15,11 +16,13 @@ public:
 
     template <typename T>
     void addComponent(Entity e, T component) {
+        std::lock_guard<std::mutex> guard(commandMutex);
         commands.push_back(
             [=, c = std::move(component)](ComponentManager& cm, EntityManager&) mutable { cm.getArray<T>()->insert(e, std::move(c)); });
     }
 
     void addComponent(Entity e, PositionComponent pos) {
+        std::lock_guard<std::mutex> guard(commandMutex);
         commands.push_back([=, c = std::move(pos)](ComponentManager& cm, EntityManager&) mutable {
             cm.getArray<PositionComponent>()->insert(e, std::move(c));
             reorder(e, pos.zIndex);
@@ -28,10 +31,12 @@ public:
 
     template <typename T>
     void removeComponent(Entity e) {
+        std::lock_guard<std::mutex> guard(commandMutex);
         commands.push_back([=](ComponentManager& cm, EntityManager&) { cm.getArray<T>()->remove(e); });
     }
 
     void scheduleDestruction(Entity e) {
+        std::lock_guard<std::mutex> guard(commandMutex);
         commands.push_back([=](ComponentManager& cm, EntityManager& em) { cm.destroyEntityAndComponents(e, em); });
     }
 
@@ -82,6 +87,7 @@ private:
 
     EntityManager& em;
 
+    std::mutex commandMutex;
     std::vector<std::function<void(ComponentManager&, EntityManager&)>> commands;
 
     std::unordered_map<std::type_index, IComponentArray*> componentArrays;

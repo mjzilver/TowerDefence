@@ -51,15 +51,15 @@ int main() {
         SystemManager systemManager(context);
 
         auto& renderSystem = systemManager.registerSystem<RenderSystem>();
-        // auto& animationSystem = systemManager.registerSystem<AnimationSystem>();
-        // auto& movementSystem = systemManager.registerSystem<MovementSystem>();
-        // auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>();
-        // auto& shootingSystem = systemManager.registerSystem<ShootingSystem>();
-        // auto& collisionSystem = systemManager.registerSystem<CollisionSystem>();
-        // auto& combatSystem = systemManager.registerSystem<CombatSystem>();
+        auto& animationSystem = systemManager.registerSystem<AnimationSystem>();
+        auto& movementSystem = systemManager.registerSystem<MovementSystem>();
+        auto& pathfindingSystem = systemManager.registerSystem<PathfindingSystem>();
+        auto& shootingSystem = systemManager.registerSystem<ShootingSystem>();
+        auto& collisionSystem = systemManager.registerSystem<CollisionSystem>();
+        auto& combatSystem = systemManager.registerSystem<CombatSystem>();
         auto& stateSystem = systemManager.registerSystem<StateSystem>();
         auto& clickSystem = systemManager.registerSystem<ClickSystem>();
-        // auto& menuSystem = systemManager.registerSystem<MenuSystem>();
+        auto& menuSystem = systemManager.registerSystem<MenuSystem>();
         auto& spawningSystem = systemManager.registerSystem<SpawningSystem>();
         if constexpr (DEBUG_ENABLED) {
             systemManager.registerSystem<DebugSystem>();
