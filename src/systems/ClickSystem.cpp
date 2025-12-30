@@ -12,12 +12,11 @@
 #include "../components/ShaderComponent.h"
 #include "../components/SizeComponent.h"
 #include "../components/TextureComponent.h"
-#include "../ecs/ComponentManager.h"
 #include "../event/Event.h"
 #include "../event/EventDispatcher.h"
 #include "CollisionSystem.h"
 
-ClickSystem::ClickSystem(EngineContext& ctx) : System(ctx) {
+ClickSystem::ClickSystem(EngineContext& ctx) : System(ctx, "ClickSystem") {
     writes.push_back(typeid(ShaderComponent));
     writes.push_back(typeid(ClickableComponent));
 
@@ -44,9 +43,9 @@ void ClickSystem::onClick(int button, int action, double x, double y) {
 
     auto& componentManager = context.componentManager;
 
-    auto* clickables = componentManager.getArray<ClickableComponent>();
-    const auto* positions = componentManager.getArray<PositionComponent>();
-    const auto* sizes = componentManager.getArray<SizeComponent>();
+    auto* clickables = writeArray<ClickableComponent>();
+    const auto* positions = readArray<PositionComponent>();
+    const auto* sizes = readArray<SizeComponent>();
 
     for (Entity entity : clickables->getEntities()) {
         const auto* position = positions->get(entity);
@@ -75,11 +74,11 @@ void ClickSystem::onClick(int button, int action, double x, double y) {
 
 void ClickSystem::onHover(double x, double y) {
     auto& componentManager = context.componentManager;
-    auto* clickables = componentManager.getArray<ClickableComponent>();
-    const auto* positions = componentManager.getArray<PositionComponent>();
-    const auto* sizes = componentManager.getArray<SizeComponent>();
-    const auto* shaders = componentManager.getArray<ShaderComponent>();
-    const auto* textures = componentManager.getArray<TextureComponent>();
+    auto* clickables = writeArray<ClickableComponent>();
+    const auto* positions = readArray<PositionComponent>();
+    const auto* sizes = readArray<SizeComponent>();
+    auto* shaders = writeArray<ShaderComponent>();
+    const auto* textures = readArray<TextureComponent>();
 
     for (Entity entity : clickables->getEntities()) {
         const auto* position = positions->get(entity);

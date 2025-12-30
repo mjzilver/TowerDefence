@@ -87,6 +87,11 @@ public:
     }
 
     template <typename T>
+    const T* getComponent(Entity entity) const {
+        return getArray<T>()->get(entity);
+    }
+
+    template <typename T>
     T* getComponent(Entity entity) {
         return getArray<T>()->get(entity);
     }

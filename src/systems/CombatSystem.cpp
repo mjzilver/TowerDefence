@@ -11,7 +11,7 @@
 #include "../components/VelocityComponent.h"
 #include "../utils/ZLayer.h"
 
-CombatSystem::CombatSystem(EngineContext& ctx) : System(ctx) {
+CombatSystem::CombatSystem(EngineContext& ctx) : System(ctx, "CombatSystem") {
     context.eventDispatcher.addListener(EventType::PROJECTILE_HIT, std::bind(&CombatSystem::onEvent, this, std::placeholders::_1));
 
     writes.push_back(typeid(PositionComponent));
@@ -35,12 +35,12 @@ void CombatSystem::onEvent(const Event& event) {
         Entity projectile = event.getEntity("projectile");
         Entity target = event.getEntity("target");
 
-        const auto* projectileDamageComp = componentManager.getComponent<DamageComponent>(projectile);
-        auto* targetPosition = componentManager.getComponent<PositionComponent>(target);
-        const auto* targetSize = componentManager.getComponent<SizeComponent>(target);
-        auto* targetHealth = componentManager.getComponent<HealthComponent>(target);
-        auto* targetDeath = componentManager.getComponent<DeathComponent>(target);
-        const auto* targetTexture = componentManager.getComponent<TextureComponent>(target);
+        const auto* projectileDamageComp = read<DamageComponent>(projectile);
+        auto* targetPosition = write<PositionComponent>(target);
+        const auto* targetSize = read<SizeComponent>(target);
+        auto* targetHealth = write<HealthComponent>(target);
+        auto* targetDeath = write<DeathComponent>(target);
+        const auto* targetTexture = read<TextureComponent>(target);
 
         if (!projectileDamageComp || !targetPosition || !targetSize || !targetHealth || !targetTexture) {
             return;

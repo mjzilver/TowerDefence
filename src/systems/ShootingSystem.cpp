@@ -8,7 +8,7 @@
 #include "../components/VelocityComponent.h"
 #include "../components/WeaponComponent.h"
 
-ShootingSystem::ShootingSystem(EngineContext& ctx) : System(ctx) {
+ShootingSystem::ShootingSystem(EngineContext& ctx) : System(ctx, "ShootingSystem") {
     writes.push_back(typeid(WeaponComponent));
     writes.push_back(typeid(RotationComponent));
     writes.push_back(typeid(AnimationComponent));
@@ -21,13 +21,13 @@ ShootingSystem::ShootingSystem(EngineContext& ctx) : System(ctx) {
 
 void ShootingSystem::update(float deltaTime) {
     auto& componentManager = context.componentManager;
-    auto* weapons = componentManager.getArray<WeaponComponent>();
-    const auto* positions = componentManager.getArray<PositionComponent>();
-    const auto* sizes = componentManager.getArray<SizeComponent>();
-    const auto* velocities = componentManager.getArray<VelocityComponent>();
-    const auto* rotations = componentManager.getArray<RotationComponent>();
-    const auto* animations = componentManager.getArray<AnimationComponent>();
-    auto* healths = componentManager.getArray<HealthComponent>();
+    auto* weapons = writeArray<WeaponComponent>();
+    const auto* positions = readArray<PositionComponent>();
+    const auto* sizes = readArray<SizeComponent>();
+    const auto* velocities = readArray<VelocityComponent>();
+    auto* rotations = writeArray<RotationComponent>();
+    auto* animations = writeArray<AnimationComponent>();
+    const auto* healths = readArray<HealthComponent>();
 
     for (Entity entity : weapons->getEntities()) {
         auto* weapon = weapons->get(entity);

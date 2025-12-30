@@ -58,14 +58,22 @@ public:
         entityToIndex.erase(entity);
     }
 
-    T* get(Entity entity) const {
+    const T* get(Entity entity) const {
         auto it = entityToIndex.find(entity);
         if (it == entityToIndex.end()) return nullptr;
         return components[it->second];
     }
 
+    T* get(Entity entity) {
+        auto it = entityToIndex.find(entity);
+        if (it == entityToIndex.end()) return nullptr;
+        return components[it->second];
+    }
+
+
     std::deque<T*>& getAll() { return components; }
     std::deque<Entity>& getEntities() { return entities; }
+    const std::deque<Entity>& getEntities() const { return entities; }
 
     ~ComponentArray() {
         for (T* component : components) {

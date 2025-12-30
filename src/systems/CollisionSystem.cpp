@@ -10,7 +10,7 @@
 #include "../event/EventDispatcher.h"
 #include "../utils/Globals.h"
 
-CollisionSystem::CollisionSystem(EngineContext& ctx) : System(ctx), quadTree(context.componentManager, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}) {
+CollisionSystem::CollisionSystem(EngineContext& ctx) : System(ctx, "CollisionSystem"), quadTree(context.componentManager, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}) {
     writes.push_back(typeid(CollisionComponent));
 
     reads.push_back(typeid(PositionComponent));
@@ -25,15 +25,15 @@ void CollisionSystem::update(float) {
 
     auto& componentManager = context.componentManager;
 
-    auto* collisions = componentManager.getArray<CollisionComponent>();
-    const auto* positions = componentManager.getArray<PositionComponent>();
-    const auto* sizes = componentManager.getArray<SizeComponent>();
-    const auto* velocities = componentManager.getArray<VelocityComponent>();
-    const auto* damages = componentManager.getArray<DamageComponent>();
-    const auto* healths = componentManager.getArray<HealthComponent>();
+    auto* collisions = writeArray<CollisionComponent>();
+    const auto* positions = readArray<PositionComponent>();
+    const auto* sizes = readArray<SizeComponent>();
+    const auto* velocities = readArray<VelocityComponent>();
+    const auto* damages = readArray<DamageComponent>();
+    const auto* healths = readArray<HealthComponent>();
 
     for (Entity entity : collisions->getEntities()) {
-        auto* pos = positions->get(entity);
+        const auto* pos = positions->get(entity);
         auto* col = collisions->get(entity);
 
         if (!pos || !col) {

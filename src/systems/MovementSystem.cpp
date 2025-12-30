@@ -5,7 +5,7 @@
 #include "../components/TextureComponent.h"
 #include "../components/VelocityComponent.h"
 
-MovementSystem::MovementSystem(EngineContext& ctx) : System(ctx) {
+MovementSystem::MovementSystem(EngineContext& ctx) : System(ctx, "MovementSystem") {
     writes.push_back(typeid(PositionComponent));
     writes.push_back(typeid(DirectionComponent));
     writes.push_back(typeid(TextureComponent));
@@ -15,10 +15,10 @@ MovementSystem::MovementSystem(EngineContext& ctx) : System(ctx) {
 
 void MovementSystem::update(float deltaTime) {
     auto& componentManager = context.componentManager;
-    const auto* positions = componentManager.getArray<PositionComponent>();
-    auto* velocities = componentManager.getArray<VelocityComponent>();
-    const auto* directions = componentManager.getArray<DirectionComponent>();
-    const auto* textures = componentManager.getArray<TextureComponent>();
+    auto* positions = writeArray<PositionComponent>();
+    const auto* velocities = readArray<VelocityComponent>();
+    auto* directions = writeArray<DirectionComponent>();
+    auto* textures = writeArray<TextureComponent>();
 
     for (Entity entity : velocities->getEntities()) {
         auto* position = positions->get(entity);

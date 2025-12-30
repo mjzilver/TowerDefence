@@ -10,7 +10,7 @@
 #include "../components/VelocityComponent.h"
 #include "../ecs/Component.h"
 
-PathfindingSystem::PathfindingSystem(EngineContext& ctx) : System(ctx), path(context.mapLoader.getPath()) {
+PathfindingSystem::PathfindingSystem(EngineContext& ctx) : System(ctx, "PathfindingSystem"), path(context.mapLoader.getPath()) {
     writes.push_back(typeid(VelocityComponent));
     writes.push_back(typeid(PathfindingComponent));
 
@@ -22,11 +22,11 @@ PathfindingSystem::PathfindingSystem(EngineContext& ctx) : System(ctx), path(con
 void PathfindingSystem::update(float deltaTime) {
     auto& componentManager = context.componentManager;
 
-    auto* pathfinders = componentManager.getArray<PathfindingComponent>();
-    const auto* positions = componentManager.getArray<PositionComponent>();
-    const auto* sizes = componentManager.getArray<SizeComponent>();
-    const auto* velocities = componentManager.getArray<VelocityComponent>();
-    const auto* speeds = componentManager.getArray<SpeedComponent>();
+    auto* pathfinders = writeArray<PathfindingComponent>();
+    const auto* positions = readArray<PositionComponent>();
+    const auto* sizes = readArray<SizeComponent>();
+    auto* velocities = writeArray<VelocityComponent>();
+    const auto* speeds = readArray<SpeedComponent>();
 
     for (Entity entity : pathfinders->getEntities()) {
         const auto* pos = positions->get(entity);
@@ -43,8 +43,8 @@ void PathfindingSystem::update(float deltaTime) {
             if (pathFind->currentIndex < 0 || pathFind->currentIndex >= (int)path.size()) continue;
 
             int targetIndex = pathFind->currentIndex;
-            const auto* targetPos = componentManager.getComponent<PositionComponent>(path[targetIndex].entity);
-            const auto* targetSize = componentManager.getComponent<SizeComponent>(path[targetIndex].entity);
+            const auto* targetPos = read<PositionComponent>(path[targetIndex].entity);
+            const auto* targetSize = read<SizeComponent>(path[targetIndex].entity);
 
             if (targetPos && targetSize) {
                 const float ex = pos->x + size->w * 0.5f;

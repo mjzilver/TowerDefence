@@ -17,13 +17,13 @@
 #include "../event/Event.h"
 
 #define PRINT_COMPONENT(Type)                         \
-    if (auto* comp = cm.getComponent<Type>(entity)) { \
+    if (auto* comp = read<Type>(entity)) { \
         std::cout << #Type ": " << *comp << "\n";     \
     }
 
 class DebugSystem : public System {
 public:
-    DebugSystem(EngineContext& ctx) : System(ctx) {
+    DebugSystem(EngineContext& ctx) : System(ctx, "DebugSystem") {
         context.eventDispatcher.addListener(EventType::ENTITY_CLICKED, std::bind(&DebugSystem::onEvent, this, std::placeholders::_1));
 
         reads.push_back(typeid(PositionComponent));

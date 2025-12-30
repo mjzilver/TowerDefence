@@ -15,7 +15,7 @@
 #include "../utils/Globals.h"
 #include "../utils/String.h"
 
-RenderSystem::RenderSystem(EngineContext& ctx) : System(ctx) {
+RenderSystem::RenderSystem(EngineContext& ctx) : System(ctx, "RenderSystem") {
     projection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f, -1.0f, 1.0f);
     excludeFromBatching = true;
 }

@@ -14,7 +14,7 @@
 #include "../event/EventDispatcher.h"
 #include "../utils/Globals.h"
 
-MenuSystem::MenuSystem(EngineContext& ctx) : System(ctx) {
+MenuSystem::MenuSystem(EngineContext& ctx) : System(ctx, "MenuSystem") {
     context.eventDispatcher.addListener(EventType::ENTITY_DESTROYED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
     context.eventDispatcher.addListener(EventType::GRASS_TILE_CLICKED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
     context.eventDispatcher.addListener(EventType::TOWER_CLICKED, std::bind(&MenuSystem::onEvent, this, std::placeholders::_1));
@@ -24,12 +24,12 @@ MenuSystem::MenuSystem(EngineContext& ctx) : System(ctx) {
     writes.push_back(typeid(TextComponent));
     writes.push_back(typeid(ChildComponent));
     writes.push_back(typeid(TextureComponent));
+    writes.push_back(typeid(ClickableComponent));
+    writes.push_back(typeid(UpgradeComponent));
 
-    reads.push_back(typeid(ClickableComponent));
     reads.push_back(typeid(PositionComponent));
     reads.push_back(typeid(RewardComponent));
     reads.push_back(typeid(SizeComponent));
-    reads.push_back(typeid(UpgradeComponent));
 }
 
 void MenuSystem::reset() {
@@ -62,7 +62,7 @@ void MenuSystem::createMenu() {
         [&]() {
             unselect();
             menuMode = MenuMode::UPGRADE_TOWER;
-            componentManager.getComponent<ClickableComponent>(towerUpgradeButtonEntity)->selected = true;
+            write<ClickableComponent>(towerUpgradeButtonEntity)->selected = true;
         },
         towerUpgradeCost);
 
@@ -70,7 +70,7 @@ void MenuSystem::createMenu() {
     towerBuildButtonEntity = entityFactory.createBuildTowerMenuItem({buttonXOffset, buttonY}, [&]() {
         unselect();
         menuMode = MenuMode::BUILD_TOWER;
-        componentManager.getComponent<ClickableComponent>(towerBuildButtonEntity)->selected = true;
+        write<ClickableComponent>(towerBuildButtonEntity)->selected = true;
     });
 
     buttonXOffset += buttonSpacing;
@@ -86,14 +86,12 @@ void MenuSystem::createMenu() {
 }
 
 void MenuSystem::update(float) {
-    auto& componentManager = context.componentManager;
-
-    auto* goldText = componentManager.getComponent<TextComponent>(currencyDisplayEntity);
+    auto* goldText = write<TextComponent>(currencyDisplayEntity);
     if (goldText) {
         goldText->text = std::to_string(currency) + " Gold";
     }
 
-    auto* killText = componentManager.getComponent<TextComponent>(killCounterEntity);
+    auto* killText = write<TextComponent>(killCounterEntity);
     if (killText) {
         killText->text = "Kills\n" + std::to_string(killCount);
     }
@@ -103,9 +101,9 @@ void MenuSystem::buildClick(Entity entity) {
     if (currency >= towerBuildCost) {
         auto& componentManager = context.componentManager;
 
-        const auto* position = componentManager.getComponent<PositionComponent>(entity);
-        const auto* size = componentManager.getComponent<SizeComponent>(entity);
-        auto* child = componentManager.getComponent<ChildComponent>(entity);
+        const auto* position = read<PositionComponent>(entity);
+        const auto* size = read<SizeComponent>(entity);
+        auto* child = write<ChildComponent>(entity);
 
         if (!child) {
             auto tower = context.entityFactory.createTower({position->x, position->y - size->h + 16});
@@ -116,10 +114,10 @@ void MenuSystem::buildClick(Entity entity) {
             currency -= towerBuildCost;
             towerBuildCost += towerBuildCostIncrease;
 
-            auto* textComponent = componentManager.getComponent<TextComponent>(towerBuildButtonEntity);
+            auto* textComponent = write<TextComponent>(towerBuildButtonEntity);
             textComponent->text = "Build Tower\n" + std::to_string(towerBuildCost) + " gold";
 
-            auto* clickable = componentManager.getComponent<ClickableComponent>(towerBuildButtonEntity);
+            auto* clickable = write<ClickableComponent>(towerBuildButtonEntity);
             clickable->selected = true;
         }
     }
@@ -129,14 +127,14 @@ void MenuSystem::upgradeClick(Entity entity) {
     if (currency >= towerUpgradeCost) {
         auto& componentManager = context.componentManager;
 
-        auto* upgrade = componentManager.getComponent<UpgradeComponent>(entity);
+        auto* upgrade = write<UpgradeComponent>(entity);
 
         if (upgrade && upgrade->maxUpgradeLevel > upgrade->upgradeLevel) {
             context.entityFactory.upgradeTower(entity);
 
             currency -= towerUpgradeCost;
 
-            auto* clickable = componentManager.getComponent<ClickableComponent>(towerUpgradeButtonEntity);
+            auto* clickable = write<ClickableComponent>(towerUpgradeButtonEntity);
             clickable->selected = true;
         }
     }
@@ -153,7 +151,7 @@ void MenuSystem::onEvent(const Event& event) {
         upgradeClick(entity);
     } else if (event.type == EventType::ENTITY_DESTROYED) {
         Entity entity = event.getEntity("entity");
-        auto* reward = componentManager.getComponent<RewardComponent>(entity);
+        const auto* reward = read<RewardComponent>(entity);
         if (reward) {
             currency += reward->gold;
             killCount++;
@@ -162,7 +160,7 @@ void MenuSystem::onEvent(const Event& event) {
         unselect();
     } else if (event.type == EventType::ACTIVATE_CHEATS) {
         currency = 1000000;
-        auto* clickables = componentManager.getArray<ClickableComponent>();
+        auto* clickables = writeArray<ClickableComponent>();
 
         for (Entity entity : clickables->getEntities()) {
             auto* clickable = clickables->get(entity);
@@ -185,8 +183,8 @@ void MenuSystem::onEvent(const Event& event) {
 
 void MenuSystem::unselect() {
     auto& componentManager = context.componentManager;
-    componentManager.getComponent<ClickableComponent>(towerBuildButtonEntity)->selected = false;
-    componentManager.getComponent<ClickableComponent>(towerUpgradeButtonEntity)->selected = false;
+    write<ClickableComponent>(towerBuildButtonEntity)->selected = false;
+    write<ClickableComponent>(towerUpgradeButtonEntity)->selected = false;
 
     menuMode = MenuMode::NONE;
 };

@@ -12,10 +12,13 @@
 #include "../event/EventDispatcher.h"
 #include "../utils/Globals.h"
 
-SpawningSystem::SpawningSystem(EngineContext& ctx) : System(ctx) {
+SpawningSystem::SpawningSystem(EngineContext& ctx) : System(ctx, "SpawningSystem") {
     context.eventDispatcher.addListener(EventType::ACTIVATE_STRESS_TEST, std::bind(&SpawningSystem::onEvent, this, std::placeholders::_1));
 
     writes.push_back(typeid(DeathComponent));
+
+    reads.push_back(typeid(PositionComponent));
+    reads.push_back(typeid(SizeComponent));
 }
 
 void SpawningSystem::setStart() {
@@ -76,8 +79,8 @@ void SpawningSystem::update(float deltaTime) {
 
         Entity start = context.mapLoader.getStart().entity;
 
-        const auto* position = componentManager.getComponent<PositionComponent>(start);
-        const auto* size = componentManager.getComponent<SizeComponent>(start);
+        const auto* position = read<PositionComponent>(start);
+        const auto* size = read<SizeComponent>(start);
 
         if (position && size) {
             ColorComponent colorComponent;
@@ -136,7 +139,7 @@ void SpawningSystem::update(float deltaTime) {
         if (spawnInterval < minSpawnInterval) spawnInterval = minSpawnInterval;
     }
 
-    auto* deaths = componentManager.getArray<DeathComponent>();
+    auto* deaths = writeArray<DeathComponent>();
 
     for (Entity entity : deaths->getEntities()) {
         auto* death = deaths->get(entity);
