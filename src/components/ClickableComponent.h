@@ -11,7 +11,7 @@ struct ClickableComponent : public Component {
     bool hovered = false;
     bool selected = false;
 
-    EventType clickedEvent;
+    EventType clickedEvent = EventType::ENTITY_CLICKED;
     ClickableType type = ClickableType::EVENT;
 
     std::function<void()> onClick;

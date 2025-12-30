@@ -26,7 +26,7 @@ public:
         return it->second;
     }
 
-    std::vector<Entity> getSortedEntities();
+    std::vector<Entity> getSortedEntities() const;
 
     void reset() {
         lastEntity = INVALID_ENTITY;
@@ -34,7 +34,6 @@ public:
         freedEntities = std::queue<Entity>();
     }
 
-private:
     void destroyEntity(Entity entity) {
         activeEntities.erase(entity);
 
@@ -45,6 +44,7 @@ private:
         freedEntities.push(entity);
     }
 
+private:
     Entity lastEntity = INVALID_ENTITY;
     std::unordered_set<Entity> activeEntities;
     std::queue<Entity> freedEntities;

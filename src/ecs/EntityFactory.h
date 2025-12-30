@@ -27,7 +27,7 @@ public:
 
     Entity createRectangle(const glm::vec2& position, const glm::vec2& size);
 
-    Entity createUpgradeMenuItem(const glm::vec2& pos, std::function<void()> onClick);
+    Entity createUpgradeMenuItem(const glm::vec2& pos, std::function<void()> onClick, int cost);
     Entity createBuildTowerMenuItem(const glm::vec2& pos, std::function<void()> onClick);
     Entity createCurrencyDisplay(const glm::vec2& pos);
     Entity createKillCounter(const glm::vec2& pos);

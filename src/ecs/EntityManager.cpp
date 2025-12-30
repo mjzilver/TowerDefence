@@ -14,10 +14,10 @@ Entity EntityManager::createEntity() {
     return entity;
 }
 
-std::vector<Entity> EntityManager::getSortedEntities() {
+std::vector<Entity> EntityManager::getSortedEntities() const {
     std::vector<Entity> sorted;
     size_t total = 0;
-    for (auto& [layer, entities] : layeredEntities) total += entities.size();
+    for (const auto& [layer, entities] : layeredEntities) total += entities.size();
     sorted.reserve(total);
 
     for (auto it = layeredEntities.rbegin(); it != layeredEntities.rend(); ++it) {

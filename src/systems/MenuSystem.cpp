@@ -58,11 +58,14 @@ void MenuSystem::createMenu() {
     killCounterEntity = entityFactory.createKillCounter({buttonXOffset, buttonY});
 
     buttonXOffset += buttonSpacing;
-    towerUpgradeButtonEntity = entityFactory.createUpgradeMenuItem({buttonXOffset, buttonY}, [&]() {
-        unselect();
-        menuMode = MenuMode::UPGRADE_TOWER;
-        componentManager.getComponent<ClickableComponent>(towerUpgradeButtonEntity)->selected = true;
-    });
+    towerUpgradeButtonEntity = entityFactory.createUpgradeMenuItem(
+        {buttonXOffset, buttonY},
+        [&]() {
+            unselect();
+            menuMode = MenuMode::UPGRADE_TOWER;
+            componentManager.getComponent<ClickableComponent>(towerUpgradeButtonEntity)->selected = true;
+        },
+        towerUpgradeCost);
 
     buttonXOffset += buttonSpacing;
     towerBuildButtonEntity = entityFactory.createBuildTowerMenuItem({buttonXOffset, buttonY}, [&]() {
@@ -81,19 +84,17 @@ void MenuSystem::createMenu() {
 
         context.eventDispatcher.dispatch({EventType::OPEN_MENU_CLICKED});
     });
-
-    auto* upgradeText = componentManager.getComponent<TextComponent>(towerUpgradeButtonEntity);
-    upgradeText->text = "Upgrade\n" + std::to_string(towerUpgradeCost);
 }
 
 void MenuSystem::update(float) {
     auto& componentManager = context.componentManager;
-    auto* goldText = componentManager.getComponent<TextComponent>(currencyDisplayEntity);
-    auto* killText = componentManager.getComponent<TextComponent>(killCounterEntity);
 
+    auto* goldText = componentManager.getComponent<TextComponent>(currencyDisplayEntity);
     if (goldText) {
         goldText->text = std::to_string(currency) + " Gold";
     }
+
+    auto* killText = componentManager.getComponent<TextComponent>(killCounterEntity);
     if (killText) {
         killText->text = "Kills\n" + std::to_string(killCount);
     }

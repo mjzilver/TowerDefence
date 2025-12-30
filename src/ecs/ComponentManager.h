@@ -1,7 +1,6 @@
 #pragma once
 
-#include <algorithm>
-#include <queue>
+#include <functional>
 #include <typeindex>
 #include <unordered_map>
 
@@ -15,23 +14,30 @@ public:
     ComponentManager(EntityManager& em) : em(em) {}
 
     template <typename T>
-    void addComponent(Entity entity, T component) {
-        getArray<T>()->insert(entity, std::move(component));
+    void addComponent(Entity e, T component) {
+        commands.push_back(
+            [=, c = std::move(component)](ComponentManager& cm, EntityManager&) mutable { cm.getArray<T>()->insert(e, std::move(c)); });
     }
 
-    void addComponent(Entity entity, PositionComponent pos) {
-        getArray<PositionComponent>()->insert(entity, std::move(pos));
-        reorder(entity, pos.zIndex);
+    void addComponent(Entity e, PositionComponent pos) {
+        commands.push_back([=, c = std::move(pos)](ComponentManager& cm, EntityManager&) mutable {
+            cm.getArray<PositionComponent>()->insert(e, std::move(c));
+            reorder(e, pos.zIndex);
+        });
+    }
+
+    template <typename T>
+    void removeComponent(Entity e) {
+        commands.push_back([=](ComponentManager& cm, EntityManager&) { cm.getArray<T>()->remove(e); });
+    }
+
+    void scheduleDestruction(Entity e) {
+        commands.push_back([=](ComponentManager& cm, EntityManager& em) { cm.destroyEntityAndComponents(e, em); });
     }
 
     template <typename T>
     T* getComponent(Entity entity) {
         return getArray<T>()->get(entity);
-    }
-
-    template <typename T>
-    void removeComponent(Entity entity) {
-        getArray<T>()->remove(entity);
     }
 
     template <typename T>
@@ -43,19 +49,11 @@ public:
         return static_cast<ComponentArray<T>*>(componentArrays[typeIndex]);
     }
 
-    void scheduleDestruction(Entity entity) { scheduledForDestruction.push(entity); }
-
-    void flushDestructions(EntityManager& entityManager) {
-        while (!scheduledForDestruction.empty()) {
-            Entity entity = scheduledForDestruction.front();
-            scheduledForDestruction.pop();
-
-            for (auto& [type, array] : componentArrays) {
-                array->remove(entity);
-            }
-
-            entityManager.destroyEntity(entity);
+    void flush(EntityManager& em) {
+        for (auto& cmd : commands) {
+            cmd(*this, em);
         }
+        commands.clear();
     }
 
     void destroyAll() {
@@ -64,27 +62,9 @@ public:
         }
     }
 
-    void reorder(Entity entity, ZLayer newLayer) {
-        for (auto& [layer, entities] : em.layeredEntities) {
-            auto it = std::find(entities.begin(), entities.end(), entity);
-            if (it != entities.end()) {
-                entities.erase(it);
-            }
-        }
+    void reorder(Entity entity, ZLayer newLayer);
 
-        auto& vec = em.layeredEntities[newLayer];
-        auto* positions = getArray<PositionComponent>();
-
-        auto insertPos = std::upper_bound(vec.begin(), vec.end(), entity, [&](Entity a, Entity b) {
-            auto* pa = positions->get(a);
-            auto* pb = positions->get(b);
-
-            if (!pa || !pb) return a < b;
-            return pa->y > pb->y;
-        });
-
-        vec.insert(insertPos, entity);
-    }
+    void destroyEntityAndComponents(Entity e) { destroyEntityAndComponents(e, em); }
 
     ~ComponentManager() {
         for (auto& [type, array] : componentArrays) {
@@ -93,8 +73,16 @@ public:
     }
 
 private:
+    void destroyEntityAndComponents(Entity e, EntityManager& em) {
+        for (auto& [_, array] : componentArrays) {
+            array->remove(e);
+        }
+        em.destroyEntity(e);
+    }
+
     EntityManager& em;
 
+    std::vector<std::function<void(ComponentManager&, EntityManager&)>> commands;
+
     std::unordered_map<std::type_index, IComponentArray*> componentArrays;
-    std::queue<Entity> scheduledForDestruction;
 };

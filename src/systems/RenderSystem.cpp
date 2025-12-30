@@ -292,7 +292,7 @@ void RenderSystem::render() {
 
             if constexpr (DEBUG_ENABLED) {
                 const auto* collision = collisions->get(entity);
-
+                
                 if (!position || !collision) continue;
 
                 const glm::vec4 rect{position->x + collision->x, position->y + collision->y, collision->w, collision->h};

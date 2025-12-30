@@ -52,10 +52,10 @@ void CollisionSystem::update(float) {
         const auto* col = collisions->get(entity);
 
         if (pos && vel && size && dmg && col) {
-            float x = pos->x + col->x;
-            float y = pos->y + col->y;
-            float w = col->w;
-            float h = col->h;
+            const float x = pos->x + col->x;
+            const float y = pos->y + col->y;
+            const float w = col->w;
+            const float h = col->h;
 
             std::vector<Entity> nearby = quadTree.query({x, y, w, h});
             for (Entity otherEntity : nearby) {
@@ -68,10 +68,10 @@ void CollisionSystem::update(float) {
                 const auto* otherHealth = healths->get(otherEntity);
 
                 if (otherPos && otherCol && otherHealth) {
-                    float ox = otherPos->x + otherCol->x;
-                    float oy = otherPos->y + otherCol->y;
-                    float ow = otherCol->w;
-                    float oh = otherCol->h;
+                    const float ox = otherPos->x + otherCol->x;
+                    const float oy = otherPos->y + otherCol->y;
+                    const float ow = otherCol->w;
+                    const float oh = otherCol->h;
 
                     if (checkCollision(x, y, w, h, ox, oy, ow, oh)) {
                         if (col->solid && otherCol->solid) {
