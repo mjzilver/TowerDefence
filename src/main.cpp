@@ -88,14 +88,17 @@ int main() {
             glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            while (accumulator >= fixedDt) {
+                if (stateSystem.getState() == EngineState::GAMEPLAY) {
+                    systemManager.updateSystems(fixedDt);
+                    componentManager.flush(entityManager);
+                }
+                accumulator -= fixedDt;
+            }
+
             if (stateSystem.getState() == EngineState::MAIN_MENU) {
                 menu.render(renderSystem);
             } else if (stateSystem.getState() == EngineState::GAMEPLAY) {
-                while (accumulator >= fixedDt) {
-                    systemManager.updateSystems(fixedDt);
-                    componentManager.flush(entityManager);
-                    accumulator -= fixedDt;
-                }
                 renderSystem.render();
             }
 

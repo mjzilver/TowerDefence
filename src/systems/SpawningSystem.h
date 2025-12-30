@@ -23,7 +23,7 @@ private:
     int spawnCount = 0;
     float spawnTimer = 0.0f;
     float spawnInterval = 3.0f;
-    const float minSpawnInterval = 0.25f;
+    const float minSpawnInterval = 0.15f;
     const float spawnScaleFactor = 0.985f;
 
     const int initialHealth = 80;
@@ -44,6 +44,6 @@ private:
     const int goldStep = 10;
 
     const int maxHealth = 1000;
-    const int maxSpeed = 240;
+    const int maxSpeed = 350;
     const int maxGold = 300;
 };

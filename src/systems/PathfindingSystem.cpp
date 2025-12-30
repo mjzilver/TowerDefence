@@ -19,7 +19,7 @@ PathfindingSystem::PathfindingSystem(EngineContext& ctx) : System(ctx), path(con
     reads.push_back(typeid(SpeedComponent));
 }
 
-void PathfindingSystem::update(float) {
+void PathfindingSystem::update(float deltaTime) {
     auto& componentManager = context.componentManager;
 
     auto* pathfinders = componentManager.getArray<PathfindingComponent>();
@@ -28,11 +28,6 @@ void PathfindingSystem::update(float) {
     const auto* velocities = componentManager.getArray<VelocityComponent>();
     const auto* speeds = componentManager.getArray<SpeedComponent>();
 
-    const float snapRadius = 3.0f;
-    const float arrivalStart = 30.0f;
-    const float minSpeed = 100.0f;
-    const int lookAhead = 1;
-
     for (Entity entity : pathfinders->getEntities()) {
         const auto* pos = positions->get(entity);
         const auto* size = sizes->get(entity);
@@ -40,14 +35,14 @@ void PathfindingSystem::update(float) {
         auto* pathFind = pathfinders->get(entity);
         const auto* speed = speeds->get(entity);
 
-        if (pathFind && pathFind->randomOffset.x == 0) {
-            generateRandomOffset(pathFind, maxOffset);
-        }
+        if (pos && size && vel && speed && pathFind && !pathFind->reachedGoal) {
+            if (pathFind->randomOffset.x == 0) {
+                generateRandomOffset(pathFind, maxOffset);
+            }
 
-        if (pos && size && vel && speed && !pathFind->reachedGoal) {
             if (pathFind->currentIndex < 0 || pathFind->currentIndex >= (int)path.size()) continue;
 
-            int targetIndex = std::min(pathFind->currentIndex + lookAhead, (int)path.size() - 1);
+            int targetIndex = pathFind->currentIndex;
             const auto* targetPos = componentManager.getComponent<PositionComponent>(path[targetIndex].entity);
             const auto* targetSize = componentManager.getComponent<SizeComponent>(path[targetIndex].entity);
 
@@ -61,31 +56,46 @@ void PathfindingSystem::update(float) {
                 float dy = ty - ey;
                 const float dist = std::sqrt(dx * dx + dy * dy);
 
-                if (dist <= snapRadius && pathFind->currentIndex < (int)path.size() - 1) {
-                    pathFind->currentIndex++;
-                    continue;
-                }
-
                 if (dist > 0.001f) {
                     dx /= dist;
                     dy /= dist;
                 }
 
-                float speedVal = speed->speed;
-                bool isLastTile = (pathFind->currentIndex == (int)path.size() - 1);
+                float moveDist = speed->speed * deltaTime;
+                float stepDist = moveDist / targetCheckSteps;
+                bool reached = false;
+                float checkX = ex;
+                float checkY = ey;
 
-                if (!isLastTile) {
-                    vel->x = dx * speedVal;
-                    vel->y = dy * speedVal;
-                } else if (isLastTile && dist <= snapRadius) {
-                    pathFind->reachedGoal = true;
+                for (int i = 0; i < targetCheckSteps; ++i) {
+                    checkX += dx * stepDist;
+                    checkY += dy * stepDist;
 
-                    componentManager.removeComponent<PathfindingComponent>(entity);
+                    float stepToTarget = std::sqrt((tx - checkX) * (tx - checkX) + (ty - checkY) * (ty - checkY));
+                    if (stepToTarget <= targetReachThreshold) {
+                        reached = true;
+                        break;
+                    }
+                }
 
-                    DeathComponent deathComp;
-                    deathComp.hasDied = true;
-                    deathComp.remainingTime = 0.3f;
-                    componentManager.addComponent(entity, deathComp);
+                if (reached) {
+                    pathFind->currentIndex++;
+                    bool isLastTile = (pathFind->currentIndex >= (int)path.size());
+
+                    if (isLastTile) {
+                        pathFind->reachedGoal = true;
+                        componentManager.removeComponent<PathfindingComponent>(entity);
+
+                        DeathComponent deathComp;
+                        deathComp.hasDied = true;
+                        deathComp.remainingTime = 0.3f;
+                        componentManager.addComponent(entity, deathComp);
+                    }
+                }
+
+                if (!pathFind->reachedGoal) {
+                    vel->x = dx * speed->speed;
+                    vel->y = dy * speed->speed;
                 }
             }
         }

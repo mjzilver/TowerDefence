@@ -282,7 +282,7 @@ Entity EntityFactory::createTower(const glm::vec2& position) {
     weaponComponent.range = 250;
     weaponComponent.damage = 25;
     weaponComponent.rateOfFire = 1.0f;
-    weaponComponent.projectileSpeed = 300.0f;
+    weaponComponent.projectileSpeed = 400.0f;
     componentManager.addComponent(weapon, weaponComponent);
 
     // Link the weapon to the tower
@@ -610,9 +610,9 @@ Entity EntityFactory::upgradeTower(Entity entity) {
     weaponPosition->y -= 8;
 
     auto* weaponComponent = componentManager.getComponent<WeaponComponent>(weaponEntity);
-    weaponComponent->damage += 10;
+    weaponComponent->damage += 15;
     weaponComponent->projectileSpeed *= 1.2f;
-    weaponComponent->rateOfFire *= 0.8f;
+    weaponComponent->rateOfFire *= 0.7f;
     weaponComponent->range *= 1.2f;
 
     return entity;

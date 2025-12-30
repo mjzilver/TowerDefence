@@ -27,4 +27,6 @@ private:
     Entity end;
 
     const float maxOffset = 20.0f;
+    const int targetCheckSteps = 3;
+    const float targetReachThreshold = 3.0f;
 };
