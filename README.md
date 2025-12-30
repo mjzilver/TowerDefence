@@ -31,6 +31,7 @@
 - [x] Event system
 - [x] Collision detection
 - [x] Quadtree collision
+- [x] Multithreaded systems
 
 ### Attributions
 
