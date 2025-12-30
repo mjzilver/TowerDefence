@@ -442,7 +442,7 @@ Entity EntityFactory::createKillCounter(const glm::vec2& pos) {
     return entity;
 }
 
-Entity EntityFactory::createUpgradeMenuItem(const glm::vec2& pos, std::function<void()> onClick) {
+Entity EntityFactory::createUpgradeMenuItem(const glm::vec2& pos, std::function<void()> onClick, int cost) {
     Entity entity = entityManager.createEntity();
 
     PositionComponent positionComponent;
@@ -457,7 +457,8 @@ Entity EntityFactory::createUpgradeMenuItem(const glm::vec2& pos, std::function<
     componentManager.addComponent(entity, sizeComponent);
 
     TextComponent textComponent;
-    textComponent.text = "Upgrade\??? gold";
+    textComponent.text = "Upgrade\n" + std::to_string(cost);
+
     textComponent.color = {0.1f, 0.1f, 0.1f};
     componentManager.addComponent(entity, textComponent);
 

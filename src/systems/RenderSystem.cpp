@@ -251,7 +251,6 @@ void RenderSystem::render() {
             const auto* textComponent = textComp->get(entity);
             const auto* colorComponent = colors->get(entity);
             const auto* clickableComponent = clickable->get(entity);
-            const auto* collision = collisions->get(entity);
 
             std::string shaderName = "default";
             if (shaderComponent) {
@@ -287,6 +286,8 @@ void RenderSystem::render() {
             }
 
             if constexpr (DEBUG_ENABLED) {
+                const auto* collision = collisions->get(entity);
+                
                 if (!position || !collision) continue;
 
                 const glm::vec4 rect{position->x + collision->x, position->y + collision->y, collision->w, collision->h};

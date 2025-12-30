@@ -27,7 +27,7 @@ void CollisionSystem::update(float) {
         auto* col = collisions->get(entity);
 
         if (!pos || !col) {
-            continue;   
+            continue;
         };
         glm::vec4 entityBounds{pos->x + col->x, pos->y + col->y, col->w, col->h};
 
