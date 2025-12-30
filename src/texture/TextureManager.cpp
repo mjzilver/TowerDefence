@@ -1,5 +1,7 @@
 #include "TextureManager.h"
 
+#include <vector>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <GL/gl.h>
 #include <glad/glad.h>
@@ -23,10 +25,8 @@ unsigned char* TextureManager::loadPngImage(const std::string& filePath, unsigne
     return image;
 }
 
-Texture TextureManager::loadTexture(const std::string& filePath) {
-    if (textureCache.find(filePath) != textureCache.end()) {
-        return textureCache[filePath];
-    }
+void TextureManager::preload(const std::string& filePath) {
+    if (textureCache.find(filePath) != textureCache.end()) return;
 
     unsigned int width, height;
     unsigned char* image = loadPngImage(filePath, width, height);
@@ -41,5 +41,21 @@ Texture TextureManager::loadTexture(const std::string& filePath) {
     Texture result = {textureId, glm::vec2(width, height)};
 
     textureCache[filePath] = result;
-    return result;
+}
+
+void TextureManager::preload(const std::vector<std::string>& files) {
+    for (const auto& file : files) {
+        preload(file);
+    }
+}
+
+const Texture& TextureManager::get(const std::string& filePath) const {
+    auto it = textureCache.find(filePath);
+
+    if (it == textureCache.end()) {
+        std::cerr << "[TextureManager] Texture not preloaded: " << filePath << std::endl;
+        std::abort();
+    }
+
+    return it->second;
 }

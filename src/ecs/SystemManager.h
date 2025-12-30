@@ -26,9 +26,7 @@ public:
     void updateSystems(float deltaTime) {
         for (auto& batch : batches) {
             for (auto* sys : batch) {
-                threadpool.submit([&, sys]() {
-                    sys->update(deltaTime);
-                });
+                threadpool.submit([&, sys]() { sys->update(deltaTime); });
             }
         }
 

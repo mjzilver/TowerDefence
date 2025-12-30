@@ -80,7 +80,7 @@ void PathfindingSystem::update(float) {
                 } else if (isLastTile && dist <= snapRadius) {
                     pathFind->reachedGoal = true;
 
-                    //componentManager.removeComponent<PathfindingComponent>(entity);
+                    componentManager.removeComponent<PathfindingComponent>(entity);
 
                     DeathComponent deathComp;
                     deathComp.hasDied = true;

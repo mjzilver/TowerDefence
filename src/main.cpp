@@ -80,7 +80,6 @@ int main() {
         const float frameTime = 1.0f / 60.0f;
 
         while (!glfwWindowShouldClose(window)) {
-
             glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -100,7 +99,7 @@ int main() {
                 double currentTime = glfwGetTime();
                 double deltaTime = currentTime - lastTime;
                 static double lastPrint = 0;
-                
+
                 if (currentTime - lastPrint >= 1.0) {
                     std::cout << "FPS: " << 1.0 / deltaTime << "\n";
                     lastPrint = currentTime;

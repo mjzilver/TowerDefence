@@ -31,6 +31,18 @@
 #include "../utils/TextureCoords.h"
 #include "../utils/ZLayer.h"
 
+EntityFactory::EntityFactory(ComponentManager& componentManager, EntityManager& entityManager, TextureManager& textureManager)
+    : componentManager(componentManager), entityManager(entityManager), textureManager(textureManager) {
+    textureManager.preload({
+        "tiles/Grass.png",
+        "enemy/Firebug.png",
+        "towers/tower1/Tower 01.png",
+        "towers/tower1/Tower 01 - Level 01 - Weapon.png",
+        "towers/tower1/Tower 01 - Level 01 - Projectile.png",
+        "towers/tower1/Tower 01 - Weapon - Impact.png",
+    });
+}
+
 Entity EntityFactory::createGrassTile(const glm::vec2& position) {
     Entity entity = entityManager.createEntity();
 
@@ -47,7 +59,7 @@ Entity EntityFactory::createGrassTile(const glm::vec2& position) {
     componentManager.addComponent(entity, sizeComponent);
 
     TextureComponent textureComponent;
-    textureComponent.texture = textureManager.loadTexture("tiles/Grass.png");
+    textureComponent.texture = textureManager.get("tiles/Grass.png");
     textureComponent.coords = getTextureCoords(2, 1, TEXTURE_SIZE, TEXTURE_SIZE, textureComponent.texture.size.x, textureComponent.texture.size.y);
     componentManager.addComponent(entity, textureComponent);
 
@@ -82,7 +94,7 @@ Entity EntityFactory::createPathTile(const glm::vec2& position) {
     componentManager.addComponent(entity, flagComponent);
 
     TextureComponent textureComponent;
-    textureComponent.texture = textureManager.loadTexture("tiles/Grass.png");
+    textureComponent.texture = textureManager.get("tiles/Grass.png");
     textureComponent.coords = getTextureCoords(9, 2, TEXTURE_SIZE, TEXTURE_SIZE, textureComponent.texture.size.x, textureComponent.texture.size.y);
     componentManager.addComponent(entity, textureComponent);
 
@@ -150,7 +162,7 @@ Entity EntityFactory::createFireBug(const glm::vec2& position, int health, int s
     componentManager.addComponent(entity, clickableComponent);
 
     TextureComponent textureComponent;
-    textureComponent.texture = textureManager.loadTexture("enemy/Firebug.png");
+    textureComponent.texture = textureManager.get("enemy/Firebug.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
     componentManager.addComponent(entity, textureComponent);
 
@@ -218,7 +230,7 @@ Entity EntityFactory::createTower(const glm::vec2& position) {
     componentManager.addComponent(entity, upgradeComponent);
 
     TextureComponent textureComponent;
-    textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01.png");
+    textureComponent.texture = textureManager.get("towers/tower1/Tower 01.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
     componentManager.addComponent(entity, textureComponent);
 
@@ -238,7 +250,7 @@ Entity EntityFactory::createTower(const glm::vec2& position) {
     componentManager.addComponent(weapon, weaponSizeComponent);
 
     TextureComponent weaponTextureComponent;
-    weaponTextureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Level 01 - Weapon.png");
+    weaponTextureComponent.texture = textureManager.get("towers/tower1/Tower 01 - Level 01 - Weapon.png");
     weaponTextureComponent.coords =
         getTextureCoords(0, 0, weaponSize, weaponSize, weaponTextureComponent.texture.size.x, weaponTextureComponent.texture.size.y);
     componentManager.addComponent(weapon, weaponTextureComponent);
@@ -309,7 +321,7 @@ Entity EntityFactory::createTowerProjectile(float x, float y, float /*targetX*/,
     componentManager.addComponent(entity, sizeComponent);
 
     TextureComponent textureComponent;
-    textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Level 01 - Projectile.png");
+    textureComponent.texture = textureManager.get("towers/tower1/Tower 01 - Level 01 - Projectile.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
     componentManager.addComponent(entity, textureComponent);
 
@@ -366,7 +378,7 @@ Entity EntityFactory::createTowerProjectileImpact(glm::vec2 position) {
     componentManager.addComponent(entity, sizeComponent);
 
     TextureComponent textureComponent;
-    textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01 - Weapon - Impact.png");
+    textureComponent.texture = textureManager.get("towers/tower1/Tower 01 - Weapon - Impact.png");
     textureComponent.coords = getTextureCoords(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x, textureComponent.texture.size.y);
     componentManager.addComponent(entity, textureComponent);
 
@@ -589,7 +601,7 @@ Entity EntityFactory::upgradeTower(Entity entity) {
     static const int TOWER_HEIGHT = 128;
 
     TextureComponent textureComponent;
-    textureComponent.texture = textureManager.loadTexture("towers/tower1/Tower 01.png");
+    textureComponent.texture = textureManager.get("towers/tower1/Tower 01.png");
     textureComponent.coords = getTextureCoords(upgradeComponent->upgradeLevel - 1, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, textureComponent.texture.size.x,
                                                textureComponent.texture.size.y);
     componentManager.addComponent(entity, textureComponent);

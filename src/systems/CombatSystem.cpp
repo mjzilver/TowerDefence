@@ -64,10 +64,10 @@ void CombatSystem::onEvent(const Event& event) {
                 targetDeath->hasDied = true;
             }
 
-            // componentManager.removeComponent<VelocityComponent>(target);
-            // componentManager.removeComponent<PathfindingComponent>(target);
-            // componentManager.removeComponent<HealthComponent>(target);
-            // componentManager.removeComponent<CollisionComponent>(target);
+            componentManager.removeComponent<VelocityComponent>(target);
+            componentManager.removeComponent<PathfindingComponent>(target);
+            componentManager.removeComponent<HealthComponent>(target);
+            componentManager.removeComponent<CollisionComponent>(target);
 
             targetPosition->zIndex = ZLayer::DEAD;
             componentManager.reorder(target, ZLayer::DEAD);
@@ -79,7 +79,7 @@ void CombatSystem::onEvent(const Event& event) {
         deathComponent.hasDied = true;
         deathComponent.remainingTime = 0.001f;
 
-        //componentManager.removeComponent<CollisionComponent>(projectile);
+        componentManager.removeComponent<CollisionComponent>(projectile);
         componentManager.addComponent(projectile, deathComponent);
     }
 }

@@ -4,6 +4,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "Texture.h"
 
@@ -12,7 +13,9 @@ public:
     TextureManager() = default;
     ~TextureManager() = default;
 
-    Texture loadTexture(const std::string& filePath);
+    void preload(const std::string& filePath);
+    void preload(const std::vector<std::string>& files);
+    const Texture& get(const std::string& filePath) const;
 
 private:
     const std::string texturePath = "resources/images/";

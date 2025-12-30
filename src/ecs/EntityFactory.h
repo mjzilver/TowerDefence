@@ -10,8 +10,7 @@
 
 class EntityFactory {
 public:
-    EntityFactory(ComponentManager& componentManager, EntityManager& entityManager, TextureManager& textureManager)
-        : componentManager(componentManager), entityManager(entityManager), textureManager(textureManager) {}
+    EntityFactory(ComponentManager& componentManager, EntityManager& entityManager, TextureManager& textureManager);
 
     Entity createGrassTile(const glm::vec2& position);
     Entity createPathTile(const glm::vec2& position);

@@ -1,10 +1,10 @@
 #include "RenderSystem.h"
 
+#include <cassert>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <string>
-#include <vector>
 
 #include "../components/ClickableComponent.h"
 #include "../components/CollisionComponent.h"
@@ -261,6 +261,7 @@ void RenderSystem::render() {
             if (shaderComponent) {
                 shaderName = shaderComponent->name;
             }
+            
             Shader* shader = shaderPrograms[shaderName];
             GLuint shaderProgram = shader->getProgram();
             GLuint vao;
@@ -292,7 +293,7 @@ void RenderSystem::render() {
 
             if constexpr (DEBUG_ENABLED) {
                 const auto* collision = collisions->get(entity);
-                
+
                 if (!position || !collision) continue;
 
                 const glm::vec4 rect{position->x + collision->x, position->y + collision->y, collision->w, collision->h};
