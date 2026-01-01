@@ -28,9 +28,8 @@ public:
             for (auto* sys : batch) {
                 threadpool.submit([&, sys]() { sys->update(deltaTime); });
             }
+            threadpool.join();
         }
-
-        threadpool.join();
 
         context.eventDispatcher.swapQueues();
         context.eventDispatcher.deliver();

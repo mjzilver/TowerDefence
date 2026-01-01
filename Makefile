@@ -6,12 +6,15 @@ H_FILES = $(shell find src -type f -name '*.h')
 CMAKE_FLAGS = -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 DEBUG_FLAGS = -DCMAKE_BUILD_TYPE=Debug \
               -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer -O1"
+TSAN_FLAGS = -DCMAKE_BUILD_TYPE=Debug \
+             -DCMAKE_CXX_FLAGS="-fsanitize=thread -fno-omit-frame-pointer -O1" \
+             -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=thread"
 RELEASE_FLAGS = -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_CXX_FLAGS="-O3 -march=native -DNDEBUG"
 PROFILE_FLAGS = -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_CXX_FLAGS="-O2 -pg" \
                 -DCMAKE_EXE_LINKER_FLAGS="-pg"
-MAKE_FLAGS = -j4
+MAKE_FLAGS := -j$(shell nproc --ignore=1)
 
 .PHONY: all
 all: build run
@@ -53,18 +56,34 @@ build-debug:
 
 run-debug: build-debug
 	cd $(BUILD_DIR) && \
-	LSAN_OPTIONS=suppressions=../lsan.supp \
+	LSAN_OPTIONS=suppressions=../supp/lsan.supp \
 	ASAN_OPTIONS=\
 	detect_leaks=1:\
 	abort_on_error=0:\
 	symbolize=1:\
-	fast_unwind_on_malloc=0:\
-	malloc_context_size=50 \
-	LSAN_OPTIONS=verbosity=1 \
+	fast_unwind_on_malloc=0 \
 	./$(TARGET) 2>&1 | tee ./asan.log
 
 .PHONY: debug
 debug: build-debug run-debug
+
+.PHONY: build-tsan
+build-tsan:
+	mkdir -p $(BUILD_DIR)
+	cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(TSAN_FLAGS) .. && $(MAKE) $(MAKE_FLAGS)
+
+.PHONY: run-tsan
+run-tsan: build-tsan
+	cd $(BUILD_DIR) && \
+	TSAN_OPTIONS=suppressions=../supp/tsan.supp:\
+	halt_on_error=0:\
+	report_signal_unsafe=0:\
+	second_deadlock_stack=1:\
+	symbolize=1 \
+	./$(TARGET) 2>&1 | tee ./tsan.log
+
+.PHONY: tsan
+tsan: build-tsan run-tsan
 
 # ---------
 # Profiling

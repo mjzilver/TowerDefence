@@ -54,6 +54,10 @@ public:
     }
 
     void clear() override {
+        for (T* component : components) {
+            delete component;
+        }
+        
         entityToIndex.clear();
         components.clear();
         entities.clear();

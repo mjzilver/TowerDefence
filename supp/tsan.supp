@@ -1,0 +1,10 @@
+race:libGL
+race:libEGL
+race:libGLX
+race:libgallium
+race:i915
+race:anon_inode:i915
+race:libglib-2.0.so
+race:libgio-2.0.so
+race:libfontconfig.so.1
+race:libpangoft2-1.0.so.0
