@@ -1,9 +1,12 @@
 #pragma once
 
+#include <cassert>
 #include <deque>
+#include <iostream>
 #include <unordered_map>
 #include <vector>
 
+#include "../utils/Globals.h"
 #include "Component.h"
 
 class IComponentArray {
@@ -16,11 +19,13 @@ public:
 template <typename T>
 class ComponentArray : public IComponentArray {
 public:
-    void insert(Entity entity, T component) {
-        auto it = entityToIndex.find(entity);
-        if (it != entityToIndex.end()) {
-            *components[it->second] = std::move(component);
-            return;
+    void insert(Entity e, T component) {
+        if constexpr (DEBUG_ENABLED) {
+            auto it = entityToIndex.find(e);
+            if (it != entityToIndex.end()) {
+                std::cerr << "Component: " << typeid(T).name() << " already exists on entity " << e << "\n";
+                std::abort();
+            }
         }
 
         size_t index;
@@ -28,14 +33,24 @@ public:
             index = freeIndices.back();
             freeIndices.pop_back();
             components[index] = new T(std::move(component));
-            entities[index] = entity;
+            entities[index] = e;
         } else {
             index = entities.size();
-            entities.push_back(entity);
+            entities.push_back(e);
             components.push_back(new T(std::move(component)));
         }
 
-        entityToIndex[entity] = index;
+        entityToIndex[e] = index;
+    }
+
+    void insertOrReplace(Entity e, T component) {
+        auto it = entityToIndex.find(e);
+        if (it != entityToIndex.end()) {
+            *components[it->second] = std::move(component);
+            return;
+        }
+
+        insert(e, component);
     }
 
     void clear() override {
@@ -45,8 +60,8 @@ public:
         freeIndices.clear();
     }
 
-    void remove(Entity entity) override {
-        auto it = entityToIndex.find(entity);
+    void remove(Entity e) override {
+        auto it = entityToIndex.find(e);
         if (it == entityToIndex.end()) return;
 
         size_t index = it->second;
@@ -55,7 +70,7 @@ public:
         components[index] = nullptr;
         entities[index] = INVALID_ENTITY;
         freeIndices.push_back(index);
-        entityToIndex.erase(entity);
+        entityToIndex.erase(e);
     }
 
     const T* get(Entity entity) const {
@@ -69,7 +84,6 @@ public:
         if (it == entityToIndex.end()) return nullptr;
         return components[it->second];
     }
-
 
     std::deque<T*>& getAll() { return components; }
     std::deque<Entity>& getEntities() { return entities; }

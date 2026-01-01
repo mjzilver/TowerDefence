@@ -62,7 +62,9 @@ protected:
         }
     }
 
-    bool hasRead(const std::type_index& t) const { return std::find(reads.begin(), reads.end(), t) != reads.end(); }
+    bool hasRead(const std::type_index& t) const {
+        return std::find(reads.begin(), reads.end(), t) != reads.end() || std::find(writes.begin(), writes.end(), t) != writes.end();
+    }
 
     bool hasWrite(const std::type_index& t) const { return std::find(writes.begin(), writes.end(), t) != writes.end(); }
 };

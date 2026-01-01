@@ -39,6 +39,8 @@ void StateSystem::openMainMenu() { engineState = EngineState::MAIN_MENU; }
 
 void StateSystem::onEvent(const Event& event) {
     if (event.type == EventType::OPEN_MENU_CLICKED) {
+        context.componentManager.destroyAll();
+        context.componentManager.flush(context.entityManager);
         openMainMenu();
     }
 }

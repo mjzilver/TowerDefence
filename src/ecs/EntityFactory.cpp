@@ -105,7 +105,7 @@ Entity EntityFactory::createStartTile(const glm::vec2& position) {
     Entity entity = createPathTile(position);
     FlagComponent flagComponent;
     flagComponent.type = START;
-    componentManager.addComponent(entity, flagComponent);
+    componentManager.addOrReplaceComponent(entity, flagComponent);
     return entity;
 }
 
@@ -113,7 +113,7 @@ Entity EntityFactory::createEndTile(const glm::vec2& position) {
     Entity entity = createPathTile(position);
     FlagComponent flagComponent;
     flagComponent.type = END;
-    componentManager.addComponent(entity, flagComponent);
+    componentManager.addOrReplaceComponent(entity, flagComponent);
     return entity;
 }
 

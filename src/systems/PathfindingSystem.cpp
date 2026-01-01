@@ -89,7 +89,7 @@ void PathfindingSystem::update(float deltaTime) {
                         DeathComponent deathComp;
                         deathComp.hasDied = true;
                         deathComp.remainingTime = 0.3f;
-                        componentManager.addComponent(entity, deathComp);
+                        componentManager.addOrReplaceComponent(entity, deathComp);
                     }
                 }
 

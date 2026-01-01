@@ -64,7 +64,18 @@ public:
     void addComponent(Entity e, T component) {
         std::lock_guard<std::mutex> guard(commandMutex);
         commands.push_back(
-            [=, c = std::move(component)](ComponentManager& cm, EntityManager&) mutable { cm.getArray<T>()->insert(e, std::move(c)); });
+            [=, c = std::move(component)](ComponentManager& cm, EntityManager&) mutable { 
+                cm.getArray<T>()->insert(e, std::move(c)); 
+            });
+    }
+
+    template <typename T>
+    void addOrReplaceComponent(Entity e, T component) {
+        std::lock_guard<std::mutex> guard(commandMutex);
+        commands.push_back(
+            [=, c = std::move(component)](ComponentManager& cm, EntityManager&) mutable { 
+                cm.getArray<T>()->insertOrReplace(e, std::move(c)); 
+            });
     }
 
     void addComponent(Entity e, PositionComponent pos) {
@@ -125,9 +136,14 @@ public:
     }
 
     void destroyAll() {
-        for (auto& [type, array] : componentArrays) {
-            array->clear();
-        }
+        std::lock_guard<std::mutex> guard(commandMutex);
+        commands.push_back([=](ComponentManager& cm, EntityManager& em) {
+            for (auto& [type, array] : cm.componentArrays) {
+                array->clear();
+            }
+            
+            em.reset();
+        });
     }
 
     void reorder(Entity entity, ZLayer newLayer);

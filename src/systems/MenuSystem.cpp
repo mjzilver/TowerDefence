@@ -78,9 +78,6 @@ void MenuSystem::createMenu() {
 
     buttonXOffset += buttonSpacing;
     entityFactory.createMenuButton({buttonXOffset, buttonY}, [&]() {
-        componentManager.destroyAll();
-        context.entityManager.reset();
-
         context.eventDispatcher.dispatch({EventType::OPEN_MENU_CLICKED});
     });
 }
